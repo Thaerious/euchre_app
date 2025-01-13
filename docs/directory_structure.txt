@@ -22,6 +22,7 @@ my_project/
 │   ├── __init__.py
 │   ├── test_app.py           # Unit tests for the app
 │   └── ...                   # Additional test files
+├── tools/                    # Scripts to assist in project management
 ├── instance/                 # Instance-specific configuration (optional)
 │   └── config.py             # Environment-specific settings (ignored by VCS)
 ├── migrations/               # Database migrations (if using Flask-Migrate or Alembic)
