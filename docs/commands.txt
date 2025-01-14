@@ -1,0 +1,2 @@
+npx sass <input> <output>
+npx sass app/static/sass/style.sass app/static/css/style.sass 

@@ -11,6 +11,8 @@ my_project/
 │   ├── static/               # Static files (CSS, JavaScript, images)
 │   │   ├── css/
 │   │   │   └── style.css
+│   │   ├── sass/             # Style source files (scss, sass)
+│   │   │   └── style.sass
 │   │   ├── js/
 │   │   │   └── script.js
 │   │   └── images/
