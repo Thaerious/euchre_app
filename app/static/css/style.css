@@ -2,11 +2,20 @@
   --box-size: 80;
 }
 
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #87CEEB; 
+}
+
 .game-board {
+  position: relative;
   background-color: #008000; 
   border: 2px solid #ffffff; 
   border-radius: 15px;       
-  padding: 20px;                 
   margin: 0 auto;            
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); 
   min-height: 300px;
@@ -18,17 +27,106 @@
 }
 
 @media (orientation: portrait) {
-  .box {
-    width: calc(var(--box-size) * 100vw);
-    height: calc(var(--box-size) * 100vw);
+  .game-board {
+    width: calc(var(--box-size) * 1vw);
+    height: calc(var(--box-size) * 1vw);
   }
 }
 
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-  background-color: #87CEEB; 
+.hand, .played{
+  position: absolute;
+  height: 15%;  
+  aspect-ratio: 2.5 / 3.5;
+}
+
+#played{
+  bottom: 50%; 
+  left: 50%;
+  transform: translate(-50%, 50%);  
+}
+
+#hand_0{
+  bottom: 5%; 
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#hand_1{
+  top: 50%;
+  left: 5%;
+  transform: translateY(-50%) rotate(90deg);
+}
+
+#hand_2{
+  top: 5%; 
+  left: 50%;
+  transform: translateX(-50%);  
+}
+
+#hand_3{
+  top: 50%;
+  right: 5%;
+  transform: translateY(-50%) rotate(90deg);
+}
+
+.card {
+  position: absolute;
+  height: 100%;
+  width: auto;  
+}
+
+.played > .card:nth-child(1){
+  transform: translateY(60%);
+}
+
+.played > .card:nth-child(2){
+  transform: translateX(-80%) rotate(90deg);
+}
+
+.played > .card:nth-child(3){
+  transform: translateY(-60%);
+}
+
+.played > .card:nth-child(4){
+  transform: translateX(80%) rotate(90deg);
+}
+
+#button_container{
+  position: absolute;
+  height: 6%;  
+  width: 50%; 
+  bottom: 22%;
+  left: 50%;
+  transform: translateX(-50%);  
+  background-color: pink;
+}
+
+/* Buttons */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap');
+
+.styled-button {
+  position: absolute;
+  width: 33%; /* Adjust as needed */
+  height: 100%; /* Adjust as needed */
+  font-family: "Montserrat", sans-serif;
+  font-size: 1em;
+  font-weight: bolder;
+  color: rgb(255, 247, 133);
+  background-color: #4CAF50; /* Green theme */
+  border: 2px solid black; /* Fixed spacing issue with 'px' */
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); 
+  transition: all 0.3s ease;
+}
+
+.styled-button:hover {
+  background-color: #45a049;
+}
+
+.styled-button:active {
+  background-color: #2E7D32;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); 
+  transform: translateY(2px);
 }
