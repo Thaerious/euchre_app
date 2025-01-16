@@ -1,43 +1,86 @@
 <html>
+
 <head>
     <link rel="stylesheet" href="../static/css/style.css">
     <script src="../static/js/hand.js"></script>
 </head>
+
 <body>
     <div class="game-board" id="table">
+        <img class="card" id="upcard" src="../static/images/cards/large/back.png" />
+
         <div class="played" id="played">
-            <img class="card" src="../static/images/cards/large/back.png"/>
-            <img class="card"  src="../static/images/cards/large/back.png"/>
-            <img class="card"  src="../static/images/cards/large/back.png"/>
-            <img class="card"  src="../static/images/cards/large/back.png"/>
-        </div>            
+            <img class="card" src="../static/images/cards/large/back.png" />
+            <img class="card" src="../static/images/cards/large/back.png" />
+            <img class="card" src="../static/images/cards/large/back.png" />
+            <img class="card" src="../static/images/cards/large/back.png" />
+        </div>
         <div class="hand" id="hand_3">
-            <img class="card" src="../static/images/cards/large/back.png"/>
-            <img class="card"  src="../static/images/cards/large/back.png"/>
-            <img class="card"  src="../static/images/cards/large/back.png"/>
-            <img class="card"  src="../static/images/cards/large/back.png"/>
-            <img class="card"  src="../static/images/cards/large/back.png"/>
-        </div>            
+            <div class="cards">
+                <img class="card" src="../static/images/cards/large/back.png" />
+                <img class="card" src="../static/images/cards/large/back.png" />
+                <img class="card" src="../static/images/cards/large/back.png" />
+                <img class="card" src="../static/images/cards/large/back.png" />
+                <img class="card" src="../static/images/cards/large/back.png" />
+            </div>
+
+            <div class="tricks">
+                <img class="trick" src="../static/images/cards/large/back.png" />
+                <img class="trick" src="../static/images/cards/large/back.png" />
+                <img class="trick" src="../static/images/cards/large/back.png" />
+                <img class="trick" src="../static/images/cards/large/back.png" />
+                <img class="trick" src="../static/images/cards/large/back.png" />
+            </div>
+        </div>
         <div class="hand" id="hand_2">
-            <img class="card" src="../static/images/cards/large/back.png"/>
-            <img class="card"  src="../static/images/cards/large/back.png"/>
-            <img class="card"  src="../static/images/cards/large/back.png"/>
-            <img class="card"  src="../static/images/cards/large/back.png"/>
-            <img class="card"  src="../static/images/cards/large/back.png"/>
-        </div>        
+            <div class="cards">
+                <img class="card" src="../static/images/cards/large/back.png" />
+                <img class="card" src="../static/images/cards/large/back.png" />
+                <img class="card" src="../static/images/cards/large/back.png" />
+                <img class="card" src="../static/images/cards/large/back.png" />
+                <img class="card" src="../static/images/cards/large/back.png" />
+            </div>
+            <div class="tricks">
+                <img class="trick" src="../static/images/cards/large/back.png" />
+                <img class="trick" src="../static/images/cards/large/back.png" />
+                <img class="trick" src="../static/images/cards/large/back.png" />
+                <img class="trick" src="../static/images/cards/large/back.png" />
+                <img class="trick" src="../static/images/cards/large/back.png" />
+            </div>            
+        </div>
         <div class="hand" id="hand_1">
-            <img class="card" src="../static/images/cards/large/back.png"/>
-            <img class="card"  src="../static/images/cards/large/back.png"/>
-            <img class="card"  src="../static/images/cards/large/back.png"/>
-            <img class="card"  src="../static/images/cards/large/back.png"/>
-            <img class="card"  src="../static/images/cards/large/back.png"/>
-        </div>            
+            <div class="cards">
+                <img class="card" src="../static/images/cards/large/back.png" />
+                <img class="card" src="../static/images/cards/large/back.png" />
+                <img class="card" src="../static/images/cards/large/back.png" />
+                <img class="card" src="../static/images/cards/large/back.png" />
+                <img class="card" src="../static/images/cards/large/back.png" />
+            </div>
+
+            <div class="tricks">
+                <img class="trick" src="../static/images/cards/large/back.png" />
+                <img class="trick" src="../static/images/cards/large/back.png" />
+                <img class="trick" src="../static/images/cards/large/back.png" />
+                <img class="trick" src="../static/images/cards/large/back.png" />
+                <img class="trick" src="../static/images/cards/large/back.png" />
+            </div>
+        </div>
         <div class="hand" id="hand_0">
-            <img class="card" src="../static/images/cards/large/back.png"/>
-            <img class="card"  src="../static/images/cards/large/back.png"/>
-            <img class="card"  src="../static/images/cards/large/back.png"/>
-            <img class="card"  src="../static/images/cards/large/back.png"/>
-            <img class="card"  src="../static/images/cards/large/back.png"/>
+            <div class="cards">
+                <img class="card" src="../static/images/cards/large/back.png" />
+                <img class="card" src="../static/images/cards/large/back.png" />
+                <img class="card" src="../static/images/cards/large/back.png" />
+                <img class="card" src="../static/images/cards/large/back.png" />
+                <img class="card" src="../static/images/cards/large/back.png" />
+            </div>
+
+            <div class="tricks">
+                <img class="trick" src="../static/images/cards/large/back.png" />
+                <img class="trick" src="../static/images/cards/large/back.png" />
+                <img class="trick" src="../static/images/cards/large/back.png" />
+                <img class="trick" src="../static/images/cards/large/back.png" />
+                <img class="trick" src="../static/images/cards/large/back.png" />
+            </div>
         </div>
 
         <div id="button_container">
@@ -45,8 +88,21 @@
             <button id="b2" class="styled-button">Pass</button>
             <button id="b3" class="styled-button">Order</button>
         </div>
+
+        <div id="score_0" class="score" data-value="4">
+            <img class="card top" src="../static/images/cards/large/5♥.png" />
+            <img class="card bottom" src="../static/images/cards/large/5♦.png" />
+            <img class="card back" src="../static/images/cards/large/back.png" />
+        </div>    
+        
+        <div id="score_1" class="score" data-value="4">
+            <img class="card top" src="../static/images/cards/large/5♠.png" />
+            <img class="card bottom" src="../static/images/cards/large/5♣.png" />
+            <img class="card back" src="../static/images/cards/large/back.png" />
+        </div>              
     </div>
 
     <!-- <button id="euchreButton" class="styled-button">Play Euchre</button> -->
 </body>
+
 </html>
