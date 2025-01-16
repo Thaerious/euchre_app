@@ -1,0 +1,236 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap");
+:root {
+  --box-size: 80;
+}
+
+div,
+img {
+  position: absolute;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #87CEEB;
+}
+
+.game-board {
+  position: relative;
+  background-color: #008000;
+  border: 2px solid #ffffff;
+  border-radius: 15px;
+  margin: 0 auto;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  min-height: 300px;
+  min-width: 300px;
+  /* Default for landscape */
+  height: calc(var(--box-size) * 1vh);
+  width: calc(var(--box-size) * 1vh);
+}
+@media (orientation: portrait) {
+  .game-board {
+    width: calc(var(--box-size) * 1vw);
+    height: calc(var(--box-size) * 1vw);
+  }
+}
+
+.played,
+#upcard {
+  height: 15%;
+  aspect-ratio: 2.5/3.5;
+}
+.played > .card:nth-child(1),
+#upcard > .card:nth-child(1) {
+  transform: translateY(60%);
+}
+.played > .card:nth-child(2),
+#upcard > .card:nth-child(2) {
+  transform: translateX(-80%) rotate(90deg);
+}
+.played > .card:nth-child(3),
+#upcard > .card:nth-child(3) {
+  transform: translateY(-60%);
+}
+.played > .card:nth-child(4),
+#upcard > .card:nth-child(4) {
+  transform: translateX(80%) rotate(90deg);
+}
+
+.hand {
+  height: 15%;
+  width: 30%;
+}
+.hand .cards {
+  width: 0px;
+  height: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.hand .tricks {
+  width: 0;
+  height: 100%;
+  z-index: 100;
+  right: -7.5%;
+}
+
+#played,
+#upcard {
+  bottom: 50%;
+  left: 50%;
+  transform: translate(-50%, 50%);
+}
+
+#button_container {
+  position: absolute;
+  height: 6%;
+  width: 50%;
+  bottom: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#hand_0 {
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#hand_1 {
+  top: 50%;
+  left: 5%;
+  transform: translateY(-50%) rotate(90deg);
+}
+
+#hand_2 {
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%) rotate(180deg);
+}
+
+#hand_3 {
+  top: 50%;
+  right: 5%;
+  transform: translateY(-50%) rotate(-90deg);
+}
+
+.score {
+  height: 15%;
+  aspect-ratio: 2.5/3.5;
+  background-color: pink;
+}
+.score#score_0 {
+  left: 5%;
+  top: 5%;
+}
+.score#score_1 {
+  right: 10%;
+  bottom: 10%;
+}
+.score > .top {
+  z-index: 3;
+}
+.score > .bottom {
+  z-index: 2;
+}
+.score > .back {
+  z-index: 4;
+}
+.score[data-value="1"] > .back {
+  transform: translate(22%, 17%) rotate(35deg);
+}
+.score[data-value="2"] > .back {
+  transform: translate(0, 25%) rotate(90deg);
+}
+.score[data-value="3"] > .back {
+  transform: translate(0, 50%) rotate(90deg);
+}
+.score[data-value="4"] > .back {
+  transform: translate(43%, 45%) rotate(27deg);
+}
+.score[data-value="5"] > .back {
+  z-index: 1;
+}
+.score[data-value="6"] > .back {
+  z-index: 1;
+}
+.score[data-value="6"] > .top {
+  transform: translate(22%, 17%) rotate(35deg);
+}
+.score[data-value="7"] > .back {
+  z-index: 1;
+}
+.score[data-value="7"] > .top {
+  transform: translate(0, 25%) rotate(90deg);
+}
+.score[data-value="8"] > .back {
+  z-index: 1;
+}
+.score[data-value="8"] > .top {
+  transform: translate(0, 50%) rotate(90deg);
+}
+.score[data-value="9"] > .back {
+  z-index: 1;
+}
+.score[data-value="9"] > .top {
+  transform: translate(42%, 45%) rotate(32deg);
+}
+
+.card {
+  height: 100%;
+  width: auto;
+}
+
+.trick {
+  height: 34%;
+  top: 0;
+  left: 0;
+}
+.trick:nth-child(2) {
+  transform: translateY(50%) rotate(90deg);
+}
+.trick:nth-child(3) {
+  transform: translateY(100%);
+}
+.trick:nth-child(4) {
+  transform: translateY(150%) rotate(90deg);
+}
+.trick:nth-child(5) {
+  transform: translateY(200%);
+}
+
+/* Buttons */
+.styled-button {
+  position: absolute;
+  width: 33%;
+  /* Adjust as needed */
+  height: 100%;
+  /* Adjust as needed */
+  font-family: "Montserrat", sans-serif;
+  font-size: 1em;
+  font-weight: bolder;
+  color: rgb(255, 247, 133);
+  background-color: #4CAF50;
+  /* Green theme */
+  border: 2px solid black;
+  /* Fixed spacing issue with 'px' */
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.styled-button:hover {
+  background-color: #45a049;
+}
+
+.styled-button:active {
+  background-color: #2E7D32;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+  transform: translateY(2px);
+}
+
+/*# sourceMappingURL=style.css.map */

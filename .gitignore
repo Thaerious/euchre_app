@@ -126,5 +126,3 @@ yarn-debug.log
 yarn-error.log
 *.stackdump
 
-# Compiled CSS files
-app/static/css/**/*
