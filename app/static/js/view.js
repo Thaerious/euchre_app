@@ -43,6 +43,23 @@ function distributeHorizontally(parentSelector, gappercent = 0.0) {
     });
 }
 
+window.updateView = updateView
+function updateView(snapshot) {
+    window.snapshot = snapshot
+    console.log(snapshot)
+    setTricks(0, 0)
+    setTricks(1, 0)
+    setTricks(2, 0)
+    setTricks(3, 0)
+
+    // set the hand cards
+    setHand(snapshot.hand)
+
+    // set scoreing cards
+    document.querySelector("#score_0").setAttribute("data-value", snapshot.score[0]);
+    document.querySelector("#score_1").setAttribute("data-value", snapshot.score[1]);
+}
+
 (() => {
     window.addEventListener("load", () => {
         setHand(["K\u2663", "9\u2665", "A\u2660", "A\u2666", "10\u2660"]);

@@ -2,8 +2,17 @@
 #start_button{
     position: absolute;
     left: 50%;
-    top: 50%;
+    top: 56%;
     transform: translate(-50%, -50%);
-    height: 80px;
+    height: 10%;
+    aspect-ratio: 1.6;
+}
+
+#login_button{
+    position: absolute;
+    left: 50%;
+    top: 43%;
+    transform: translate(-50%, -50%);
+    height: 10%;
     aspect-ratio: 1.6;
 }
