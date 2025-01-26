@@ -3,8 +3,7 @@
 <head>
     <link rel="stylesheet" href="../static/css/view.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    <script src="../static/js/view.js"></script>
-    <script src="../static/js/game.js"></script>
+    <script type="module" src="../static/js/gameview.js"></script>
 </head>
 
 <body>
@@ -85,10 +84,17 @@
             </div>
         </div>
 
-        <div id="button_container">
-            <button id="b1" class="styled-button">Alone</button>
-            <button id="b2" class="styled-button">Pass</button>
-            <button id="b3" class="styled-button">Order</button>
+        <div id="suit_container">
+            <button id="suit_♠" class="styled_button suit_button black">♠</button>
+            <button id="suit_♥" class="styled_button suit_button red">♥</button>
+            <button id="suit_♣" class="styled_button suit_button black">♣</button>
+            <button id="suit_♦" class="styled_button suit_button red">♦</button>
+        </div>
+
+        <div id="action_container">
+            <button id="b1" class="styled_button action_button">Alone</button>
+            <button id="b2" class="styled_button action_button">Pass</button>
+            <button id="b3" class="styled_button action_button">Order</button>
         </div>
 
         <div id="score_0" class="score" data-value="4">
@@ -103,8 +109,6 @@
             <img class="card back" src="../static/images/cards/large/back.png" />
         </div>              
     </div>
-
-    <!-- <button id="euchreButton" class="styled-button">Play Euchre</button> -->
 </body>
 
 </html>

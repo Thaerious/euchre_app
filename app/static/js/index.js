@@ -1,6 +1,6 @@
 window.addEventListener("load", () => {
     document.querySelector("#login_button").addEventListener("click", () => {
-        login("Player1", "")
+        login("Adam", "")
     });    
     document.querySelector("#start_button").addEventListener("click", () => {
         startGame()
