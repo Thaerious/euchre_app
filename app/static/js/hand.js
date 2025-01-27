@@ -6,6 +6,40 @@ export class HandManager {
             console.error(`HandManager: Container with ID '${containerId}' not found.`);
             return;
         }
+        this.events = {};
+    }
+
+    on(event, listener) {
+        if (!this.events[event]) {
+            this.events[event] = [];
+        }
+        this.events[event].push(listener);
+    }
+
+    emit(event, ...args) {
+        if (this.events[event]) {
+            this.events[event].forEach(listener => listener(...args));
+        }
+    }
+
+    enable() {
+        const innerContainer = this.container.querySelector(".cards");
+        innerContainer.classList.add("enabled")
+    }
+
+    disable() {
+        const innerContainer = this.container.querySelector(".cards");
+        innerContainer.classList.remove("enabled")
+    }
+
+    setTricks(trickCount) {
+        let i = 0;
+        const tricksElement = document.querySelector(`#hand_0 > .tricks`);
+
+        for (const trick of tricksElement.querySelectorAll(".trick")) {
+            if (i++ < trickCount) trick.style.display = "block";
+            else trick.style.display = "none";
+        }
     }
 
     setTricks(userIndex, trickCount) {
