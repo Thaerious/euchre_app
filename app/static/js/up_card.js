@@ -25,4 +25,4 @@ export class UpCardManager {
     }    
 }
 
-export const upCard = new UpCardManager("#upcard");
+export default new UpCardManager("#upcard");

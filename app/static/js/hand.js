@@ -35,4 +35,4 @@ export class HandManager {
     }
 }
 
-export const hand = new HandManager("#hand_0");
+export default new HandManager("#hand_0");

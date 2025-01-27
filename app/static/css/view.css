@@ -83,6 +83,10 @@ body {
   left: 50%;
   transform: translate(-50%, 50%);
 }
+.played *,
+#upcard * {
+  position: absolute;
+}
 .played > .card:nth-child(1),
 #upcard > .card:nth-child(1) {
   transform: translateY(60%);
@@ -116,10 +120,30 @@ body {
   margin-left: -20%;
 }
 .hand .tricks {
+  position: absolute;
   width: 0;
+  top: 0;
   height: 100%;
   z-index: 100;
   right: -7.5%;
+}
+.hand .tricks .trick {
+  position: absolute;
+  height: 34%;
+  top: 0;
+  left: 0;
+}
+.hand .tricks .trick:nth-child(2) {
+  transform: translateY(50%) rotate(90deg);
+}
+.hand .tricks .trick:nth-child(3) {
+  transform: translateY(100%);
+}
+.hand .tricks .trick:nth-child(4) {
+  transform: translateY(150%) rotate(90deg);
+}
+.hand .tricks .trick:nth-child(5) {
+  transform: translateY(200%);
 }
 
 #hand_0 {
@@ -209,24 +233,6 @@ body {
 }
 .score[data-value="9"] > .top {
   transform: translate(42%, 45%) rotate(32deg);
-}
-
-.trick {
-  height: 34%;
-  top: 0;
-  left: 0;
-}
-.trick:nth-child(2) {
-  transform: translateY(50%) rotate(90deg);
-}
-.trick:nth-child(3) {
-  transform: translateY(100%);
-}
-.trick:nth-child(4) {
-  transform: translateY(150%) rotate(90deg);
-}
-.trick:nth-child(5) {
-  transform: translateY(200%);
 }
 
 /* Buttons */

@@ -60,4 +60,4 @@ export class SuitButtonManager {
     }    
 }
 
-export const suitButtons = new SuitButtonManager("suit_container");
+export default new SuitButtonManager("suit_container");

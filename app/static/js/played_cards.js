@@ -17,14 +17,14 @@ export class PlayedCardsManager {
         }
     }
 
-    setCard(index, card) {
+    setCard(seat, card) {
         const cards = this.container.querySelectorAll(".card")
 
         if (card == "") {
-            cards[index].classList.add("hidden")
+            cards[seat].classList.add("hidden")
         } else {
-            cards[index].src = `../static/images/cards/large/${card}.png`;
-            cards[index].classList.remove("hidden")
+            cards[seat].src = `../static/images/cards/large/${card}.png`;
+            cards[seat].classList.remove("hidden")
         }
     }
 }

@@ -65,4 +65,4 @@ export class ActionButtonManager {
     }
 }
 
-export const actionButtons = new ActionButtonManager("action_container");
+export default new ActionButtonManager("action_container");
