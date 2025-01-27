@@ -4,6 +4,8 @@ import { actionButtons } from "./action_buttons.js"
 import { distributeHorizontally } from "./distribute_elements.js"
 import { upCard } from "./up_card.js"
 import { hand } from "./hand.js"
+import played_cards from "./played_cards.js"
+import chatBubble from "./chat_bubble.js"
 
 function hidePlayedCards() {
     const elements = document.querySelectorAll(`#played > .card`);
@@ -44,16 +46,45 @@ function updateView(snapshot) {
     // set buttons based on state
     suitButtons.clear()
     suitButtons.hide()
+    chatBubble.hide()
 
+    // clear played cards if not currently playing a trick (state 5)
+    if (snapshot.state !== 5) hidePlayedCards()
+
+    // set the hand cards
+    hand.setCards(snapshot.hand)
+    setBacks(1, snapshot.players[1].cards)
+    setBacks(2, snapshot.players[2].cards)
+    setBacks(3, snapshot.players[3].cards)
+
+    // set score cards
+    document.querySelector("#score_0").setAttribute("data-value", snapshot.score[0]);
+    document.querySelector("#score_1").setAttribute("data-value", snapshot.score[1]);
+
+    // show start button for new game
+    if (snapshot.state === 0) {
+        actionButtons.setButtons([
+            { "name": "Start" }
+        ])        
+    }
+
+    if (snapshot.last_player !== snapshot.for_player) {
+        chatBubble.show(
+    }
+
+    // show buttons, enable actions if for-player is playing
+    if (snapshot.active_player === snapshot.for_player) {
+        updateViewForPlayer(snapshot)
+    }
+}
+
+function getSeat(pindex, snapshot) {
+}
+
+function updateViewForPlayer(snapshot) {
     switch (snapshot.state) {
-        case 0:
-            actionButtons.setButtons([
-                { "name": "Start" }
-            ])
-
-            break;
         case 1:
-            if (snapshot.active_player == snapshot.for_player) {
+            if (snapshot.active_player === snapshot.for_player) {
 
                 actionButtons.setButtons([
                     { "name": "Pass" },
@@ -65,7 +96,7 @@ function updateView(snapshot) {
             upCard.show(snapshot.up_card)
             break;
         case 2:
-            if (snapshot.active_player == snapshot.for_player) {
+            if (snapshot.active_player === snapshot.for_player) {
                 actionButtons.setButtons([
                     { "name": "Down" }
                 ])
@@ -74,7 +105,7 @@ function updateView(snapshot) {
             upCard.show(snapshot.up_card)
             break;
         case 3:
-            if (snapshot.active_player == snapshot.for_player) {
+            if (snapshot.active_player === snapshot.for_player) {
                 actionButtons.setButtons([
                     { "name": "Pass" },
                     { "name": "Make", "disable": true },
@@ -86,7 +117,7 @@ function updateView(snapshot) {
             suitButtons.show()
             break;
         case 4:
-            if (snapshot.active_player == snapshot.for_player) {
+            if (snapshot.active_player === snapshot.for_player) {
                 actionButtons.setButtons([
                     { "name": "Make", "disable": true },
                     { "name": "Alone", "disable": true },
@@ -109,41 +140,11 @@ function updateView(snapshot) {
             upCard.hide()
             break;
     }
-
-    // clear played cards if not currently playing a trick (state 5)
-    if (snapshot.state != 5) hidePlayedCards()
-
-    // set the hand cards
-    hand.setCards(snapshot.hand)
-    setBacks(1, snapshot.players[1].cards)
-    setBacks(2, snapshot.players[2].cards)
-    setBacks(3, snapshot.players[3].cards)
-
-    // set score cards
-    document.querySelector("#score_0").setAttribute("data-value", snapshot.score[0]);
-    document.querySelector("#score_1").setAttribute("data-value", snapshot.score[1]);
-
-    // refesh layout
-    // setTimeout(()=>{
-    //     distributeHorizontally("#hand_0 > .cards", -0.6);
-    //     distributeHorizontally("#hand_1 > .cards", -0.6);
-    //     distributeHorizontally("#hand_2 > .cards", -0.6);
-    //     distributeHorizontally("#hand_3 > .cards", -0.6);
-    //     distributeHorizontally("#action_container", 0.05);
-    // }, 10);    
 }
 
 (() => {
     window.snapshots = {}
     window.addEventListener("load", () => requestSnapshot());
-
-    // window.addEventListener("resize", () => {
-    //     distributeHorizontally("#hand_0 > .cards", -0.6);
-    //     distributeHorizontally("#hand_1 > .cards", -0.6);
-    //     distributeHorizontally("#hand_2 > .cards", -0.6);
-    //     distributeHorizontally("#hand_3 > .cards", -0.6);
-    //     distributeHorizontally("#action_container", 0.05);
-    // });
 
     getSocket().on("snapshot", (data) => {
         const snap = JSON.parse(data)
@@ -165,13 +166,7 @@ function updateView(snapshot) {
             )
         }
 
-        if (data.last_player != data.for_player) {
-            updateView(snap);
-        } else {
-            setTimeout(() => {
-                updateView(snap);
-            }, 10);
-        }
+        updateView(snap);
     });
 
     suitButtons.on("change", () => {
