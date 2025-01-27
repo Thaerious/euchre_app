@@ -47,17 +47,17 @@ body {
     z-index: 10;
     // background-color: rgba(255, 192, 203, .75);
 
-    &.seat_1{
+    &[seat="1"]{
         top: 30%;
         left: 13%;        
     }
 
-    &.seat_2{
+    &[seat="2"]{
         top: -5%;
         left: 45%;        
     }    
 
-    &.seat_3{
+    &[seat="3"]{
         top: 30%;
         right: -3%;        
     }  

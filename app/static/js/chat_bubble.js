@@ -1,7 +1,6 @@
 export class ChatBubbleManager {
     constructor(containerId) {
         this.container = document.querySelector(`${containerId}`)
-        this.currentSeat = null
 
         if (!this.container) {
             console.error(`HandManager: Element with ID '${containerId}' not found.`)
@@ -10,14 +9,10 @@ export class ChatBubbleManager {
     }
 
     show(seat, text) {
-        if (this.currentSeat !== null) {
-            this.container.classList.remove(`seat_${this.currentSeat}`)
-        }
-        
-        this.currentSeat = seat
-        this.container.classList.add(`seat_${this.currentSeat}`)
-        this.container.classList.remove("hidden")
+        this.container.setAttribute("seat", seat)
         this.container.querySelector("div").innerText = text
+        this.container.classList.remove("hidden")
+        console.log(this.container)
     }
 
     hide(){

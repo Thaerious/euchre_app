@@ -32,6 +32,10 @@ function getSeat(pindex, snapshot) {
     return (pindex + (4 - snapshot.for_player)) % 4;
 }
 
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 class ViewManager {
     constructor() {
         this.busy = false
@@ -39,12 +43,12 @@ class ViewManager {
 
         // Every 500 ms if the manager is not busy, 
         // display the next snapshot if avaialable
-        this.interval = setInterval(() => {
+        this.interval = setInterval(async () => {
             if (this.snapQ.length > 0 && !this.busy) {
                 const next = this.snapQ.shift()
-                this.updateView(next)
+                await this.updateView(next)
             }
-        }, 500)
+        }, 50)
     }
 
     stop() {
@@ -52,14 +56,7 @@ class ViewManager {
     }
 
     enqueue(snapshot) {
-        console.log(this.busy)
-        if (this.busy) {
-            console.log(`[Q] <-- ${snapshot.hash}`)
-            this.snapQ.push(snapshot)
-        } else {
-            console.log(`[V] <-- ${snapshot.hash}`)
-            this.updateView(snapshot)
-        }
+        this.snapQ.push(snapshot)
     }
 
     report(snapshot) {
@@ -71,7 +68,7 @@ class ViewManager {
         )
     }
 
-    updateView(snapshot) {
+    async updateView(snapshot) {
         this.report(snapshot)
         this.busy = true
 
@@ -105,21 +102,21 @@ class ViewManager {
             return
         }
 
-        if (snapshot.last_player !== snapshot.for_player) {
-            const seat = getSeat(snapshot.last_player, snapshot)
-            chatBubble.show(seat, snapshot.last_action)
+        if (snapshot.last_player !== null) {
+            if (snapshot.last_player !== snapshot.for_player) {                
+                const seat = getSeat(snapshot.last_player, snapshot)
+                chatBubble.show(seat, snapshot.last_action)
+            }
+    
+            await delay(1000)
+            chatBubble.hide()            
         }
 
-        setTimeout(() => {
-            chatBubble.hide()
-            // show buttons, enable actions if for-player is playing
-            if (snapshot.active_player === snapshot.for_player) {
-                this.updateViewForPlayer(snapshot)
-            }
+        if (snapshot.active_player === snapshot.for_player) {
+            this.updateViewForPlayer(snapshot)
+        }
 
-            console.log(`Done ${snapshot.hash}`)
-            this.busy = false;
-        }, 1000)
+        this.busy = false        
     }
 
     updateViewForPlayer(snapshot) {

@@ -47,15 +47,15 @@ body {
   height: 20%;
   z-index: 10;
 }
-.chat_bubble.seat_1 {
+.chat_bubble[seat="1"] {
   top: 30%;
   left: 13%;
 }
-.chat_bubble.seat_2 {
+.chat_bubble[seat="2"] {
   top: -5%;
   left: 45%;
 }
-.chat_bubble.seat_3 {
+.chat_bubble[seat="3"] {
   top: 30%;
   right: -3%;
 }
