@@ -1,327 +1,325 @@
 :root {
-  --box-size: 80;
-}
-
-div,
-img {
-  position: absolute;
+    --box-size: 80;
 }
 
 .hidden {
-  display: none !important;
+    display: none !important;
 }
 
 body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-  background-color: #87CEEB;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #87CEEB;
+}
+
+.card {
+    height: 100%;
+    width: auto;
 }
 
 .game-board {
-  position: relative;
-  background-color: #008000;
-  border: 2px solid #ffffff;
-  border-radius: 15px;
-  margin: 0 auto;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  min-height: 300px;
-  min-width: 300px;
+    position: relative;
+    background-color: #008000;
+    border: 2px solid #ffffff;
+    border-radius: 15px;
+    margin: 0 auto;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    min-height: 300px;
+    min-width: 300px;
 
-  /* Default for landscape */
-  height: calc(var(--box-size) * 1vh);
-  width: calc(var(--box-size) * 1vh);
+    /* Default for landscape */
+    height: calc(var(--box-size) * 1vh);
+    width: calc(var(--box-size) * 1vh);
 
-  @media (orientation: portrait) {
-    width: calc(var(--box-size) * 1vw);
-    height: calc(var(--box-size) * 1vw);
-  }
+    @media (orientation: portrait) {
+        width: calc(var(--box-size) * 1vw);
+        height: calc(var(--box-size) * 1vw);
+    }
 }
 
 .played,
 #upcard {
-  height: 15%;
-  aspect-ratio: 2.5 / 3.5;
+    position: absolute;
+    height: 15%;
+    aspect-ratio: 2.5 / 3.5;
+    bottom: 50%;
+    left: 50%;
+    transform: translate(-50%, 50%);
 
-  &>.card:nth-child(1) {
-    transform: translateY(60%);
-  }
+    &>.card:nth-child(1) {
+        transform: translateY(60%);
+    }
 
-  &>.card:nth-child(2) {
-    transform: translateX(-80%) rotate(90deg);
-  }
+    &>.card:nth-child(2) {
+        transform: translateX(-80%) rotate(90deg);
+    }
 
-  &>.card:nth-child(3) {
-    transform: translateY(-60%);
-  }
+    &>.card:nth-child(3) {
+        transform: translateY(-60%);
+    }
 
-  &>.card:nth-child(4) {
-    transform: translateX(80%) rotate(90deg);
-  }
+    &>.card:nth-child(4) {
+        transform: translateX(80%) rotate(90deg);
+    }
 }
 
 .hand {
-  display: flex;
-  height: 15%;
-  width: 30%;
-  background-color: pink;
+    position: absolute;
+    display: flex;
+    height: 15%;
+    width: 30%;
+    background-color: pink;
 
-    .card{
-      display: relative;
+    .card {
+        display: relative;
     }
 
-  .cards {    
-    display: flex;
-    width: 100%;
-    height: 100%;
-    background-color: skyblue;
-  }
+    .cards {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        background-color: skyblue;
+    }
 
-  .tricks {
-    width: 0;
-    height: 100%;
-    z-index: 100;
-    right: -7.5%;
-  }
-}
-
-#played,
-#upcard {
-  bottom: 50%;
-  left: 50%;
-  transform: translate(-50%, 50%);
+    .tricks {
+        width: 0;
+        height: 100%;
+        z-index: 100;
+        right: -7.5%;
+    }
 }
 
 #hand_0 {
-  bottom: 10%;
-  left: 50%;
-  transform: translateX(-50%);
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 #hand_1 {
-  top: 50%;
-  left: 5%;
-  transform: translateY(-50%) rotate(90deg);
+    top: 50%;
+    left: 5%;
+    transform: translateY(-50%) rotate(90deg);
 }
 
 #hand_2 {
-  top: 5%;
-  left: 50%;
-  transform: translateX(-50%)rotate(180deg);
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%)rotate(180deg);
 }
 
 #hand_3 {
-  top: 50%;
-  right: 5%;
-  transform: translateY(-50%) rotate(-90deg);
+    top: 50%;
+    right: 5%;
+    transform: translateY(-50%) rotate(-90deg);
 }
 
 .score {
-  height: 15%;
-  aspect-ratio: 2.5 / 3.5;
+    position: absolute;
+    height: 15%;
+    aspect-ratio: 2.5 / 3.5;
 
-  &#score_0 {
-    left: 5%;
-    top: 5%;
-  }
-
-  &#score_1 {
-    right: 10%;
-    bottom: 10%;
-  }
-
-  &>.top {
-    z-index: 3;
-  }
-
-  &>.bottom {
-    z-index: 2;
-  }
-
-  &>.back {
-    z-index: 4;
-  }
-
-  &[data-value='1'] {
-    &>.back {
-      transform: translate(22%, 17%) rotate(35deg);
+    *{
+        position: absolute;
     }
-  }
 
-  &[data-value='2'] {
-    &>.back {
-      transform: translate(0, 25%) rotate(90deg);
+    &#score_0 {
+        left: 5%;
+        top: 5%;
     }
-  }
 
-  &[data-value='3'] {
-    &>.back {
-      transform: translate(0, 50%) rotate(90deg);
-    }
-  }
-
-  &[data-value='4'] {
-    &>.back {
-      transform: translate(43%, 45%) rotate(27deg);
-    }
-  }
-
-  &[data-value='5'] {
-    &>.back {
-      z-index: 1;
-    }
-  }
-
-  &[data-value='6'] {
-    &>.back {
-      z-index: 1;
+    &#score_1 {
+        right: 10%;
+        bottom: 10%;
     }
 
     &>.top {
-      transform: translate(22%, 17%) rotate(35deg);
+        z-index: 3;
     }
-  }
 
-  &[data-value='7'] {
+    &>.bottom {
+        z-index: 2;
+    }
+
     &>.back {
-      z-index: 1;
+        z-index: 4;
     }
 
-    &>.top {
-      transform: translate(0, 25%) rotate(90deg);
-    }
-  }
-
-  &[data-value='8'] {
-    &>.back {
-      z-index: 1;
+    &[data-value='1'] {
+        &>.back {
+            transform: translate(22%, 17%) rotate(35deg);
+        }
     }
 
-    &>.top {
-      transform: translate(0, 50%) rotate(90deg);
-    }
-  }
-
-  &[data-value='9'] {
-    &>.back {
-      z-index: 1;
+    &[data-value='2'] {
+        &>.back {
+            transform: translate(0, 25%) rotate(90deg);
+        }
     }
 
-    &>.top {
-      transform: translate(42%, 45%) rotate(32deg);
+    &[data-value='3'] {
+        &>.back {
+            transform: translate(0, 50%) rotate(90deg);
+        }
     }
-  }
-}
 
-.card {
-  height: 100%;
-  width: auto;
+    &[data-value='4'] {
+        &>.back {
+            transform: translate(43%, 45%) rotate(27deg);
+        }
+    }
+
+    &[data-value='5'] {
+        &>.back {
+            z-index: 1;
+        }
+    }
+
+    &[data-value='6'] {
+        &>.back {
+            z-index: 1;
+        }
+
+        &>.top {
+            transform: translate(22%, 17%) rotate(35deg);
+        }
+    }
+
+    &[data-value='7'] {
+        &>.back {
+            z-index: 1;
+        }
+
+        &>.top {
+            transform: translate(0, 25%) rotate(90deg);
+        }
+    }
+
+    &[data-value='8'] {
+        &>.back {
+            z-index: 1;
+        }
+
+        &>.top {
+            transform: translate(0, 50%) rotate(90deg);
+        }
+    }
+
+    &[data-value='9'] {
+        &>.back {
+            z-index: 1;
+        }
+
+        &>.top {
+            transform: translate(42%, 45%) rotate(32deg);
+        }
+    }
 }
 
 .trick {
-  height: 34%;
-  top: 0;
-  left: 0;
+    height: 34%;
+    top: 0;
+    left: 0;
 
-  &:nth-child(2) {
-    transform: translateY(50%) rotate(90deg);
-  }
+    &:nth-child(2) {
+        transform: translateY(50%) rotate(90deg);
+    }
 
-  &:nth-child(3) {
-    transform: translateY(100%);
-  }
+    &:nth-child(3) {
+        transform: translateY(100%);
+    }
 
-  &:nth-child(4) {
-    transform: translateY(150%) rotate(90deg);
-  }
+    &:nth-child(4) {
+        transform: translateY(150%) rotate(90deg);
+    }
 
-  &:nth-child(5) {
-    transform: translateY(200%);
-  }
+    &:nth-child(5) {
+        transform: translateY(200%);
+    }
 }
 
 /* Buttons */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap');
 
 .styled_button {
-  font-family: "Montserrat", sans-serif;
-  font-size: 1em;
-  font-weight: bolder;
-  color: rgb(255, 247, 133);
-  background-color: #4CAF50;
-  border: 2px solid black;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
+    font-family: "Montserrat", sans-serif;
+    font-size: 1em;
+    font-weight: bolder;
+    color: rgb(255, 247, 133);
+    background-color: #4CAF50;
+    border: 2px solid black;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
 
-  &.disabled {
-    pointer-events: none;
-    user-select: none;
-    color: grey !important;
-    background-color: darkgrey;
-  }
-  
-  &.red{
-    color: red;
-  }
+    &.disabled {
+        pointer-events: none;
+        user-select: none;
+        color: grey !important;
+        background-color: darkgrey;
+    }
 
-  &.black{
-    color: black
-  }
+    &.red {
+        color: red;
+    }
 
-  &.selected{
-    background-color: rgb(255, 247, 133);
-  }
+    &.black {
+        color: black
+    }
 
-  &:hover {
-    background-color: #145017;
+    &.selected {
+        background-color: rgb(255, 247, 133);
+    }
 
-    &.selected{
-      background-color: rgb(114, 107, 24);
-    }    
-  }
+    &:hover {
+        background-color: #145017;
 
-  &:active {
-    background-color: #2E7D32;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-    transform: translateY(2px);
-  }
+        &.selected {
+            background-color: rgb(114, 107, 24);
+        }
+    }
+
+    &:active {
+        background-color: #2E7D32;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+        transform: translateY(2px);
+    }
 }
 
 #suit_container {
-  position: absolute;
-  display: flex;
-  justify-content: space-between;
-  height: 4%;
-  width: 20%;
-  bottom: 27%;
-  left: 50%;
-  // background-color: pink;
-  transform: translateX(-50%);
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    height: 4%;
+    width: 20%;
+    bottom: 27%;
+    left: 50%;
+    // background-color: pink;
+    transform: translateX(-50%);
 
-  >.suit_button {
-    width: 23%;
-  }
+    >.suit_button {
+        width: 23%;
+    }
 }
 
 #action_container {
-  position: absolute;
-  display: flex;
-  justify-content: space-between;
-
-  // background-color: pink;
-  height: 6%;
-  width: 45%;
-  bottom: 2%;
-  left: 50%;
-  transform: translateX(-50%);
-
-  >.action_button {
     position: absolute;
-    width: 30%;
-    height: 100%;
-  }
+    display: flex;
+    justify-content: space-between;
+
+    // background-color: pink;
+    height: 6%;
+    width: 45%;
+    bottom: 2%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    >.action_button {
+        position: absolute;
+        width: 30%;
+        height: 100%;
+    }
 }

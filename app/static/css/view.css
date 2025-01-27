@@ -3,11 +3,6 @@
   --box-size: 80;
 }
 
-div,
-img {
-  position: absolute;
-}
-
 .hidden {
   display: none !important;
 }
@@ -19,6 +14,11 @@ body {
   height: 100vh;
   margin: 0;
   background-color: #87CEEB;
+}
+
+.card {
+  height: 100%;
+  width: auto;
 }
 
 .game-board {
@@ -43,8 +43,12 @@ body {
 
 .played,
 #upcard {
+  position: absolute;
   height: 15%;
   aspect-ratio: 2.5/3.5;
+  bottom: 50%;
+  left: 50%;
+  transform: translate(-50%, 50%);
 }
 .played > .card:nth-child(1),
 #upcard > .card:nth-child(1) {
@@ -64,6 +68,7 @@ body {
 }
 
 .hand {
+  position: absolute;
   display: flex;
   height: 15%;
   width: 30%;
@@ -83,13 +88,6 @@ body {
   height: 100%;
   z-index: 100;
   right: -7.5%;
-}
-
-#played,
-#upcard {
-  bottom: 50%;
-  left: 50%;
-  transform: translate(-50%, 50%);
 }
 
 #hand_0 {
@@ -117,8 +115,12 @@ body {
 }
 
 .score {
+  position: absolute;
   height: 15%;
   aspect-ratio: 2.5/3.5;
+}
+.score * {
+  position: absolute;
 }
 .score#score_0 {
   left: 5%;
@@ -175,11 +177,6 @@ body {
 }
 .score[data-value="9"] > .top {
   transform: translate(42%, 45%) rotate(32deg);
-}
-
-.card {
-  height: 100%;
-  width: auto;
 }
 
 .trick {
