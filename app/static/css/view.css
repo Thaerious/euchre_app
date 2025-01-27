@@ -119,6 +119,13 @@ body {
   transform: translateX(30%);
   margin-left: -20%;
 }
+.hand .cards.enabled .card:hover {
+  transform: translate(26%, -10%);
+  cursor: pointer;
+}
+.hand .cards:not(.enabled) .card:hover {
+  pointer-events: none;
+}
 .hand .tricks {
   position: absolute;
   width: 0;

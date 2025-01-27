@@ -40,34 +40,34 @@ body {
     }
 }
 
-.chat_bubble{
+.chat_bubble {
     position: absolute;
     width: 30%;
     height: 20%;
     z-index: 10;
     // background-color: rgba(255, 192, 203, .75);
 
-    &[seat="1"]{
+    &[seat="1"] {
         top: 30%;
-        left: 13%;        
+        left: 13%;
     }
 
-    &[seat="2"]{
+    &[seat="2"] {
         top: -5%;
-        left: 45%;        
-    }    
+        left: 45%;
+    }
 
-    &[seat="3"]{
+    &[seat="3"] {
         top: 30%;
-        right: -3%;        
-    }  
+        right: -3%;
+    }
 
-    img{
+    img {
         height: 100%;
         width: 100%;
     }
 
-    div{
+    div {
         position: absolute;
         width: 100%;
         left: 0%;
@@ -76,7 +76,7 @@ body {
         // background-color: rgba(255, 192, 203, .75);
         font-family: "Montserrat", sans-serif;
         font-size: 2em;
-        font-weight: bolder;        
+        font-weight: bolder;
     }
 }
 
@@ -89,7 +89,7 @@ body {
     left: 50%;
     transform: translate(-50%, 50%);
 
-    *{
+    * {
         position: absolute;
     }
 
@@ -123,10 +123,23 @@ body {
         // background-color: skyblue;
         justify-content: center;
 
-        .card{
+        .card {
             transform: translateX(30%);
-            margin-left: -20%;            
-        }        
+            margin-left: -20%;
+        }
+
+        &.enabled {
+            .card:hover {
+                transform: translate(26%, -10%);
+                cursor: pointer;
+            }
+        }
+
+        &:not(.enabled) {
+            .card:hover {
+                pointer-events: none;
+            }
+        }
     }
 
     .tricks {
@@ -142,23 +155,23 @@ body {
             height: 34%;
             top: 0;
             left: 0;
-        
+
             &:nth-child(2) {
                 transform: translateY(50%) rotate(90deg);
             }
-        
+
             &:nth-child(3) {
                 transform: translateY(100%);
             }
-        
+
             &:nth-child(4) {
                 transform: translateY(150%) rotate(90deg);
             }
-        
+
             &:nth-child(5) {
                 transform: translateY(200%);
             }
-        }        
+        }
     }
 }
 
@@ -191,7 +204,7 @@ body {
     height: 15%;
     aspect-ratio: 2.5 / 3.5;
 
-    *{
+    * {
         position: absolute;
     }
 
