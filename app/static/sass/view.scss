@@ -313,14 +313,14 @@ body {
 
     // background-color: pink;
     height: 6%;
-    width: 45%;
+    width: 55%;
     bottom: 2%;
     left: 50%;
     transform: translateX(-50%);
 
-    >.action_button {
-        position: absolute;
+    .action_button {
         width: 30%;
         height: 100%;
+        margin: 0 1% 0 1%;
     }
 }

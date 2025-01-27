@@ -13,13 +13,13 @@ function hidePlayedCards() {
 }
 
 function setTricks(userIndex, trickCount) {
-    let i = 0; 
+    let i = 0;
     const tricksElement = document.querySelector(`#hand_${userIndex} > .tricks`);
-    
+
     for (const trick of tricksElement.querySelectorAll(".trick")) {
         if (i++ < trickCount) trick.style.display = "block";
-        else trick.style.display = "none";        
-    }        
+        else trick.style.display = "none";
+    }
 }
 
 function setBacks(playerIndex, count) {
@@ -31,7 +31,7 @@ function setBacks(playerIndex, count) {
         const img = document.createElement("img");
         img.classList.add("card");
         img.src = "../static/images/cards/large/back.png";
-        element.appendChild(img);        
+        element.appendChild(img);
     }
 }
 
@@ -50,63 +50,64 @@ function updateView(snapshot) {
             actionButtons.setButtons([
                 { "name": "Start" }
             ])
+
             break;
         case 1:
             if (snapshot.active_player == snapshot.for_player) {
-                if (snapshot.dealer == snapshot.for_player) {
-                    actionButtons.setButtons([
-                        { "name": "Down", "action": "pass" },
-                        { "name": "Up", "action": "order" },
-                        { "name": "Alone" },
-                    ])                    
-                }
-                else {
-                    actionButtons.setButtons([
-                        { "name": "Pass" },
-                        { "name": "Order" },
-                        { "name": "Alone" },
-                    ])
-                }
+
+                actionButtons.setButtons([
+                    { "name": "Pass" },
+                    { "name": "Order" },
+                    { "name": "Alone" },
+                ])
+
             }
             upCard.show(snapshot.up_card)
             break;
         case 2:
             if (snapshot.active_player == snapshot.for_player) {
                 actionButtons.setButtons([
-                    { "name": "Up", "disable": true},
-                    { "name": "Down"}
-                ])                
+                    { "name": "Down" }
+                ])
             }
+            hand.enable()
             upCard.show(snapshot.up_card)
-            break;      
+            break;
         case 3:
             if (snapshot.active_player == snapshot.for_player) {
                 actionButtons.setButtons([
-                    { "name": "Pass"},
-                    { "name": "Make", "disable": true},
-                    { "name": "Alone", "disable": true},
-                ])  
+                    { "name": "Pass" },
+                    { "name": "Make", "disable": true },
+                    { "name": "Alone", "disable": true },
+                ])
             }
             upCard.back()
             suitButtons.disable(snapshot.down_card[1])
             suitButtons.show()
-            break;  
+            break;
         case 4:
             if (snapshot.active_player == snapshot.for_player) {
                 actionButtons.setButtons([
-                    { "name": "Make", "disable": true},
-                    { "name": "Alone", "disable": true},
-                ])  
+                    { "name": "Make", "disable": true },
+                    { "name": "Alone", "disable": true },
+                ])
             }
             upCard.back()
             suitButtons.disable(snapshot.down_card[1])
             suitButtons.show()
-            break;        
-        
+            break;
+
         case 5:
+            for (let index = 0; index < 4; index++) {
+                const seat = (index + (4 - snapshot.for_player)) % 4;
+                const player = snapshot.players[index]
+                playedCards.setCard(seat, player.played)
+            }
+
+            hand.enable()
             actionButtons.hide()
             upCard.hide()
-            break;        
+            break;
     }
 
     // clear played cards if not currently playing a trick (state 5)
@@ -133,9 +134,9 @@ function updateView(snapshot) {
 }
 
 (() => {
-    window.snapshots = {} 
+    window.snapshots = {}
     window.addEventListener("load", () => requestSnapshot());
-        
+
     // window.addEventListener("resize", () => {
     //     distributeHorizontally("#hand_0 > .cards", -0.6);
     //     distributeHorizontally("#hand_1 > .cards", -0.6);
@@ -144,7 +145,7 @@ function updateView(snapshot) {
     //     distributeHorizontally("#action_container", 0.05);
     // });
 
-    getSocket().on("snapshot", (data) => {    
+    getSocket().on("snapshot", (data) => {
         const snap = JSON.parse(data)
         window.snapshots[snap.hash.substring(0, 3)] = snap
 
@@ -161,17 +162,17 @@ function updateView(snapshot) {
                 snap.last_action,
                 snap.hash,
                 snap.state
-            )            
+            )
         }
 
-        if (data.last_player != data.for_player) {            
+        if (data.last_player != data.for_player) {
             updateView(snap);
         } else {
             setTimeout(() => {
                 updateView(snap);
             }, 10);
         }
-    });    
+    });
 
     suitButtons.on("change", () => {
         actionButtons.enableAll()
