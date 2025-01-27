@@ -89,6 +89,10 @@ body {
     left: 50%;
     transform: translate(-50%, 50%);
 
+    *{
+        position: absolute;
+    }
+
     &>.card:nth-child(1) {
         transform: translateY(60%);
     }
@@ -126,10 +130,35 @@ body {
     }
 
     .tricks {
+        position: absolute;
         width: 0;
+        top: 0;
         height: 100%;
         z-index: 100;
         right: -7.5%;
+
+        .trick {
+            position: absolute;
+            height: 34%;
+            top: 0;
+            left: 0;
+        
+            &:nth-child(2) {
+                transform: translateY(50%) rotate(90deg);
+            }
+        
+            &:nth-child(3) {
+                transform: translateY(100%);
+            }
+        
+            &:nth-child(4) {
+                transform: translateY(150%) rotate(90deg);
+            }
+        
+            &:nth-child(5) {
+                transform: translateY(200%);
+            }
+        }        
     }
 }
 
@@ -256,28 +285,6 @@ body {
         &>.top {
             transform: translate(42%, 45%) rotate(32deg);
         }
-    }
-}
-
-.trick {
-    height: 34%;
-    top: 0;
-    left: 0;
-
-    &:nth-child(2) {
-        transform: translateY(50%) rotate(90deg);
-    }
-
-    &:nth-child(3) {
-        transform: translateY(100%);
-    }
-
-    &:nth-child(4) {
-        transform: translateY(150%) rotate(90deg);
-    }
-
-    &:nth-child(5) {
-        transform: translateY(200%);
     }
 }
 
