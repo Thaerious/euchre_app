@@ -65,6 +65,10 @@ export class HandManager {
             img.classList.add("card")
             img.dataset.card = card
             cardContainer.appendChild(img)
+
+            img.addEventListener("click", () => {
+                this.emit("selected", card)
+            })               
         }
     }
 }

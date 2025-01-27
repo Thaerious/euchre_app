@@ -17,7 +17,19 @@ class Game_Instance:
         print(f"emit snapshot {snap.hash}")
 
     def do_action(self, username, action, data):
-        self.game.input(username, action, data)
+        game = self.game
+        
+        print(f"------------------------------------------ {game.hash}")
+        state_before = game.current_state
+        print(f"{game.euchre.current_player}")
+        if game.euchre.up_card is not None: 
+            print(f"up card {game.euchre.up_card}")
+        if len(game.euchre.tricks) > 0: 
+            print(f"trick {game.euchre.tricks[-1]}")    
+
+        game.input(username, action, data)
+        print(f"({action}, {data}) {state_before} -> {game.current_state}")
+
         self.emit_snapshot()
         self.continue_action(username)
 

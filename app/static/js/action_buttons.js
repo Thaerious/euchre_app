@@ -38,6 +38,8 @@ export class ActionButtonManager {
                 this.emit(button.getAttribute("data-action"))
             });
         }
+
+        this.show()
     }
 
     disable(name) {

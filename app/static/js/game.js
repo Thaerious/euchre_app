@@ -2,6 +2,7 @@ import { getSocket, requestSnapshot, doAction } from "./gameio.js"
 import suitButtons from "./suit_buttons.js"
 import actionButtons from "./action_buttons.js"
 import viewManager from "./view_manager.js"
+import hand from "./hand.js"
 
 (() => {
     window.snapshots = {}
@@ -35,5 +36,16 @@ import viewManager from "./view_manager.js"
 
     actionButtons.on("order", () => {
         doAction("alone", null)
+    });
+
+    hand.on("selected", (card) => {
+        switch (viewManager.snapshot.state) {
+            case 2:
+                doAction("up", card)
+                break;
+            case 5:
+                doAction("play", card)
+                break;
+        }
     });
 })()

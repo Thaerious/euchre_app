@@ -5,11 +5,11 @@ import suitButtons from "./suit_buttons.js"
 import playedCards from "./played_cards.js"
 import chatBubble from "./chat_bubble.js"
 
-function setTricks(userIndex, trickCount) {
+function setTricks(seat, trickCount) {
     let i = 0;
-    const tricksElement = document.querySelector(`#hand_${userIndex} > .tricks`);
+    const trickElements = document.querySelectorAll(`#hand_${seat} .tricks .trick`);
 
-    for (const trick of tricksElement.querySelectorAll(".trick")) {
+    for (const trick of trickElements) {
         if (i++ < trickCount) trick.style.display = "block";
         else trick.style.display = "none";
     }
@@ -45,8 +45,8 @@ class ViewManager {
         // display the next snapshot if avaialable
         this.interval = setInterval(async () => {
             if (this.snapQ.length > 0 && !this.busy) {
-                const next = this.snapQ.shift()
-                await this.updateView(next)
+                this.snapshot = this.snapQ.shift()
+                await this.updateView(this.snapshot)
             }
         }, 50)
     }
@@ -80,6 +80,7 @@ class ViewManager {
         // set buttons based on state
         suitButtons.clear()
         suitButtons.hide()
+        actionButtons.hide()
         chatBubble.hide()
         playedCards.hideAll()
 
@@ -92,6 +93,12 @@ class ViewManager {
         // set score cards
         document.querySelector("#score_0").setAttribute("data-value", snapshot.score[0]);
         document.querySelector("#score_1").setAttribute("data-value", snapshot.score[1]);
+
+        // set tricks
+        for (const player in snapshot.players) {
+            const seat = getSeat(player.index, snapshot)
+            setTricks(seat, player.tricks)
+        }
 
         // show start button for new game
         if (snapshot.state === 0) {

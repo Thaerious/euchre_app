@@ -12,7 +12,6 @@ export class ChatBubbleManager {
         this.container.setAttribute("seat", seat)
         this.container.querySelector("div").innerText = text
         this.container.classList.remove("hidden")
-        console.log(this.container)
     }
 
     hide(){
