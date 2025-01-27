@@ -123,26 +123,26 @@ function updateView(snapshot) {
     document.querySelector("#score_1").setAttribute("data-value", snapshot.score[1]);
 
     // refesh layout
-    setTimeout(()=>{
-        distributeHorizontally("#hand_0 > .cards", -0.6);
-        distributeHorizontally("#hand_1 > .cards", -0.6);
-        distributeHorizontally("#hand_2 > .cards", -0.6);
-        distributeHorizontally("#hand_3 > .cards", -0.6);
-        distributeHorizontally("#action_container", 0.05);
-    }, 10);    
+    // setTimeout(()=>{
+    //     distributeHorizontally("#hand_0 > .cards", -0.6);
+    //     distributeHorizontally("#hand_1 > .cards", -0.6);
+    //     distributeHorizontally("#hand_2 > .cards", -0.6);
+    //     distributeHorizontally("#hand_3 > .cards", -0.6);
+    //     distributeHorizontally("#action_container", 0.05);
+    // }, 10);    
 }
 
 (() => {
     window.snapshots = {} 
     window.addEventListener("load", () => requestSnapshot());
         
-    window.addEventListener("resize", () => {
-        distributeHorizontally("#hand_0 > .cards", -0.6);
-        distributeHorizontally("#hand_1 > .cards", -0.6);
-        distributeHorizontally("#hand_2 > .cards", -0.6);
-        distributeHorizontally("#hand_3 > .cards", -0.6);
-        distributeHorizontally("#action_container", 0.05);
-    });
+    // window.addEventListener("resize", () => {
+    //     distributeHorizontally("#hand_0 > .cards", -0.6);
+    //     distributeHorizontally("#hand_1 > .cards", -0.6);
+    //     distributeHorizontally("#hand_2 > .cards", -0.6);
+    //     distributeHorizontally("#hand_3 > .cards", -0.6);
+    //     distributeHorizontally("#action_container", 0.05);
+    // });
 
     getSocket().on("snapshot", (data) => {    
         const snap = JSON.parse(data)

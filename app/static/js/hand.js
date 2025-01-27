@@ -30,7 +30,7 @@ export class HandManager {
             img.src = `../static/images/cards/large/${card}.png`;
             img.classList.add("card")
             img.dataset.card = card
-            this.container.appendChild(img)
+            cardContainer.appendChild(img)
         }
     }
 }

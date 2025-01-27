@@ -69,19 +69,20 @@ body {
 
 .hand {
   position: absolute;
-  display: flex;
   height: 15%;
   width: 30%;
   background-color: pink;
-}
-.hand .card {
-  display: relative;
 }
 .hand .cards {
   display: flex;
   width: 100%;
   height: 100%;
   background-color: skyblue;
+  justify-content: center;
+}
+.hand .cards .card {
+  transform: translateX(30%);
+  margin-left: -20%;
 }
 .hand .tricks {
   width: 0;
@@ -254,7 +255,7 @@ body {
 #action_container {
   position: absolute;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   height: 6%;
   width: 45%;
   bottom: 2%;
