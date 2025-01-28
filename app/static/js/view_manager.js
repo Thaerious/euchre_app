@@ -109,6 +109,15 @@ class ViewManager {
             return
         }
 
+        // show played cards
+        if (snapshot.state === 5) {            
+            for (let index = 0; index < 4; index++) {
+                const seat = getSeat(index, snapshot)
+                const player = snapshot.players[index]
+                playedCards.setCard(seat, player.played)
+            }
+        }
+
         if (snapshot.last_player !== null) {
             if (snapshot.last_player !== snapshot.for_player) {                
                 const seat = getSeat(snapshot.last_player, snapshot)
@@ -164,12 +173,6 @@ class ViewManager {
                 break;
 
             case 5:
-                for (let index = 0; index < 4; index++) {
-                    const seat = getSeat(index, snapshot)
-                    const player = snapshot.players[index]
-                    playedCards.setCard(seat, player.played)
-                }
-
                 hand.enable()
                 actionButtons.hide()
                 upCard.hide()

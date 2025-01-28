@@ -35,7 +35,7 @@ import hand from "./hand.js"
     });
 
     actionButtons.on("order", () => {
-        doAction("alone", null)
+        doAction("order", null)
     });
 
     hand.on("selected", (card) => {
