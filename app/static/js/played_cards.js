@@ -18,7 +18,6 @@ export class PlayedCardsManager {
     }
 
     setCard(seat, card) {
-        console.log(`played cards set card ${seat} ${card}`)
         const cards = this.container.querySelectorAll(".card")
 
         if (card == "") {

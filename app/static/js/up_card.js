@@ -14,7 +14,7 @@ export class UpCardManager {
         img.src = `../static/images/cards/large/${card}.png`;    
     }
     
-    back() {
+    showBack() {
         this.show()
         const img = document.querySelector("#upcard");
         img.src = `../static/images/cards/large/back.png`;    

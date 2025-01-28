@@ -242,6 +242,25 @@ body {
   transform: translate(42%, 45%) rotate(32deg);
 }
 
+#message {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Montserrat", sans-serif;
+  font-size: 1em;
+  font-weight: bolder;
+  width: 30%;
+  height: 5%;
+  color: rgb(255, 247, 133);
+  background-color: #4CAF50;
+  border-radius: 8px;
+  pointer-events: none;
+  bottom: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 /* Buttons */
 .styled_button {
   font-family: "Montserrat", sans-serif;

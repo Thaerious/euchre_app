@@ -301,6 +301,26 @@ body {
     }
 }
 
+#message{
+    position: absolute;
+    display: flex;
+    align-items: center;    
+    justify-content: center;
+    font-family: "Montserrat", sans-serif;
+    font-size: 1em;
+    font-weight: bolder;
+    width: 30%;
+    height: 5%;   
+    color: rgb(255, 247, 133);
+    background-color: #4CAF50;
+    border-radius: 8px;
+    pointer-events: none;
+
+    bottom: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
 /* Buttons */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap');
 

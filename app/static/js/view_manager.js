@@ -4,6 +4,7 @@ import actionButtons from "./action_buttons.js"
 import suitButtons from "./suit_buttons.js"
 import playedCards from "./played_cards.js"
 import chatBubble from "./chat_bubble.js"
+import message from "./message.js"
 
 function setTricks(seat, trickCount) {
     let i = 0;
@@ -39,7 +40,7 @@ function delay(ms) {
 class ViewManager {
     constructor() {
         this.busy = false
-        this.snapQ = []        
+        this.snapQ = []
 
         // Every 500 ms if the manager is not busy, 
         // display the next snapshot if avaialable
@@ -60,7 +61,7 @@ class ViewManager {
     }
 
     report(snapshot) {
-        console.log(            
+        console.log(
             snapshot.last_player ? snapshot.players[snapshot.last_player].name : "N/A",
             snapshot.last_action,
             snapshot.hash,
@@ -83,6 +84,7 @@ class ViewManager {
         actionButtons.hide()
         chatBubble.hide()
         playedCards.hideAll()
+        message.hide()
 
         // set the hand cards
         hand.setCards(snapshot.hand)
@@ -110,7 +112,7 @@ class ViewManager {
         }
 
         // show played cards
-        if (snapshot.state === 5) {            
+        if (snapshot.state === 5) {
             for (let index = 0; index < 4; index++) {
                 const seat = getSeat(index, snapshot)
                 const player = snapshot.players[index]
@@ -118,21 +120,29 @@ class ViewManager {
             }
         }
 
+        // display upcard
+        if (snapshot.up_card !== null) {
+            upCard.show(snapshot.up_card)
+        } else {
+            upCard.showBack()
+        }
+        if (snapshot.state === 5) upCard.hide()
+
         if (snapshot.last_player !== null) {
-            if (snapshot.last_player !== snapshot.for_player) {                
+            if (snapshot.last_player !== snapshot.for_player && snapshot.state < 5) {
                 const seat = getSeat(snapshot.last_player, snapshot)
                 chatBubble.show(seat, snapshot.last_action)
             }
-    
+
             await delay(1000)
-            chatBubble.hide()            
+            chatBubble.hide()
         }
 
         if (snapshot.active_player === snapshot.for_player) {
             this.updateViewForPlayer(snapshot)
         }
 
-        this.busy = false        
+        this.busy = false
     }
 
     updateViewForPlayer(snapshot) {
@@ -143,14 +153,13 @@ class ViewManager {
                     { "name": "Order" },
                     { "name": "Alone" },
                 ])
-                upCard.show(snapshot.up_card)
                 break;
             case 2:
+                message.show("Choose a Card to Swap")
                 actionButtons.setButtons([
                     { "name": "Down" }
                 ])
                 hand.enable()
-                upCard.show(snapshot.up_card)
                 break;
             case 3:
                 actionButtons.setButtons([
@@ -158,7 +167,6 @@ class ViewManager {
                     { "name": "Make", "disable": true },
                     { "name": "Alone", "disable": true },
                 ])
-                upCard.back()
                 suitButtons.disable(snapshot.down_card[1])
                 suitButtons.show()
                 break;
@@ -167,15 +175,14 @@ class ViewManager {
                     { "name": "Make", "disable": true },
                     { "name": "Alone", "disable": true },
                 ])
-                upCard.back()
                 suitButtons.disable(snapshot.down_card[1])
                 suitButtons.show()
                 break;
 
             case 5:
+                message.show("Play a Card")
                 hand.enable()
                 actionButtons.hide()
-                upCard.hide()
                 break;
         }
     }
