@@ -4,13 +4,25 @@ import actionButtons from "./action_buttons.js"
 import viewManager from "./view_manager.js"
 import hand from "./hand.js"
 
+window.loadSnap = function (hash) {
+    viewManager.enqueue(window.snapshots[hash])
+};
+
+window.updateSnap = function (hash) {
+    viewManager.updateView(window.snapshots[hash])
+};
+
 (() => {
-    window.snapshots = {}
+    let snapshots = localStorage.getItem("snapshots")
+    snapshots ??= "{}"
+    window.snapshots = JSON.parse(snapshots)
+
     window.addEventListener("load", () => requestSnapshot());
 
     getSocket().on("snapshot", (data) => {
         const snap = JSON.parse(data)
         window.snapshots[snap.hash.substring(0, 3)] = snap
+        localStorage.setItem("snapshots", JSON.stringify(window.snapshots))
         viewManager.enqueue(snap)
     });
 

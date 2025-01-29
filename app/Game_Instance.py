@@ -1,21 +1,23 @@
 from euchre import *
 from euchre.bots import Bot
 from euchre.bots.DevBot import DevBot
+import random
 
 class Game_Instance:
 
     def __init__(self, username, socketio):
         self.socketio = socketio  # Store WebSocket reference
-        names = ["Bot_1", "Bot_2", "Bot_3", username]        
+        names = [username, "Bot_1", "Bot_2", "Bot_3"]
+        random.shuffle(names)
         self.game = Game(names)
         self.username = username  
-        self.bot = DevBot()       
+        self.bot = Bot()
 
         self.game.register_hook("before_input", self.report_before) 
         self.game.register_hook("after_input", self.report_after) 
 
     def report_before(self, action, data):
-        print(f"------------------------------------------ {self.game.hash}")
+        print(f"------------------------------------------")
         print(f"{self.game.current_player}")
         if self.game.up_card is not None: 
             print(f"up card {self.game.up_card}")
@@ -27,6 +29,9 @@ class Game_Instance:
             print(f"({self.game.last_action}) {prev_state} -> {self.game.current_state}")  
         else:    
             print(f"({self.game.last_action}:{data}) {prev_state} -> {self.game.current_state}")  
+
+        print(self.game.hash)
+        print(f"------------------------------------------")
 
     def emit_snapshot(self):
         snap = Snapshot(self.game, self.username)        

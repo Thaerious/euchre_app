@@ -6,63 +6,67 @@ import playedCards from "./played_cards.js"
 import chatBubble from "./chat_bubble.js"
 import message from "./message.js"
 
+Array.prototype.has = function (value) {
+    return this.indexOf(value) >= 0
+};
+
 function setTricks(seat, trickCount) {
-    let i = 0;
-    const trickElements = document.querySelectorAll(`#hand_${seat} .tricks .trick`);
+    let i = 0
+    const trickElements = document.querySelectorAll(`#hand_${seat} .tricks .trick`)
 
     for (const trick of trickElements) {
-        if (i++ < trickCount) trick.style.display = "block";
-        else trick.style.display = "none";
+        if (i++ < trickCount) trick.style.display = "block"
+        else trick.style.display = "none"
     }
 }
 
-function setBacks(playerIndex, count) {
-    const element = document.querySelector(`#hand_${playerIndex} > .cards`);
-    while (element.childElementCount > count) {
-        element.removeChild(element.firstChild);
-    }
-    while (element.childElementCount < count) {
-        const img = document.createElement("img");
-        img.classList.add("card");
-        img.src = "../static/images/cards/large/back.png";
-        element.appendChild(img);
-    }
+function getSeat(pindex, forPlayer) {
+    return (pindex + 4 - forPlayer) % 4
 }
 
-function getSeat(pindex, snapshot) {
-    return (pindex + (4 - snapshot.for_player)) % 4;
+function getIndex(seat, forPlayer) {
+    return (seat + forPlayer) % 4
 }
 
 function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 class ViewManager {
     constructor() {
         this.busy = false
+        this.paused = false
         this.snapQ = []
 
-        // Every 500 ms if the manager is not busy, 
-        // display the next snapshot if avaialable
-        this.interval = setInterval(async () => {
-            if (this.snapQ.length > 0 && !this.busy) {
-                this.snapshot = this.snapQ.shift()
-                await this.updateView(this.snapshot)
-            }
-        }, 50)
+        actionButtons.on("continue", async () => {
+            this.paused = false
+            await this.run_queue()
+        })
     }
 
     stop() {
         clearInterval(this.interval)
     }
 
-    enqueue(snapshot) {
+    async enqueue(snapshot) {
         this.snapQ.push(snapshot)
+        await this.run_queue()
+    }
+
+    async run_queue() {
+        if (!this.busy) {
+            this.busy = true
+            while (this.snapQ.length > 0 && !this.paused) {
+                this.snapshot = this.snapQ.shift()
+                await this.updateView(this.snapshot)
+            }
+            this.busy = false
+        }
     }
 
     report(snapshot) {
         console.log(
-            snapshot.last_player ? snapshot.players[snapshot.last_player].name : "N/A",
+            snapshot.last_player,
             snapshot.last_action,
             snapshot.hash,
             snapshot.state
@@ -71,7 +75,6 @@ class ViewManager {
 
     async updateView(snapshot) {
         this.report(snapshot)
-        this.busy = true
 
         setTricks(0, 0)
         setTricks(1, 0)
@@ -86,19 +89,23 @@ class ViewManager {
         playedCards.hideAll()
         message.hide()
 
+        if (snapshot.state == 7) {
+            return;
+        }
+
         // set the hand cards
         hand.setCards(snapshot.hand)
-        setBacks(1, snapshot.players[1].cards)
-        setBacks(2, snapshot.players[2].cards)
-        setBacks(3, snapshot.players[3].cards)
+        this.setBacks(1)
+        this.setBacks(2)
+        this.setBacks(3)
 
         // set score cards
-        document.querySelector("#score_0").setAttribute("data-value", snapshot.score[0]);
-        document.querySelector("#score_1").setAttribute("data-value", snapshot.score[1]);
+        document.querySelector("#score_0").setAttribute("data-value", snapshot.score[0])
+        document.querySelector("#score_1").setAttribute("data-value", snapshot.score[1])
 
         // set tricks
-        for (const player in snapshot.players) {
-            const seat = getSeat(player.index, snapshot)
+        for (const player of snapshot.players) {
+            const seat = getSeat(player.index, snapshot.for_player)
             setTricks(seat, player.tricks)
         }
 
@@ -107,30 +114,32 @@ class ViewManager {
             actionButtons.setButtons([
                 { "name": "Start" }
             ])
-            this.busy = false;
             return
         }
 
         // show played cards
-        if (snapshot.state === 5) {
+        if ([5, 6].has(snapshot.state)) {
             for (let index = 0; index < 4; index++) {
-                const seat = getSeat(index, snapshot)
+                const seat = getSeat(index, snapshot.for_player)
                 const player = snapshot.players[index]
                 playedCards.setCard(seat, player.played)
             }
         }
 
         // display upcard
-        if (snapshot.up_card !== null) {
-            upCard.show(snapshot.up_card)
+        if ([1, 2, 3, 4].has(snapshot.state)) {
+            if (snapshot.up_card !== null) {
+                upCard.show(snapshot.up_card)
+            } else {
+                upCard.showBack()
+            }
         } else {
-            upCard.showBack()
+            upCard.hide()
         }
-        if (snapshot.state === 5) upCard.hide()
 
         if (snapshot.last_player !== null) {
             if (snapshot.last_player !== snapshot.for_player && snapshot.state < 5) {
-                const seat = getSeat(snapshot.last_player, snapshot)
+                const seat = getSeat(snapshot.last_player, snapshot.for_player)
                 chatBubble.show(seat, snapshot.last_action)
             }
 
@@ -138,11 +147,26 @@ class ViewManager {
             chatBubble.hide()
         }
 
-        if (snapshot.active_player === snapshot.for_player) {
+        if (snapshot.state == 6) {
+            this.pauseForContinue(snapshot)
+        }
+        else if (snapshot.active_player === snapshot.for_player) {
             this.updateViewForPlayer(snapshot)
         }
+    }
 
-        this.busy = false
+    pauseForContinue(snapshot) {
+        this.paused = true
+
+        if (snapshot.tricks.length < 5) {
+            message.show("Trick Complete")
+        } else {
+            message.show("Hand Finished")
+        }
+
+        actionButtons.setButtons([
+            { "name": "Continue" }
+        ])
     }
 
     updateViewForPlayer(snapshot) {
@@ -153,37 +177,57 @@ class ViewManager {
                     { "name": "Order" },
                     { "name": "Alone" },
                 ])
-                break;
+                break
             case 2:
                 message.show("Choose a Card to Swap")
                 actionButtons.setButtons([
                     { "name": "Down" }
                 ])
                 hand.enable()
-                break;
-            case 3:
+                break
+            case 3: {
                 actionButtons.setButtons([
                     { "name": "Pass" },
                     { "name": "Make", "disable": true },
                     { "name": "Alone", "disable": true },
                 ])
-                suitButtons.disable(snapshot.down_card[1])
+                let card = snapshot.down_card
+                let suit = card[card.length - 1]
+                suitButtons.disable(suit)
                 suitButtons.show()
-                break;
-            case 4:
+            } break
+            case 4: {
                 actionButtons.setButtons([
                     { "name": "Make", "disable": true },
                     { "name": "Alone", "disable": true },
                 ])
-                suitButtons.disable(snapshot.down_card[1])
+                let card = snapshot.down_card
+                let suit = card[card.length - 1]
+                suitButtons.disable(suit)
                 suitButtons.show()
-                break;
-
+            } break
             case 5:
                 message.show("Play a Card")
                 hand.enable()
                 actionButtons.hide()
-                break;
+                break
+        }
+    }
+
+    setBacks(seat) {
+        const pindex = getIndex(seat, this.snapshot.for_player)
+        const count = this.snapshot.players[pindex].cards
+
+        const element = document.querySelector(`#hand_${seat} > .cards`)
+        while (element.childElementCount > count) {
+            element.removeChild(element.firstChild)
+        }
+
+        while (element.childElementCount < count) {
+            const img = document.createElement("img")
+            img.classList.add("card")
+            img.src = "../static/images/cards/large/back.png"
+            element.appendChild(img)
         }
     }
 }

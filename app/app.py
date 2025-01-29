@@ -48,7 +48,7 @@ def play_game(game_hash):
 
     if not game_hash in game_dictionary:
         game_dictionary[game_hash] = Game_Instance(username, socketio)
-        game_dictionary[game_hash].debug_seed = 1103
+        # game_dictionary[game_hash].seed = 1103
 
     return render_template("game.html", game_hash=game_hash)
 
