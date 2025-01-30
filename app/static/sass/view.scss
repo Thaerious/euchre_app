@@ -321,6 +321,44 @@ body {
     transform: translateX(-50%);
 }
 
+.token{
+    position: absolute;
+    width: 4%;
+    height: 4%;
+
+    &[data-seat='0']{
+        bottom: 25.5%;
+        left: 50%;        
+        &#dealer_token{
+            transform: translateX(-100%);
+        }        
+    }
+
+    &[data-seat='1']{
+        top: 50%;
+        left: 28%;        
+        &#dealer_token{
+            transform: translateY(-100%);
+        }        
+    }
+    
+    &[data-seat='2']{
+        top: 20.5%;
+        left: 50%;
+        &#dealer_token{
+            transform: translateX(-100%);
+        }                   
+    }
+    
+    &[data-seat='3']{
+        top: 50%;
+        right: 28%;        
+        &#dealer_token{
+            transform: translateY(-100%);
+        }          
+    }    
+}
+
 /* Buttons */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap');
 

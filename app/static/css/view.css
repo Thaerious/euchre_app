@@ -261,6 +261,40 @@ body {
   transform: translateX(-50%);
 }
 
+.token {
+  position: absolute;
+  width: 4%;
+  height: 4%;
+}
+.token[data-seat="0"] {
+  bottom: 25.5%;
+  left: 50%;
+}
+.token[data-seat="0"]#dealer_token {
+  transform: translateX(-100%);
+}
+.token[data-seat="1"] {
+  top: 50%;
+  left: 28%;
+}
+.token[data-seat="1"]#dealer_token {
+  transform: translateY(-100%);
+}
+.token[data-seat="2"] {
+  top: 20.5%;
+  left: 50%;
+}
+.token[data-seat="2"]#dealer_token {
+  transform: translateX(-100%);
+}
+.token[data-seat="3"] {
+  top: 50%;
+  right: 28%;
+}
+.token[data-seat="3"]#dealer_token {
+  transform: translateY(-100%);
+}
+
 /* Buttons */
 .styled_button {
   font-family: "Montserrat", sans-serif;

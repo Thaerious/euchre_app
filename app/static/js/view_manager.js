@@ -5,6 +5,7 @@ import suitButtons from "./suit_buttons.js"
 import playedCards from "./played_cards.js"
 import chatBubble from "./chat_bubble.js"
 import message from "./message.js"
+import tokens from "./tokens.js"
 
 Array.prototype.has = function (value) {
     return this.indexOf(value) >= 0
@@ -91,6 +92,19 @@ class ViewManager {
 
         if (snapshot.state == 7) {
             return;
+        }
+
+        // set the tokens
+        tokens.hide()
+        const dealerSeat = getSeat(snapshot.dealer, snapshot.for_player)
+        
+        if (snapshot.state > 0) {
+            tokens.showDealer(dealerSeat)
+        }
+
+        if ([2, 4, 5, 6].has(snapshot.state)) {
+            const makerSeat = getSeat(snapshot.maker, snapshot.for_player)            
+            tokens.showMaker(makerSeat, snapshot.trump)
         }
 
         // set the hand cards
