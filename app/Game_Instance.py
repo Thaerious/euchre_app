@@ -1,6 +1,7 @@
 from euchre import *
 from euchre.bots import Bot
 from euchre.bots.DevBot import DevBot
+from euchre.del_string import del_string
 import random
 
 class Game_Instance:
@@ -9,37 +10,32 @@ class Game_Instance:
         self.socketio = socketio  # Store WebSocket reference
         names = [username, "Bot_1", "Bot_2", "Bot_3"]
         random.shuffle(names)
-        self.game = Game(names)
+        seed = random.randint(1, 100000)
+        random.seed(seed)  
+  
+        self.game = Game(names)                                        
         self.username = username  
         self.bot = Bot()
 
-        self.game.register_hook("before_input", self.report_before) 
         self.game.register_hook("after_input", self.report_after) 
-
-    def report_before(self, action, data):
-        print(f"------------------------------------------")
-        print(f"{self.game.current_player}")
-        if self.game.up_card is not None: 
-            print(f"up card {self.game.up_card}")
-        if len(self.game.tricks) > 0: 
-            print(f"trick {self.game.tricks[-1]}")           
+        print(f"seed {seed}")            
+        print(f"\nnames [{del_string(names, ",", '"')}]")
 
     def report_after(self, prev_state, action, data):
-        if data is None:
-            print(f"({self.game.last_action}) {prev_state} -> {self.game.current_state}")  
-        else:    
-            print(f"({self.game.last_action}:{data}) {prev_state} -> {self.game.current_state}")  
-
-        print(self.game.hash)
-        print(f"------------------------------------------")
+        if self.game.last_player is None:
+            print(f"{action}")
+        elif data is None:
+            print(f"{self.game.last_player.name} {action}")
+        else:
+            print(f"{self.game.last_player.name} {action} {data}")
 
     def emit_snapshot(self):
         snap = Snapshot(self.game, self.username)        
         self.socketio.emit("snapshot", snap.to_json())
 
-    def do_action(self, username, action, data):
+    def do_action(self, username, action, data): 
         game = self.game
-        game.input(username, action, data)
+        game.input(username, action, data)     
         self.emit_snapshot()
         self.continue_action(username)
 

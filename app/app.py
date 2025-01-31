@@ -7,11 +7,15 @@ import random
 from datetime import timedelta
 import traceback
 from Game_Instance import Game_Instance
+import logging
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "your_secret_key"
 app.config["JWT_SECRET_KEY"] = "your_jwt_secret"
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)  # Extend expiration
+app.config["DEBUG"] = False
+log = logging.getLogger("werkzeug")
+log.disabled = True
 
 socketio = SocketIO(app, cors_allowed_origins="*")  # Enable CORS if needed
 jwt = JWTManager(app)

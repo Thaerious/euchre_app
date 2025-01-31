@@ -7,9 +7,16 @@ import chatBubble from "./chat_bubble.js"
 import message from "./message.js"
 import tokens from "./tokens.js"
 
+window.tokens = tokens
+
 Array.prototype.has = function (value) {
     return this.indexOf(value) >= 0
 };
+
+function setName(seat, text) {
+    const ele = document.querySelector(`.player_icon[seat='${seat}']`)
+    ele.innerText = text
+}
 
 function setTricks(seat, trickCount) {
     let i = 0
@@ -81,6 +88,12 @@ class ViewManager {
         setTricks(1, 0)
         setTricks(2, 0)
         setTricks(3, 0)
+
+        // Set names in player icons
+        for (const player of snapshot.players) {
+            const seat = getSeat(player.index, snapshot.for_player)
+            setName(seat, player.name)
+        }
 
         // set buttons based on state
         suitButtons.clear()

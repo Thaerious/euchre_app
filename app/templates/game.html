@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="../static/css/view.css">
+    <link rel="stylesheet" href="../static/css/game.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script type="module" src="../static/js/game.js"></script>
 </head>
@@ -14,6 +14,11 @@
             <img src="../static/images/chat_bubble.png"/>
             <div>ALONE</div>
         </div>
+
+        <div class="player_icon default_font" seat="0">Seat0</div>
+        <div class="player_icon default_font" seat="1">Seat1</div>
+        <div class="player_icon default_font" seat="2">Seat2</div>
+        <div class="player_icon default_font" seat="3">Seat3</div>
 
         <div class="played" id="played">
             <img class="card" src="../static/images/cards/large/back.png" />
@@ -97,9 +102,7 @@
         </div>
 
         <div id="action_container">
-            <button id="b1" class="styled_button action_button">Alone</button>
-            <button id="b2" class="styled_button action_button">Pass</button>
-            <button id="b3" class="styled_button action_button">Order</button>
+            <!-- <button id="b1" class="styled_button action_button default_font">Button</button> -->
         </div>
 
         <div id="score_0" class="score" data-value="4">
@@ -114,9 +117,9 @@
             <img class="card back" src="../static/images/cards/large/back.png" />
         </div>      
         
-        <img id="dealer_token" class="token" data-seat="3" src="../static/images/dealer.png"/>
-        <img id="maker_token" class="token" data-seat="3" src="../static/images/maker_♠.png"/>
-        <div id="message" class="hidden">Pick a Card</div>
+        <img id="dealer_token" class="token" seat="3" src="../static/images/dealer.png"/>
+        <img id="maker_token" class="token" seat="3" src="../static/images/maker_♠.png"/>
+        <div id="message" class="hidden default_font">Pick a Card</div>
     </div>
 </body>
 

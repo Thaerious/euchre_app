@@ -6,13 +6,13 @@ export class TokenManager {
 
     showMaker(seat, suit) {
         this.makerToken.classList.remove("hidden")
-        this.makerToken.setAttribute("data-seat", seat)
+        this.makerToken.setAttribute("seat", seat)
         this.makerToken.setAttribute("src", `../static/images/maker_${suit}.png`)
     }
 
     showDealer(seat) {
         this.dealerToken.classList.remove("hidden")
-        this.dealerToken.setAttribute("data-seat", seat)
+        this.dealerToken.setAttribute("seat", seat)
     }
 
     hide(){

@@ -40,12 +40,48 @@ body {
     }
 }
 
+.player_icon{
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20%;
+    height: 10%;
+    background-color: #008000;
+    border: 2px solid #ffffff;
+    border-radius: 15px;
+    margin: 0 auto;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);   
+    white-space: nowrap;
+    overflow: hidden;
+
+    &[seat="0"]{
+        left: 50%;
+        bottom: 0%;
+        transform: translate(-50%, 75%);        
+    }
+    &[seat="1"]{
+        top: 50%;
+        left: 0%;
+        transform: translate(-62.5%, -50%) rotate(-90deg);
+    }
+    &[seat="2"]{
+        left: 50%;
+        top: 0%;
+        transform: translate(-50%, -75%);
+    }
+    &[seat="3"]{
+        top: 50%;
+        right: 0%;
+        transform: translate(62.5%, -50%)  rotate(90deg);
+    }
+}
+
 .chat_bubble {
     position: absolute;
     width: 30%;
     height: 20%;
     z-index: 10;
-    // background-color: rgba(255, 192, 203, .75);
 
     &[seat="1"] {
         top: 30%;
@@ -73,10 +109,7 @@ body {
         left: 0%;
         top: 25%;
         text-align: center;
-        // background-color: rgba(255, 192, 203, .75);
-        font-family: "Montserrat", sans-serif;
         font-size: 2em;
-        font-weight: bolder;
     }
 }
 
@@ -305,13 +338,9 @@ body {
     position: absolute;
     display: flex;
     align-items: center;    
-    justify-content: center;
-    font-family: "Montserrat", sans-serif;
-    font-size: 1em;
-    font-weight: bolder;
+    justify-content: center;    
     width: 30%;
     height: 5%;   
-    color: rgb(255, 247, 133);
     background-color: #4CAF50;
     border-radius: 8px;
     pointer-events: none;
@@ -326,47 +355,66 @@ body {
     width: 4%;
     height: 4%;
 
-    &[data-seat='0']{
-        bottom: 25.5%;
-        left: 50%;        
-        &#dealer_token{
-            transform: translateX(-100%);
-        }        
-    }
-
-    &[data-seat='1']{
-        top: 50%;
-        left: 28%;        
-        &#dealer_token{
-            transform: translateY(-100%);
-        }        
-    }
-    
-    &[data-seat='2']{
-        top: 20.5%;
+    &[seat="0"]{
         left: 50%;
+        transform: translateX(-50%);
         &#dealer_token{
-            transform: translateX(-100%);
-        }                   
+            left: 45%;
+            bottom: -10%;
+        }
+        &#maker_token{
+            left: 55%;
+            bottom: -10%;            
+        }
     }
-    
-    &[data-seat='3']{
+    &[seat="1"]{
         top: 50%;
-        right: 28%;        
+        transform: translateY(-50%);
         &#dealer_token{
-            transform: translateY(-100%);
-        }          
+            top: 45%;
+            left: -10%;
+        }
+        &#maker_token{
+            top: 55%;
+            left: -10%;            
+        }        
+    }
+    &[seat="2"]{
+        transform: translateX(-50%);
+        &#dealer_token{
+            left: 45%;
+            top: -10%;
+        }
+        &#maker_token{
+            left: 55%;
+            top: -10%;            
+        }
+    }
+    &[seat="3"]{
+        top: 50%;
+        transform: translateY(-50%);
+        &#dealer_token{
+            top: 45%;
+            right: -10%;
+        }
+        &#maker_token{
+            top: 55%;
+            right: -10%;            
+        }    
     }    
 }
 
 /* Buttons */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap');
 
-.styled_button {
+.default_font{
     font-family: "Montserrat", sans-serif;
     font-size: 1em;
     font-weight: bolder;
-    color: rgb(255, 247, 133);
+    color: rgb(255, 247, 133);    
+}
+
+.styled_button {
     background-color: #4CAF50;
     border: 2px solid black;
     border-radius: 8px;
@@ -432,7 +480,7 @@ body {
     // background-color: pink;
     height: 6%;
     width: 55%;
-    bottom: 2%;
+    bottom: 3.5%;
     left: 50%;
     transform: translateX(-50%);
 

@@ -27,6 +27,7 @@ export class ActionButtonManager {
             button.id = (`button_${data.name}`)
             button.classList.add("styled_button")
             button.classList.add("action_button")
+            button.classList.add("default_font")
             button.innerText = data.name
             data.action = data.action ?? data.name.toLowerCase()
             button.setAttribute("data-action", data.action);
