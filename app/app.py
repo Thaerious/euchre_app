@@ -1,8 +1,6 @@
 from flask import Flask, render_template, jsonify, request
 from flask_socketio import SocketIO, emit
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, decode_token
-from euchre import Game, Snapshot
-from euchre.bots import Bot
 import random
 from datetime import timedelta
 import traceback

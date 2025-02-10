@@ -1,6 +1,5 @@
 from euchre import *
-from euchre.bots import Bot
-from euchre.bots.DevBot import DevBot
+from euchre.bots.Bot_1 import Bot_1
 from euchre.del_string import del_string
 import random
 
@@ -15,7 +14,7 @@ class Game_Instance:
   
         self.game = Game(names)                                        
         self.username = username  
-        self.bot = Bot()
+        self.bot = Bot_1()
 
         self.game.register_hook("after_input", self.report_after) 
         print(f"seed {seed}")            
