@@ -1,0 +1,25 @@
+<meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    style-src 'self' https://fonts.googleapis.com;
+    font-src 'self' https://fonts.gstatic.com;">
+
+<html>
+
+<head>
+    <link rel="stylesheet" href="../static/css/game.css">
+    <link rel="stylesheet" href="../static/css/landing.css">
+    <script type="module" src="../static/js/landing.js"></script>
+</head>
+
+<body>
+    <div class="game-board" id="table">
+        <div id="button_container" class="button_container">
+            <button id="create_button" class="disabled styled_button default_font">Create Game</button>        
+            <button id="join_button" class="disabled styled_button default_font">Join Game</button>
+            <button id="quick_button" class="styled_button default_font">Quick Start Solo</button>
+            <button id="logout_button" class="styled_button default_font">Logout</button>
+        </div>
+    </div>
+</body>
+
+</html>

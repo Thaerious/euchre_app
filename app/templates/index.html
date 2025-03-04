@@ -1,15 +1,21 @@
+<meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    style-src 'self' https://fonts.googleapis.com;
+    font-src 'self' https://fonts.gstatic.com;">
+
 <html>
 
 <head>
     <link rel="stylesheet" href="../static/css/game.css">
     <link rel="stylesheet" href="../static/css/index.css">
-    <script src="../static/js/index.js"></script>
+    <script type="module" src="../static/js/index.js"></script>
 </head>
 
 <body>
     <div class="game-board" id="table">
-        <button id="login_button" class="styled_button default_font">Login</button>        
-        <button id="start_button" class="styled_button default_font">Start Game</button>
+        <div id="button_container" class="button_container">
+            <button id="login_button" class="styled_button default_font">Login</button>        
+        </div>
     </div>
 </body>
 

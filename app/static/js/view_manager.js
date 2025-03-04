@@ -13,29 +13,6 @@ Array.prototype.has = function (value) {
     return this.indexOf(value) >= 0
 };
 
-function setName(seat, text) {
-    const ele = document.querySelector(`.player_icon[seat='${seat}']`)
-    ele.innerText = text
-}
-
-function setTricks(seat, trickCount) {
-    let i = 0
-    const trickElements = document.querySelectorAll(`#hand_${seat} .tricks .trick`)
-
-    for (const trick of trickElements) {
-        if (i++ < trickCount) trick.style.display = "block"
-        else trick.style.display = "none"
-    }
-}
-
-function getSeat(pindex, forPlayer) {
-    return (pindex + 4 - forPlayer) % 4
-}
-
-function getIndex(seat, forPlayer) {
-    return (seat + forPlayer) % 4
-}
-
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -84,15 +61,15 @@ class ViewManager {
     async updateView(snapshot) {
         this.report(snapshot)
 
-        setTricks(0, 0)
-        setTricks(1, 0)
-        setTricks(2, 0)
-        setTricks(3, 0)
+        this.setTricks(0, 0)
+        this.setTricks(1, 0)
+        this.setTricks(2, 0)
+        this.setTricks(3, 0)
 
         // Set names in player icons
         for (const player of snapshot.players) {
-            const seat = getSeat(player.index, snapshot.for_player)
-            setName(seat, player.name)
+            const seat = this.getSeat(player.index, snapshot.for_player)
+            this.setName(seat, player.name)
         }
 
         // set buttons based on state
@@ -109,14 +86,14 @@ class ViewManager {
 
         // set the tokens
         tokens.hide()
-        const dealerSeat = getSeat(snapshot.dealer, snapshot.for_player)
+        const dealerSeat = this.getSeat(snapshot.dealer, snapshot.for_player)
         
         if (snapshot.state > 0) {
             tokens.showDealer(dealerSeat)
         }
 
         if ([2, 4, 5, 6].has(snapshot.state)) {
-            const makerSeat = getSeat(snapshot.maker, snapshot.for_player)            
+            const makerSeat = this.getSeat(snapshot.maker, snapshot.for_player)            
             tokens.showMaker(makerSeat, snapshot.trump)
         }
 
@@ -132,7 +109,7 @@ class ViewManager {
 
         // set tricks
         for (const player of snapshot.players) {
-            const seat = getSeat(player.index, snapshot.for_player)
+            const seat = this.getSeat(player.index, snapshot.for_player)
             setTricks(seat, player.tricks)
         }
 
@@ -147,7 +124,7 @@ class ViewManager {
         // show played cards
         if ([5, 6].has(snapshot.state)) {
             for (let index = 0; index < 4; index++) {
-                const seat = getSeat(index, snapshot.for_player)
+                const seat = this.getSeat(index, snapshot.for_player)
                 const player = snapshot.players[index]
                 playedCards.setCard(seat, player.played)
             }
@@ -166,7 +143,7 @@ class ViewManager {
 
         if (snapshot.last_player !== null) {
             if (snapshot.last_player !== snapshot.for_player && snapshot.state < 5) {
-                const seat = getSeat(snapshot.last_player, snapshot.for_player)
+                const seat = this.getSeat(snapshot.last_player, snapshot.for_player)
                 chatBubble.show(seat, snapshot.last_action)
             }
 
@@ -242,7 +219,7 @@ class ViewManager {
     }
 
     setBacks(seat) {
-        const pindex = getIndex(seat, this.snapshot.for_player)
+        const pindex = this.getIndex(seat, this.snapshot.for_player)
         const count = this.snapshot.players[pindex].cards
 
         const element = document.querySelector(`#hand_${seat} > .cards`)
@@ -257,6 +234,29 @@ class ViewManager {
             element.appendChild(img)
         }
     }
+
+    setName(seat, text) {
+        const ele = document.querySelector(`.player_icon[seat='${seat}']`)
+        ele.innerText = text
+    }
+    
+    setTricks(seat, trickCount) {
+        let i = 0
+        const trickElements = document.querySelectorAll(`#hand_${seat} .tricks .trick`)
+    
+        for (const trick of trickElements) {
+            if (i++ < trickCount) trick.style.display = "block"
+            else trick.style.display = "none"
+        }
+    }
+    
+    getSeat(pindex, forPlayer) {
+        return (pindex + 4 - forPlayer) % 4
+    }
+    
+    getIndex(seat, forPlayer) {
+        return (seat + forPlayer) % 4
+    }    
 }
 
 export default new ViewManager()

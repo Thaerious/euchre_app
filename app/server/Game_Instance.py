@@ -10,10 +10,10 @@ class Game_Instance:
         names = [username, "Bot_1", "Bot_2", "Bot_3"]
         random.shuffle(names)
         seed = random.randint(1, 100000)
-        random.seed(seed)  
+        random.seed(seed)
   
         self.game = Game(names)                                        
-        self.username = username  
+        self.username = username
         self.bot = Bot_1()
 
         self.game.register_hook("after_input", self.report_after) 

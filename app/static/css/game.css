@@ -1,4 +1,47 @@
+/* Buttons */
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap");
+.default_font {
+  font-family: "Montserrat", sans-serif;
+  font-size: 1em;
+  font-weight: bolder;
+  color: rgb(255, 247, 133);
+}
+
+.styled_button {
+  background-color: #4CAF50;
+  border: 2px solid black;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+.styled_button.disabled {
+  pointer-events: none;
+  user-select: none;
+  color: grey !important;
+  background-color: darkgrey;
+}
+.styled_button.red {
+  color: red;
+}
+.styled_button.black {
+  color: black;
+}
+.styled_button.selected {
+  background-color: rgb(255, 247, 133);
+}
+.styled_button:hover {
+  background-color: #145017;
+}
+.styled_button:hover.selected {
+  background-color: rgb(114, 107, 24);
+}
+.styled_button:active {
+  background-color: #2E7D32;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+  transform: translateY(2px);
+}
+
 :root {
   --box-size: 80;
 }
@@ -342,49 +385,6 @@ body {
 .token[seat="3"]#maker_token {
   top: 55%;
   right: -10%;
-}
-
-/* Buttons */
-.default_font {
-  font-family: "Montserrat", sans-serif;
-  font-size: 1em;
-  font-weight: bolder;
-  color: rgb(255, 247, 133);
-}
-
-.styled_button {
-  background-color: #4CAF50;
-  border: 2px solid black;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-}
-.styled_button.disabled {
-  pointer-events: none;
-  user-select: none;
-  color: grey !important;
-  background-color: darkgrey;
-}
-.styled_button.red {
-  color: red;
-}
-.styled_button.black {
-  color: black;
-}
-.styled_button.selected {
-  background-color: rgb(255, 247, 133);
-}
-.styled_button:hover {
-  background-color: #145017;
-}
-.styled_button:hover.selected {
-  background-color: rgb(114, 107, 24);
-}
-.styled_button:active {
-  background-color: #2E7D32;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-  transform: translateY(2px);
 }
 
 #suit_container {

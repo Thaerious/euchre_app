@@ -42,18 +42,4 @@
   transform: translateY(2px);
 }
 
-.button_container {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  left: 50%;
-  top: 50%;
-  width: 50%;
-  transform: translate(-50%, -50%);
-}
-.button_container .styled_button {
-  height: 50px;
-  margin: 5px;
-}
-
-/*# sourceMappingURL=index.css.map */
+/*# sourceMappingURL=buttons.css.map */

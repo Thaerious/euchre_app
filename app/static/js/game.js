@@ -1,4 +1,4 @@
-import { getSocket, requestSnapshot, doAction } from "./gameio.js"
+import GameIO from "./GameIO.js"
 import suitButtons from "./suit_buttons.js"
 import actionButtons from "./action_buttons.js"
 import viewManager from "./view_manager.js"
@@ -12,18 +12,31 @@ window.updateSnap = function (hash) {
     viewManager.updateView(window.snapshots[hash])
 };
 
+window.viewManager = viewManager;
+
 (() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        // Redirect to login if no token is found
+        window.location.href = "/";
+    }
+
+    // this is for tracking and debugging snapshots
     let snapshots = localStorage.getItem("snapshots")
     snapshots ??= "{}"
     window.snapshots = JSON.parse(snapshots)
 
-    window.addEventListener("load", () => requestSnapshot());
+    // Load IO manager and request snapshot    
+    window.addEventListener("load", () => {
+        let gameio = new GameIO()
+        window.gameio = gameio // todo remove  
+        gameio.on("snapshot", async snapshot => viewManager.updateView(snapshot))
 
-    getSocket().on("snapshot", (data) => {
-        const snap = JSON.parse(data)
-        window.snapshots[snap.hash.substring(0, 3)] = snap
-        localStorage.setItem("snapshots", JSON.stringify(window.snapshots))
-        viewManager.enqueue(snap)
+        console.log("ready", gameio.hubIdentity)
+        if (gameio.hubIdentity != "gamedev") {
+            gameio.joinHub()
+            gameio.requestSnapshot()
+        }
     });
 
     suitButtons.on("change", () => {
