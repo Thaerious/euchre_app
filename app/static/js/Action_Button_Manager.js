@@ -1,6 +1,6 @@
-export class ActionButtonManager {
-    constructor(containerId) {
-        this.container = document.querySelector(`#${containerId}`);
+export default class ActionButtonManager {
+    constructor(containerId = "#action_container") {
+        this.container = document.querySelector(containerId);
         this.events = {};
     }
 
@@ -67,5 +67,3 @@ export class ActionButtonManager {
         this.container.classList.remove("hidden");
     }
 }
-
-export default new ActionButtonManager("action_container");

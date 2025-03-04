@@ -1,7 +1,7 @@
-export class MessageManager {
-    constructor(containerId) {
+export default class MessageManager {
+    constructor(containerId = "#message") {
         this.container = document.querySelector(`${containerId}`);
-}
+    }
 
     show(text) {
         this.container.innerText = text
@@ -12,5 +12,3 @@ export class MessageManager {
         this.container.classList.add("hidden")
     }    
 }
-
-export default new MessageManager("#message")

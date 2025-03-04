@@ -1,13 +1,11 @@
-import upCard from "./up_card.js"
-import hand from "./hand.js"
-import actionButtons from "./action_buttons.js"
-import suitButtons from "./suit_buttons.js"
-import playedCards from "./played_cards.js"
-import chatBubble from "./chat_bubble.js"
-import message from "./message.js"
-import tokens from "./tokens.js"
-
-window.tokens = tokens
+import UpCardManager from "./Up_Card_Manager.js"
+import HandManager from "./Hand_Manager.js"
+import SuitButtonManager from "./Suit_Button_Manager.js"
+import TokenManager from "./Token_Manager.js"
+import ChatBubbleManager from "./Chat_Bubble.js"
+import MessageManager from "./Message_Manager.js"
+import PlayedCardsManager from "./Played_Cards_Manager.js"
+import ActionButtonManager from "./Action_Button_Manager.js"
 
 Array.prototype.has = function (value) {
     return this.indexOf(value) >= 0
@@ -23,7 +21,16 @@ class ViewManager {
         this.paused = false
         this.snapQ = []
 
-        actionButtons.on("continue", async () => {
+        this.chatBubble = new ChatBubbleManager()
+        this.message = new MessageManager()
+        this.tokens = new TokenManager()
+        this.played = new PlayedCardsManager()
+        this.suitButtons = new SuitButtonManager()
+        this.actionButtons = new ActionButtonManager()
+        this.hand = new HandManager()
+        this.upcard = new UpCardManager()
+
+        this.actionButtons.on("continue", async () => {
             this.paused = false
             await this.run_queue()
         })
@@ -73,8 +80,8 @@ class ViewManager {
         }
 
         // set buttons based on state
-        suitButtons.clear()
-        suitButtons.hide()
+        SuitButtonManager.clear()
+        SuitButtonManager.hide()
         actionButtons.hide()
         chatBubble.hide()
         playedCards.hideAll()
@@ -197,8 +204,8 @@ class ViewManager {
                 ])
                 let card = snapshot.down_card
                 let suit = card[card.length - 1]
-                suitButtons.disable(suit)
-                suitButtons.show()
+                SuitButtonManager.disable(suit)
+                SuitButtonManager.show()
             } break
             case 4: {
                 actionButtons.setButtons([
@@ -207,8 +214,8 @@ class ViewManager {
                 ])
                 let card = snapshot.down_card
                 let suit = card[card.length - 1]
-                suitButtons.disable(suit)
-                suitButtons.show()
+                SuitButtonManager.disable(suit)
+                SuitButtonManager.show()
             } break
             case 5:
                 message.show("Play a Card")
@@ -218,10 +225,7 @@ class ViewManager {
         }
     }
 
-    setBacks(seat) {
-        const pindex = this.getIndex(seat, this.snapshot.for_player)
-        const count = this.snapshot.players[pindex].cards
-
+    setBacks(seat, count) {
         const element = document.querySelector(`#hand_${seat} > .cards`)
         while (element.childElementCount > count) {
             element.removeChild(element.firstChild)
@@ -249,11 +253,13 @@ class ViewManager {
             else trick.style.display = "none"
         }
     }
-    
+        
+    // Translate a player index to a seat index
     getSeat(pindex, forPlayer) {
         return (pindex + 4 - forPlayer) % 4
     }
     
+    // Translate a seat index to a player index
     getIndex(seat, forPlayer) {
         return (seat + forPlayer) % 4
     }    

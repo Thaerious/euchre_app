@@ -1,4 +1,4 @@
-export class TokenManager {
+export default class TokenManager {
     constructor(containerId) {
         this.makerToken = document.querySelector(`#maker_token`);
         this.dealerToken = document.querySelector(`#dealer_token`);
@@ -20,5 +20,3 @@ export class TokenManager {
         this.dealerToken.classList.add("hidden")
     }    
 }
-
-export default new TokenManager()

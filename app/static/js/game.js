@@ -1,8 +1,8 @@
 import GameIO from "./GameIO.js"
-import suitButtons from "./suit_buttons.js"
-import actionButtons from "./action_buttons.js"
-import viewManager from "./view_manager.js"
-import hand from "./hand.js"
+import SuitButtonManager from "./Suit_Button_Manager.js"
+import ActionButtonManager from "./Action_Button_Manager.js"
+import viewManager from "./View_Manager.js"
+import HandManager from "./Hand_Manager.js"
 
 window.loadSnap = function (hash) {
     viewManager.enqueue(window.snapshots[hash])
@@ -39,6 +39,9 @@ window.viewManager = viewManager;
         }
     });
 
+    let suitButtons = new SuitButtonManager()
+    let actionButtons = new ActionButtonManager()
+
     suitButtons.on("change", () => {
         actionButtons.enableAll()
     });
@@ -62,8 +65,8 @@ window.viewManager = viewManager;
     actionButtons.on("order", () => {
         doAction("order", null)
     });
-
-    hand.on("selected", (card) => {
+    
+    new HandManager().on("selected", (card) => {
         switch (viewManager.snapshot.state) {
             case 2:
                 doAction("up", card)

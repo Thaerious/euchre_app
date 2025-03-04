@@ -1,6 +1,6 @@
-export class HandManager {
-    constructor(containerId) {
-        this.container = document.querySelector(`${containerId}`);
+export default class HandManager {
+    constructor(containerId = "#hand_0") {
+        this.container = document.querySelector(containerId);
 
         if (!this.container) {
             console.error(`HandManager: Container with ID '${containerId}' not found.`);
@@ -73,4 +73,4 @@ export class HandManager {
     }
 }
 
-export default new HandManager("#hand_0");
+

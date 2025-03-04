@@ -1,5 +1,5 @@
-export class ChatBubbleManager {
-    constructor(containerId) {
+export default class ChatBubbleManager {
+    constructor(containerId = "#chat_bubble") {
         this.container = document.querySelector(`${containerId}`)
 
         if (!this.container) {
@@ -18,5 +18,3 @@ export class ChatBubbleManager {
         this.container.classList.add("hidden")
     }
 }
-
-export default new ChatBubbleManager("#chat_bubble")

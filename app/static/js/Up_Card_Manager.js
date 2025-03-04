@@ -1,6 +1,6 @@
-export class UpCardManager {
-    constructor(elementId) {
-        this.container = document.querySelector(`${elementId}`);
+export default class UpCardManager {
+    constructor(elementId = "#upcard") {
+        this.container = document.querySelector(elementId);
     
         if (!this.container) {
             console.error(`UpCardManager: Element with ID '${elementId}' not found.`);
@@ -25,4 +25,3 @@ export class UpCardManager {
     }    
 }
 
-export default new UpCardManager("#upcard");

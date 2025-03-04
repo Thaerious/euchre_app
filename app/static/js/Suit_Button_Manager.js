@@ -1,6 +1,6 @@
-export class SuitButtonManager {
-    constructor(containerId) {
-        this.container = document.querySelector(`#${containerId}`);
+export default class SuitButtonManager {
+    constructor(containerId = "#suit_container") {
+        this.container = document.querySelector(containerId);
         const buttons = this.container.querySelectorAll("button")
     
         if (!this.container) {
@@ -59,5 +59,3 @@ export class SuitButtonManager {
         this.container.classList.remove("hidden");
     }    
 }
-
-export default new SuitButtonManager("suit_container");
