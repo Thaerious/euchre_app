@@ -7,6 +7,9 @@ class Game_Connection:
     def send_snapshot(self, snapshot:Snapshot):
         pass
 
+    def send_message(self, string):
+        pass
+
     def get_decision(self):
         pass
 

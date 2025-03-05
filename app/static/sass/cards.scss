@@ -1,0 +1,37 @@
+.card[face='9♥'] { background-image: url('../images/cards/large/9♥.png'); }
+.card[face='9♦'] { background-image: url('../images/cards/large/9♦.png'); }
+.card[face='9♣'] { background-image: url('../images/cards/large/9♣.png'); }
+.card[face='9♠'] { background-image: url('../images/cards/large/9♠.png'); }
+
+.card[face='10♥'] { background-image: url('../images/cards/large/10♥.png'); }
+.card[face='10♦'] { background-image: url('../images/cards/large/10♦.png'); }
+.card[face='10♣'] { background-image: url('../images/cards/large/10♣.png'); }
+.card[face='10♠'] { background-image: url('../images/cards/large/10♠.png'); }
+
+.card[face='J♥'] { background-image: url('../images/cards/large/J♥.png'); }
+.card[face='J♦'] { background-image: url('../images/cards/large/J♦.png'); }
+.card[face='J♣'] { background-image: url('../images/cards/large/J♣.png'); }
+.card[face='J♠'] { background-image: url('../images/cards/large/J♠.png'); }
+
+.card[face='Q♥'] { background-image: url('../images/cards/large/Q♥.png'); }
+.card[face='Q♦'] { background-image: url('../images/cards/large/Q♦.png'); }
+.card[face='Q♣'] { background-image: url('../images/cards/large/Q♣.png'); }
+.card[face='Q♠'] { background-image: url('../images/cards/large/Q♠.png'); }
+
+.card[face='K♥'] { background-image: url('../images/cards/large/K♥.png'); }
+.card[face='K♦'] { background-image: url('../images/cards/large/K♦.png'); }
+.card[face='K♣'] { background-image: url('../images/cards/large/K♣.png'); }
+.card[face='K♠'] { background-image: url('../images/cards/large/K♠.png'); }
+
+.card[face='A♥'] { background-image: url('../images/cards/large/A♥.png'); }
+.card[face='A♦'] { background-image: url('../images/cards/large/A♦.png'); }
+.card[face='A♣'] { background-image: url('../images/cards/large/A♣.png'); }
+.card[face='A♠'] { background-image: url('../images/cards/large/A♠.png'); }
+
+.card[face='back'] { background-image: url('../images/cards/large/back.png'); }
+
+.card {
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+}

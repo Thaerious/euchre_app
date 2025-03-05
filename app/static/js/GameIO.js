@@ -22,14 +22,12 @@ export default class GameIO {
 
         this.socket.on("snapshot", (data) => {
             const snapshot = JSON.parse(data)
-            this.snapshots[snapshot.hash.substring(0, 3)] = snapshot
-            localStorage.setItem("snapshots", JSON.stringify(window.snapshots))
-            this.lastSnapshot = snapshot
             this.emit("snapshot", snapshot)
         });
 
-        this.socket.on("ping", (data) => {
-            console.log("ping from server websocket")            
+        this.socket.on("message", (data) => {
+            console.log(data)
+            alert(data.message)
         });        
     }
 

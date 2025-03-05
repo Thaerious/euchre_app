@@ -4,7 +4,6 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 from datetime import timedelta
 from Connection_Hub import Connection_Hub
 import traceback
-from Game_Instance import Game_Instance
 from Socket_Connection import Socket_Connection
 from Bot_Connection import Bot_Connection
 import logging
@@ -66,7 +65,7 @@ def quick_start():
         Bot_Connection("Botty", Bot_1),
         Bot_Connection("Botzilla", Bot_1),
         Bot_Connection("Botward", Bot_1),
-    ]).run()
+    ]).start()
 
     hub_dict[hub.identity] = hub
     return jsonify({"status": "success", "message": "game created", "identity": hub.identity})
@@ -77,11 +76,10 @@ def handle_connect():
     # todo deny bad tokens
     token = request.args.get("token")
     username = verify_token(token)
-    print(f"Client connected: {username}")
 
-@socketio.on('disconnect')
-def handle_disconnect():
-    print("Client disconnected!")
+# @socketio.on('disconnect')
+# def handle_disconnect():
+    
 
 # finds the hub and associates websocket with the user
 @socketio.on("join_hub")
@@ -91,7 +89,6 @@ def join_hub(data):
     username = verify_token(token)
     hub = hub_dict[hub_identity]
     hub[username].socketio = socketio
-    print(f"Join Hub {username} {hub}")
 
 def verify_token(token):
     if not token:
@@ -105,18 +102,7 @@ def verify_token(token):
     except Exception as e:
         traceback.print_exc()
         print(f"Invalid Auth: {str(e)}")
-        emit("socket_error", {"message": f"Invalid Auth: {str(e)}"}, room=request.sid)     
-
-@socketio.on("do_action")
-def do_action(data):
-    try:
-        username, game_hash = verify_token(data)
-        game_instance = hub_dict[game_hash]
-        game_instance.do_action(username, data["action"], data["data"])
-    except Exception as e:
-        traceback.print_exc()
-        print(f"Invalid Auth: {str(e)}")
-        emit("socket_error", {"message": f"socket_error: {str(e)}"}, room=request.sid)      
+        emit("socket_error", {"message": f"Invalid Auth: {str(e)}"}, room=request.sid)         
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)   

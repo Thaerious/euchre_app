@@ -1,24 +1,14 @@
-export default class HandManager {
+import EventEmitter from "./modules/Event_Emitter.js";
+
+export default class HandManager extends EventEmitter {
     constructor(containerId = "#hand_0") {
+        super();
         this.container = document.querySelector(containerId);
+        this.cards = []
 
         if (!this.container) {
             console.error(`HandManager: Container with ID '${containerId}' not found.`);
             return;
-        }
-        this.events = {};
-    }
-
-    on(event, listener) {
-        if (!this.events[event]) {
-            this.events[event] = [];
-        }
-        this.events[event].push(listener);
-    }
-
-    emit(event, ...args) {
-        if (this.events[event]) {
-            this.events[event].forEach(listener => listener(...args));
         }
     }
 
@@ -52,14 +42,22 @@ export default class HandManager {
         }
     }
 
-    setCards(cards) {
+    clear() {
         const cardContainer = this.container.querySelector(`.cards`);
+        this.cards = []
 
         while (cardContainer.firstChild) {
             cardContainer.removeChild(cardContainer.firstChild);
-        }
+        }        
+    }
+
+    setCards(cards) {
+        const cardContainer = this.container.querySelector(`.cards`);
 
         for (const card of cards) {
+            if (this.cards.includes(card)) continue
+            this.cards.push(card)
+
             const img = document.createElement('img');
             img.src = `../static/images/cards/large/${card}.png`;
             img.classList.add("card")
@@ -67,6 +65,7 @@ export default class HandManager {
             cardContainer.appendChild(img)
 
             img.addEventListener("click", () => {
+                this.cards = this.cards.filter(c => c !== card);
                 this.emit("selected", card)
             })               
         }

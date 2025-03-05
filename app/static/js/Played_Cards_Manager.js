@@ -10,7 +10,7 @@ export default class PlayedCardsManager {
         }
     }
 
-    hideAll() {
+    hide() {
         const cards = this.container.querySelectorAll(".card")
         for (const card of cards) {
             card.classList.add("hidden")
@@ -21,9 +21,9 @@ export default class PlayedCardsManager {
 
     setCard(seat, card) {
         const cards = this.container.querySelectorAll(".card")
-        cards[seat].src = `../static/images/cards/large/${card}.png`;
-        cards[seat].classList.remove("hidden")
+        cards[seat].setAttribute("face", card)        
         cards[seat].style.zIndex = `${this.nextZ++}`
+        cards[seat].classList.remove("hidden")
     }
 }
 
