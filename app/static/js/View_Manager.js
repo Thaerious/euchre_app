@@ -11,10 +11,6 @@ Array.prototype.has = function (value) {
     return this.indexOf(value) >= 0
 };
 
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms))
-}
-
 export default class ViewManager {
     constructor() {
         this.busy = false
@@ -28,7 +24,7 @@ export default class ViewManager {
         this.played = new PlayedCardsManager()
         this.suitButtons = new SuitButtonManager()
         this.actionButtons = new ActionButtonManager()
-        this.hand = new HandManager()
+        this.hands = [new HandManager(0), new HandManager(1), new HandManager(2), new HandManager(3)]
         this.upcard = new UpCardManager()
 
         this.actionButtons.on("continue", async () => {
@@ -76,8 +72,8 @@ export default class ViewManager {
         this.played.hide()
         this.suitButtons.hide()
         this.actionButtons.hide()
-        this.hand.clear()
-        this.upcard.showBack()
+        this.hands[0].clear()
+        this.upcard.show("back")
     }
 
     async updateView(snapshot) {
@@ -104,13 +100,12 @@ export default class ViewManager {
         }
 
         // set the hand cards
-        this.hand.setCards(snapshot.hand)
+        this.hands[0].setCards(snapshot.hand)
 
         // set opponents cards in hand
-        for (let p = 0; p < 4; p++) {
+        for (let p = 1; p < 4; p++) {
             let seat = this.getSeat(p, snapshot.for_player)
-            if (seat == 0) continue
-            this.setBacks(seat, snapshot.players[p].hand_size)
+            this.hands[seat].fill("back", snapshot.players[p].hand_size)
         }
 
         // set score cards
@@ -125,7 +120,7 @@ export default class ViewManager {
         // set tricks
         for (const player of snapshot.players) {
             const seat = this.getSeat(player.index, snapshot.for_player)
-            this.setTricks(seat, player.tricks)
+            this.hands[seat].tricks = player.tricks
         }
 
         // display upcard
@@ -133,7 +128,7 @@ export default class ViewManager {
             if (snapshot.up_card !== null) {
                 this.upcard.show(snapshot.up_card)
             } else {
-                this.upcard.showBack()
+                this.upcard.show("back")
             }
         } else {
             this.upcard.hide()
@@ -208,7 +203,7 @@ export default class ViewManager {
                 this.actionButtons.setButtons([
                     { "name": "Down" }
                 ])
-                this.hand.enable()
+                this.hands[0].enable()
                 break
             case 3: {
                 this.actionButtons.setButtons([
@@ -233,43 +228,29 @@ export default class ViewManager {
             } break
             case 5:
                 this.message.show("Play a Card")
-                this.hand.enable()
+                this.hands[0].enable()
                 this.actionButtons.hide()
                 break
         }
     }
 
     setScore(team, value) {
-        document.querySelector(`#score_${team}`).setAttribute("data-value", value)
-    }
-
-    setBacks(seat, count) {
-        const element = document.querySelector(`#hand_${seat} > .cards`)
-        while (element.childElementCount > count) {
-            element.removeChild(element.firstChild)
+        if (value < 5) {
+            document.querySelector(`#score_${team} .top`).setAttribute("face", "back")
         }
-
-        while (element.childElementCount < count) {
-            const img = document.createElement("img")
-            img.classList.add("card")
-            img.src = "../static/images/cards/large/back.png"
-            element.appendChild(img)
+        else if (team == 0) {
+            document.querySelector(`#score_${team} .top`).setAttribute("face", "5♥")
         }
+        else if (team == 1) {
+            document.querySelector(`#score_${team} .top`).setAttribute("face", "5♠")
+        }        
+
+        document.querySelector(`#score_${team}`).setAttribute("score", value)
     }
 
     setName(seat, text) {
         const ele = document.querySelector(`.player_icon[seat='${seat}']`)
         ele.innerText = text
-    }
-
-    setTricks(seat, trickCount) {
-        let i = 0
-        const trickElements = document.querySelectorAll(`#hand_${seat} .tricks .trick`)
-
-        for (const trick of trickElements) {
-            if (i++ < trickCount) trick.classList.remove("hidden")
-            else trick.classList.add("hidden")
-        }
     }
 
     // Translate a player index to a seat index

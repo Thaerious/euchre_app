@@ -55,7 +55,7 @@ import ViewManager from "./View_Manager.js"
         gameio.doAction("order", null)
     });
     
-    viewManager.hand.on("selected", (card) => {
+    viewManager.hands[0].on("selected", (card) => {
         switch (viewManager.snapshot.state) {
             case 2:
                 gameio.doAction("up", card)

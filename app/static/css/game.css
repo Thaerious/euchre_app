@@ -43,6 +43,22 @@
   transform: translateY(2px);
 }
 
+.card[face="5♥"] {
+  background-image: url("../images/cards/large/5♥.png");
+}
+
+.card[face="5♦"] {
+  background-image: url("../images/cards/large/5♦.png");
+}
+
+.card[face="5♣"] {
+  background-image: url("../images/cards/large/5♣.png");
+}
+
+.card[face="5♠"] {
+  background-image: url("../images/cards/large/5♠.png");
+}
+
 .card[face="9♥"] {
   background-image: url("../images/cards/large/9♥.png");
 }
@@ -144,9 +160,12 @@
 }
 
 .card {
+  position: absolute;
   background-size: cover;
   background-position: center;
-  border-radius: 10px;
+  height: 15%;
+  aspect-ratio: 2.5/3.5;
+  --offset_width: 5.35%;
 }
 
 :root {
@@ -166,12 +185,7 @@ body {
   background-color: #87CEEB;
 }
 
-.card {
-  height: 100%;
-  width: auto;
-}
-
-.game-board {
+.table {
   position: relative;
   background-color: #008000;
   border: 2px solid #ffffff;
@@ -185,7 +199,7 @@ body {
   width: calc(var(--box-size) * 1vh);
 }
 @media (orientation: portrait) {
-  .game-board {
+  .table {
     width: calc(var(--box-size) * 1vw);
     height: calc(var(--box-size) * 1vw);
   }
@@ -262,107 +276,109 @@ body {
   font-size: 2em;
 }
 
-.played,
 #upcard {
-  position: absolute;
-  height: 15%;
-  aspect-ratio: 2.5/3.5;
-  bottom: 50%;
   left: 50%;
+  bottom: 50%;
   transform: translate(-50%, 50%);
 }
-.played *,
-#upcard * {
-  position: absolute;
-}
-.played > .card:nth-child(1),
-#upcard > .card:nth-child(1) {
-  transform: translateY(60%);
-}
-.played > .card:nth-child(2),
-#upcard > .card:nth-child(2) {
-  transform: translateX(-80%) rotate(90deg);
-}
-.played > .card:nth-child(3),
-#upcard > .card:nth-child(3) {
-  transform: translateY(-60%);
-}
-.played > .card:nth-child(4),
-#upcard > .card:nth-child(4) {
-  transform: translateX(80%) rotate(90deg);
+
+#played_0 {
+  left: 50%;
+  bottom: 50%;
+  transform: translate(-50%, 125%);
 }
 
-.hand {
-  position: absolute;
-  height: 15%;
-  width: 30%;
+#played_1 {
+  left: 50%;
+  bottom: 50%;
+  transform: translate(50%, 50%) rotate(90deg);
 }
-.hand .cards {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  justify-content: center;
+
+#played_2 {
+  left: 50%;
+  bottom: 50%;
+  transform: translate(-50%, -25%);
 }
-.hand .cards .card {
-  transform: translateX(30%);
-  margin-left: -20%;
+
+#played_3 {
+  left: 50%;
+  bottom: 50%;
+  transform: translate(-150%, 50%) rotate(90deg);
 }
-.hand .cards.enabled .card:hover {
-  transform: translate(26%, -10%);
+
+[hand="0"] {
+  --card_index: 0;
+  bottom: 10%;
+  left: calc(var(--hand_0_offset, 0%) * var(--offset_width) + 50% + var(--card_index) * 5%);
+}
+[hand="0"].enabled:hover {
+  transform: translate(-5%, -26%);
   cursor: pointer;
 }
-.hand .cards:not(.enabled) .card:hover {
-  pointer-events: none;
+
+[hand="1"] {
+  left: 10%;
+  top: calc(var(--hand_0_offset, 0%) * var(--offset_width) + 50% + var(--card_index) * 5%);
+  transform: rotate(90deg);
 }
-.hand .tricks {
+
+[hand="2"] {
+  top: 10%;
+  left: calc(var(--hand_0_offset, 0%) * var(--offset_width) + 50% + var(--card_index) * 5%);
+}
+
+[hand="3"] {
+  right: 10%;
+  top: calc(var(--hand_0_offset, 0%) * var(--offset_width) + 50% + var(--card_index) * 5%);
+  transform: rotate(90deg);
+}
+
+#tricks_0 {
+  bottom: 10%;
+  left: 70%;
+}
+
+#tricks_1 {
+  bottom: 18%;
+  left: 13%;
+  rotate: 90deg;
+}
+
+#tricks_2 {
+  top: 10%;
+  left: 25%;
+  rotate: 180deg;
+}
+
+#tricks_3 {
+  top: 21%;
+  right: 13%;
+  rotate: -90deg;
+}
+
+.tricks {
   position: absolute;
-  width: 0;
-  top: 0;
-  height: 100%;
+  height: 15%;
+  width: 5%;
   z-index: 100;
-  right: -7.5%;
 }
-.hand .tricks .trick {
+.tricks .trick {
   position: absolute;
   height: 34%;
   top: 0;
   left: 0;
 }
-.hand .tricks .trick:nth-child(2) {
+.tricks .trick:nth-child(2) {
   transform: translateY(50%) rotate(90deg);
 }
-.hand .tricks .trick:nth-child(3) {
+.tricks .trick:nth-child(3) {
   transform: translateY(100%);
 }
-.hand .tricks .trick:nth-child(4) {
+.tricks .trick:nth-child(4) {
   transform: translateY(150%) rotate(90deg);
 }
-.hand .tricks .trick:nth-child(5) {
+.tricks .trick:nth-child(5) {
   transform: translateY(200%);
-}
-
-#hand_0 {
-  bottom: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-#hand_1 {
-  top: 50%;
-  left: 5%;
-  transform: translateY(-50%) rotate(90deg);
-}
-
-#hand_2 {
-  top: 5%;
-  left: 50%;
-  transform: translateX(-50%) rotate(180deg);
-}
-
-#hand_3 {
-  top: 50%;
-  right: 5%;
-  transform: translateY(-50%) rotate(-90deg);
 }
 
 .score {
@@ -370,8 +386,8 @@ body {
   height: 15%;
   aspect-ratio: 2.5/3.5;
 }
-.score * {
-  position: absolute;
+.score .card {
+  height: 100%;
 }
 .score#score_0 {
   left: 5%;
@@ -387,47 +403,17 @@ body {
 .score > .bottom {
   z-index: 2;
 }
-.score > .back {
-  z-index: 4;
-}
-.score[data-value="1"] > .back {
+.score[score="1"] > .top, .score[score="6"] > .top {
   transform: translate(22%, 17%) rotate(35deg);
 }
-.score[data-value="2"] > .back {
+.score[score="2"] > .top, .score[score="7"] > .top {
   transform: translate(0, 25%) rotate(90deg);
 }
-.score[data-value="3"] > .back {
+.score[score="3"] > .top, .score[score="8"] > .top {
   transform: translate(0, 50%) rotate(90deg);
 }
-.score[data-value="4"] > .back {
+.score[score="4"] > .top, .score[score="9"] > .top {
   transform: translate(43%, 45%) rotate(27deg);
-}
-.score[data-value="5"] > .back {
-  z-index: 1;
-}
-.score[data-value="6"] > .back {
-  z-index: 1;
-}
-.score[data-value="6"] > .top {
-  transform: translate(22%, 17%) rotate(35deg);
-}
-.score[data-value="7"] > .back {
-  z-index: 1;
-}
-.score[data-value="7"] > .top {
-  transform: translate(0, 25%) rotate(90deg);
-}
-.score[data-value="8"] > .back {
-  z-index: 1;
-}
-.score[data-value="8"] > .top {
-  transform: translate(0, 50%) rotate(90deg);
-}
-.score[data-value="9"] > .back {
-  z-index: 1;
-}
-.score[data-value="9"] > .top {
-  transform: translate(42%, 45%) rotate(32deg);
 }
 
 #message {

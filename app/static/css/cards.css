@@ -1,4 +1,20 @@
 @charset "UTF-8";
+.card[face="5♥"] {
+  background-image: url("../images/cards/large/5♥.png");
+}
+
+.card[face="5♦"] {
+  background-image: url("../images/cards/large/5♦.png");
+}
+
+.card[face="5♣"] {
+  background-image: url("../images/cards/large/5♣.png");
+}
+
+.card[face="5♠"] {
+  background-image: url("../images/cards/large/5♠.png");
+}
+
 .card[face="9♥"] {
   background-image: url("../images/cards/large/9♥.png");
 }
@@ -100,9 +116,12 @@
 }
 
 .card {
+  position: absolute;
   background-size: cover;
   background-position: center;
-  border-radius: 10px;
+  height: 15%;
+  aspect-ratio: 2.5/3.5;
+  --offset_width: 5.35%;
 }
 
 /*# sourceMappingURL=cards.css.map */

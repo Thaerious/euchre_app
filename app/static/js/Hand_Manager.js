@@ -1,73 +1,79 @@
 import EventEmitter from "./modules/Event_Emitter.js";
 
 export default class HandManager extends EventEmitter {
-    constructor(containerId = "#hand_0") {
+    constructor(handIndex) {
         super();
-        this.container = document.querySelector(containerId);
-        this.cards = []
+        this.handIndex = handIndex
+    }
 
-        if (!this.container) {
-            console.error(`HandManager: Container with ID '${containerId}' not found.`);
-            return;
-        }
+    get count() {
+        const cards = document.querySelectorAll(`.card[hand='${this.handIndex}']`);
+        return cards.length
     }
 
     enable() {
-        const innerContainer = this.container.querySelector(".cards");
-        innerContainer.classList.add("enabled")
-    }
-
-    disable() {
-        const innerContainer = this.container.querySelector(".cards");
-        innerContainer.classList.remove("enabled")
-    }
-
-    setTricks(trickCount) {
-        let i = 0;
-        const tricksElement = document.querySelector(`#hand_0 > .tricks`);
-
-        for (const trick of tricksElement.querySelectorAll(".trick")) {
-            if (i++ < trickCount) trick.style.display = "block";
-            else trick.style.display = "none";
+        const cards = document.querySelectorAll(`.card[hand='${this.handIndex}']`);
+        for (const card of cards) {
+           card.classList.add("enabled")
         }
     }
 
-    setTricks(userIndex, trickCount) {
-        let i = 0;
-        const tricksElement = this.container.querySelectorAll(`.tricks`);
-
-        for (const trick of tricksElement.querySelectorAll(".trick")) {
-            if (i++ < trickCount) trick.style.display = "block";
-            else trick.style.display = "none";
+    disable() {
+        const cards = document.querySelectorAll(`.card[hand='${this.handIndex}']`);
+        for (const card of cards) {
+           card.classList.remove("enabled")
         }
     }
 
     clear() {
-        const cardContainer = this.container.querySelector(`.cards`);
-        this.cards = []
+        const table = document.querySelector("#table")
+        const cards = document.querySelectorAll(`.card[hand='${this.handIndex}']`);
 
-        while (cardContainer.firstChild) {
-            cardContainer.removeChild(cardContainer.firstChild);
+        for (const card of cards) {
+            table.removeChild(card);
         }        
     }
 
+    fill(face, count) {
+        this.clear()
+        for (let i = 0; i < count; i++) {
+            this.setCard(face)
+        }
+    }
+
     setCards(cards) {
-        const cardContainer = this.container.querySelector(`.cards`);
-
         for (const card of cards) {
-            if (this.cards.includes(card)) continue
-            this.cards.push(card)
+            this.setCard(card)
+        }
+    }
 
-            const img = document.createElement('img');
-            img.src = `../static/images/cards/large/${card}.png`;
-            img.classList.add("card")
-            img.dataset.card = card
-            cardContainer.appendChild(img)
+    setCard(face) {
+        let cardIndex = this.count
+        const table = document.querySelector("#table")
+        const card = document.createElement("div")
+        card.classList.add("card")
+        card.setAttribute("hand", this.handIndex)        
+        card.setAttribute("index", cardIndex)
+        card.setAttribute("face", face)
+        card.style.setProperty("--card_index", cardIndex)
+        table.appendChild(card)
 
-            img.addEventListener("click", () => {
-                this.cards = this.cards.filter(c => c !== card);
-                this.emit("selected", card)
-            })               
+        let n = this.count
+        let offset = -1 - ((n - 1) * 0.5)
+        document.documentElement.style.setProperty('--hand_0_offset', `${offset}`);
+
+        card.addEventListener("click", () => {
+            this.emit("selected", card)
+        })   
+    }
+
+    set tricks(count) {
+        let i = 0;
+        const tricksElement = document.querySelector(`#tricks_${this.handIndex}`);
+
+        for (const trick of tricksElement.querySelectorAll(".trick")) {
+            if (i++ < count) trick.style.display = "block";
+            else trick.style.display = "none";
         }
     }
 }
