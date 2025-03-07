@@ -1,12 +1,12 @@
 export default class UpCardManager {
     show(face) {
-        const card = document.querySelector("#upcard")
-        card.setAttribute("face", face)    
-        card.classList.remove("hidden");
+        this.card = document.querySelector("#upcard")
+        this.card.setAttribute("face", face)    
+        this.card.classList.remove("hidden");
     }
     
     hide() {
-        this.container.classList.add("hidden");
+        this.card.classList.add("hidden");
     }    
 }
 

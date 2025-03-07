@@ -4,18 +4,24 @@ export default class PlayedCardsManager {
         this.nextZ = 1;
     }
 
-    hide() {
-        for (let seat = 0; seat < 4; seat++) {
-            const card = document.querySelector(`#played_${seat}`)
-            card.classList.add("hidden")
+    clear() {
+        this.nextZ = 1;
+        const cards = document.querySelectorAll(".played")
+
+        for (const card of cards) {
+            card.remove()
         }
     }
 
     setCard(seat, face) {
-        const card = document.querySelector(`#played_${seat}`)
-        card.setAttribute("face", face)        
+        const table = document.querySelector("#table")
+        const card = document.createElement("div")
+        card.classList.add("card")
+        card.classList.add("played")
+        card.setAttribute("face", face)
+        card.setAttribute("seat", seat)
         card.style.zIndex = `${this.nextZ++}`
-        card.classList.remove("hidden")
+        table.appendChild(card)
     }
 }
 

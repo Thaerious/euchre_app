@@ -4,7 +4,7 @@ import ActionButtonManager from "./Action_Button_Manager.js"
 import ViewManager from "./View_Manager.js"
 
 (() => {
-    let viewManager = new ViewManager()
+    let viewManager = new ViewManager()    
     window.viewManager = viewManager;
 
     const token = localStorage.getItem("access_token");    
@@ -22,6 +22,14 @@ import ViewManager from "./View_Manager.js"
         gameio.on("snapshot", async snapshot => viewManager.enqueue(snapshot))
 
         console.log("ready", gameio.hubIdentity)
+        if (localStorage.getItem("hub") != gameio.hubIdentity) {
+            localStorage.history = "[]"
+            localStorage.setItem("hub", gameio.hubIdentity)
+        }
+        else {
+            viewManager.loadHistory()
+        }
+
         if (gameio.hubIdentity != "gamedev") {
             gameio.joinHub()
             gameio.requestSnapshot()

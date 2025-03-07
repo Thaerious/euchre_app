@@ -1,9 +1,16 @@
 @charset "UTF-8";
 /* Buttons */
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap");
-.default_font {
+.normal_font {
   font-family: "Montserrat", sans-serif;
-  font-size: 1em;
+  font-size: 2vh;
+  font-weight: bolder;
+  color: rgb(255, 247, 133);
+}
+
+.large_font {
+  font-family: "Montserrat", sans-serif;
+  font-size: 3vh;
   font-weight: bolder;
   color: rgb(255, 247, 133);
 }
@@ -176,6 +183,11 @@
   display: none !important;
 }
 
+.fade-out {
+  opacity: 0;
+  transition: opacity 1s ease-out;
+}
+
 body {
   display: flex;
   justify-content: center;
@@ -273,7 +285,7 @@ body {
   left: 0%;
   top: 25%;
   text-align: center;
-  font-size: 2em;
+  font-size: 4vh;
 }
 
 #upcard {
@@ -282,54 +294,60 @@ body {
   transform: translate(-50%, 50%);
 }
 
-#played_0 {
+.played {
+  position: absolute;
+  left: 0;
+  transition: left 3s ease-in-out; /* Smooth movement */
+}
+
+.played[seat="0"] {
   left: 50%;
   bottom: 50%;
   transform: translate(-50%, 125%);
 }
 
-#played_1 {
-  left: 50%;
-  bottom: 50%;
-  transform: translate(50%, 50%) rotate(90deg);
-}
-
-#played_2 {
-  left: 50%;
-  bottom: 50%;
-  transform: translate(-50%, -25%);
-}
-
-#played_3 {
+.played[seat="1"] {
   left: 50%;
   bottom: 50%;
   transform: translate(-150%, 50%) rotate(90deg);
 }
 
-[hand="0"] {
+.played[seat="2"] {
+  left: 50%;
+  bottom: 50%;
+  transform: translate(-50%, -25%);
+}
+
+.played[seat="3"] {
+  left: 50%;
+  bottom: 50%;
+  transform: translate(50%, 50%) rotate(90deg);
+}
+
+.hand[seat="0"] {
   --card_index: 0;
   bottom: 10%;
   left: calc(var(--hand_0_offset, 0%) * var(--offset_width) + 50% + var(--card_index) * 5%);
 }
-[hand="0"].enabled:hover {
+.hand[seat="0"].enabled:hover {
   transform: translate(-5%, -26%);
   cursor: pointer;
 }
 
-[hand="1"] {
+.hand[seat="1"] {
   left: 10%;
-  top: calc(var(--hand_0_offset, 0%) * var(--offset_width) + 50% + var(--card_index) * 5%);
+  top: calc(var(--hand_1_offset, 0%) * var(--offset_width) + 50% + var(--card_index) * 5%);
   transform: rotate(90deg);
 }
 
-[hand="2"] {
+.hand[seat="2"] {
   top: 10%;
-  left: calc(var(--hand_0_offset, 0%) * var(--offset_width) + 50% + var(--card_index) * 5%);
+  left: calc(var(--hand_2_offset, 0%) * var(--offset_width) + 50% + var(--card_index) * 5%);
 }
 
-[hand="3"] {
+.hand[seat="3"] {
   right: 10%;
-  top: calc(var(--hand_0_offset, 0%) * var(--offset_width) + 50% + var(--card_index) * 5%);
+  top: calc(var(--hand_3_offset, 0%) * var(--offset_width) + 50% + var(--card_index) * 5%);
   transform: rotate(90deg);
 }
 

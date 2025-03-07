@@ -1,8 +1,15 @@
 /* Buttons */
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap");
-.default_font {
+.normal_font {
   font-family: "Montserrat", sans-serif;
-  font-size: 1em;
+  font-size: 2vh;
+  font-weight: bolder;
+  color: rgb(255, 247, 133);
+}
+
+.large_font {
+  font-family: "Montserrat", sans-serif;
+  font-size: 3vh;
   font-weight: bolder;
   color: rgb(255, 247, 133);
 }

@@ -8,13 +8,21 @@ export default class ChatBubbleManager {
         }
     }
 
+    showFade(seat, text) {
+        this.show(seat, text)
+        setTimeout(() => {
+            this.hide() 
+        }, 2000);
+    }
+
     show(seat, text) {
         this.container.setAttribute("seat", seat)
         this.container.querySelector("div").innerText = text
         this.container.classList.remove("hidden")
+        this.container.classList.remove("fade-out")        
     }
 
     hide(){
-        this.container.classList.add("hidden")
+        this.container.classList.add("fade-out")
     }
 }

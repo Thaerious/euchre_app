@@ -16,6 +16,7 @@ export default class ViewManager {
         this.busy = false
         this.paused = false
         this.snapQ = []
+        this.snapIndex = -1
         this.snapshot = null
 
         this.chatBubble = new ChatBubbleManager()
@@ -29,154 +30,235 @@ export default class ViewManager {
 
         this.actionButtons.on("continue", async () => {
             this.paused = false
-            await this.run_queue()
+            // await this.run_queue()
         })
 
         this.suitButtons.on("change", suit => {
             this.actionButtons.enableAll()
         });
-    }
 
-    stop() {
-        clearInterval(this.interval)
+        // Animation for when player plays a card
+        this.hands[0].on("selected", (face) => {
+            if (this.snapshot.current_player == this.snapshot.for_player) {
+                const card = this.hands[0].getCard(face)
+                this.hands[0].setPlayed(card)
+            }
+        });
     }
 
     async enqueue(snapshot) {
+        // don't queue old snapshots
+        if (this.snapQ.length > 0 && snapshot.serial_id <= this.snapQ.at(-1).serial_id) return
         this.snapQ.push(snapshot)
-        await this.run_queue()
+        this.saveHistory()
+        // await this.run_queue()
     }
 
     async run_queue() {
         if (!this.busy) {
             this.busy = true
             while (this.snapQ.length > 0 && !this.paused) {
-                this.snapshot = this.snapQ.shift()
-                await this.updateView(this.snapshot)
+                await this.process()
             }
             this.busy = false
         }
     }
 
-    report(snapshot) {
-        console.log(
-            snapshot.last_player,
-            snapshot.last_action,
-            snapshot.state
-        )
+    loadHistory() {
+        const _history = localStorage.getItem("history")
+        const snapHistory = JSON.parse(_history)
+        for (const snap of snapHistory) {
+            this.snapQ.push(snap)
+        }
+
+        this.snapIndex = this.snapQ.length - 1
+        this.process()
+    }
+
+    saveHistory() {
+        localStorage.removeItem("history")
+        const history_json = JSON.stringify(this.snapQ)
+        localStorage.setItem("history", history_json)
+    }    
+
+    list() {
+        for (let i = 0; i < this.snapQ.length; i++) {
+            const snap = this.snapQ[i]
+            if (i == this.snapIndex) {
+                console.log(`>[${i}:${snap.serial_id}]`, snap.last_player, snap.last_action, snap.state)
+            } else {
+                console.log(` [${i}:${snap.serial_id}]`, snap.last_player, snap.last_action, snap.state)
+            }
+        }       
+    }
+
+    async prev() {
+        if (this.snapIndex > 0) this.snapIndex -= 1
+        this.snapshot = null        
+        this.process()
+    }
+
+    async next() {
+        console.log(this.snapIndex, this.snapQ.length, this.snapIndex >= this.snapQ.length)
+        if (this.snapIndex >= this.snapQ.length - 1) return
+        this.snapIndex += 1
+        this.process()
+    }
+
+    async go(index) {
+        if (index < 0) index = 0
+        if (index > this.snapQ.length - 1) index = this.snapQ.length - 1
+        this.snapIndex = index
+        this.snapshot = null        
+        this.process()        
+    }
+
+    async process() {
+        console.log("viewManager.process()")
+        const prevSnap = this.snapshot;
+        this.snapshot = this.snapQ[this.snapIndex]
+        console.log(`*[${this.snapIndex}:${this.snapshot.serial_id}]`, this.snapshot.last_player, this.snapshot.last_action, this.snapshot.state)
+
+        if (prevSnap == null) {
+            console.log("  prevSnap == null")
+            await this.loadView(this.snapshot)
+            if (this.snapshot.current_player == this.snapshot.current_player) {
+                this.updateViewForPlayer()
+            }
+        }
+        else if (this.snapshot.current_player == this.snapshot.for_player) {
+            console.log("  current_player == for_player")
+            this.bubbleMessage()
+            this.updateView()
+            this.updateViewForPlayer()
+        }
+        else {
+            if (this.snapshot.last_action == "play") {
+                console.log("  last_action == play")
+                this.bubbleMessage()
+                await this.playCard()
+            }
+            else {
+                console.log("  else...")
+                this.bubbleMessage()
+                await this.updateView(this.snapshot)
+            }
+        }
+    }
+
+    bubbleMessage() {
+        if (this.snapshot.last_player != this.snapshot.for_player) {
+            const seat = this.getSeat(this.snapshot.last_player, this.snapshot.for_player)      
+            this.chatBubble.showFade(seat, `${this.snapshot.last_action} ${this.snapshot.last_data ?? ""}`)
+        }        
     }
 
     resetView() {
-        this.chatBubble.hide()
         this.message.hide()
         this.tokens.hide()
-        this.played.hide()
+        this.played.clear()
         this.suitButtons.hide()
         this.actionButtons.hide()
         this.hands[0].clear()
         this.upcard.show("back")
+    }   
+
+    async updateView() {
+        this.suitButtons.hide()
+        this.actionButtons.hide()   
+        const seat = this.getSeat(this.snapshot.last_player, this.snapshot.for_player)
+        await this.displayUpcard()
     }
 
-    async updateView(snapshot) {
-        this.report(snapshot)
-        this.resetView()
+    async playCard() {
+        let seat = this.getSeat(this.snapshot.last_player, this.snapshot.for_player)
+        const card = this.hands[seat].getCard()
+        card.setAttribute("face", this.snapshot.last_data)
+        this.hands[seat].setPlayed(card)
+    }
+
+    async loadView() {
+        this.resetView()        
 
         // Set names in player icons
-        for (const player of snapshot.players) {
-            const seat = this.getSeat(player.index, snapshot.for_player)
+        for (const player of this.snapshot.players) {
+            const seat = this.getSeat(player.index, this.snapshot.for_player)
             this.setName(seat, player.name)
         }
 
-        if (snapshot.state == 7) return;
+        if (this.snapshot.state == 7) return;
 
         // set the tokens        
-        if (snapshot.state > 0) {
-            const dealerSeat = this.getSeat(snapshot.dealer, snapshot.for_player)
+        if (this.snapshot.state > 0) {
+            const dealerSeat = this.getSeat(this.snapshot.dealer, this.snapshot.for_player)
             this.tokens.showDealer(dealerSeat)
         }
 
-        if ([2, 4, 5, 6].has(snapshot.state)) {
-            const makerSeat = this.getSeat(snapshot.maker, snapshot.for_player)
-            this.tokens.showMaker(makerSeat, snapshot.trump)
+        if ([2, 4, 5, 6].has(this.snapshot.state)) {
+            const makerSeat = this.getSeat(this.snapshot.maker, this.snapshot.for_player)
+            this.tokens.showMaker(makerSeat, this.snapshot.trump)
         }
 
         // set the hand cards
-        this.hands[0].setCards(snapshot.hand)
+        this.hands[0].addCards(this.snapshot.hand)
 
         // set opponents cards in hand
         for (let p = 1; p < 4; p++) {
-            let seat = this.getSeat(p, snapshot.for_player)
-            this.hands[seat].fill("back", snapshot.players[p].hand_size)
+            let seat = this.getSeat(p, this.snapshot.for_player)
+            this.hands[seat].fill("back", this.snapshot.players[p].hand_size)
         }
 
         // set score cards
-        if ([0, 2].has(snapshot.for_player)) {
-            this.setScore(0, snapshot.score[0])
-            this.setScore(1, snapshot.score[1])
+        if ([0, 2].has(this.snapshot.for_player)) {
+            this.setScore(0, this.snapshot.score[0])
+            this.setScore(1, this.snapshot.score[1])
         } else {
-            this.setScore(1, snapshot.score[0])
-            this.setScore(0, snapshot.score[1])
+            this.setScore(1, this.snapshot.score[0])
+            this.setScore(0, this.snapshot.score[1])
         }
 
         // set tricks
-        for (const player of snapshot.players) {
-            const seat = this.getSeat(player.index, snapshot.for_player)
+        for (const player of this.snapshot.players) {
+            const seat = this.getSeat(player.index, this.snapshot.for_player)
             this.hands[seat].tricks = player.tricks
         }
 
+        await this.displayUpcard()
+
+        // show played cards
+        this.played.clear()
+        if ([5, 6].has(this.snapshot.state)) {
+            let current_trick = this.snapshot.tricks.at(-1)
+            
+            let pindex = this.snapshot.lead
+            let seat = this.getSeat(pindex, this.snapshot.for_player)
+
+            for (let card of current_trick) {
+                this.played.setCard(seat, card)
+                if (++seat > 3) seat = 0
+            }
+        }
+
+        // if (this.snapshot.last_player !== this.snapshot.for_player) {
+        //     const seat = this.getSeat(this.snapshot.last_player, this.snapshot.for_player)
+        //     this.chatBubble.showFade(seat, `${this.snapshot.last_action} ${this.snapshot.last_data}`)  
+        // }
+    }
+
+    async displayUpcard() {
         // display upcard
-        if ([1, 2, 3, 4].has(snapshot.state)) {
-            if (snapshot.up_card !== null) {
-                this.upcard.show(snapshot.up_card)
+        if ([1, 2, 3, 4].has(this.snapshot.state)) {
+            if (this.snapshot.up_card !== null) {
+                this.upcard.show(this.snapshot.up_card)
             } else {
                 this.upcard.show("back")
             }
         } else {
             this.upcard.hide()
-        }
-
-        // show played cards
-        this.played.hide()
-        if ([5, 6].has(snapshot.state)) {
-            let current_trick = snapshot.tricks.at(-1)
-            let cards_played = current_trick.length
-
-            for (let index = 0; index < cards_played; index++) {
-                let pindex = (snapshot.lead + index) % 4
-                const seat = this.getSeat(pindex, snapshot.for_player)
-                const player = snapshot.players[pindex]
-                if (player.played.length == 0) continue
-                this.played.setCard(seat, player.played.at(-1))
-            }
-        }
-
-        // if (snapshot.last_player !== null) {
-        //     if (snapshot.last_player !== snapshot.for_player && snapshot.state < 5) {
-        //         const seat = this.getSeat(snapshot.last_player, snapshot.for_player)
-        //         chatBubble.show(seat, snapshot.last_action)
-        //     }
-
-        //     await delay(1000)
-        //     chatBubble.hide()
-        // }
-
-        if (snapshot.current_player === snapshot.for_player) {
-            this.updateViewForPlayer(snapshot)
-        } else {
-            await this.pauseForContinue(snapshot)
-        }
-
-        // if (snapshot.state == 6 ) {
-        //     await this.pauseForContinue(snapshot, "Trick Finished")
-        // }
-        // else if (snapshot.state == 7 ) {
-        //     await this.pauseForContinue(snapshot, "Hand Finished")
-        // }        
-        // else if (snapshot.current_player === snapshot.for_player) {
-        //     this.updateViewForPlayer(snapshot)
-        // }
+        }        
     }
 
-    async pauseForContinue(snapshot, message = "") {
+    async pauseForContinue(message = "") {
         this.paused = true
         if (message !== "") this.message.show(message)
 
@@ -189,8 +271,8 @@ export default class ViewManager {
         });
     }
 
-    updateViewForPlayer(snapshot) {
-        switch (snapshot.state) {
+    updateViewForPlayer() {
+        switch (this.snapshot.state) {
             case 1:
                 this.actionButtons.setButtons([
                     { "name": "Pass" },
@@ -211,7 +293,7 @@ export default class ViewManager {
                     { "name": "Make", "disable": true },
                     { "name": "Alone", "disable": true },
                 ])
-                let card = snapshot.down_card
+                let card = this.snapshot.down_card
                 let suit = card[card.length - 1]
                 this.suitButtons.disable(suit)
                 this.suitButtons.show()
@@ -221,7 +303,7 @@ export default class ViewManager {
                     { "name": "Make", "disable": true },
                     { "name": "Alone", "disable": true },
                 ])
-                let card = snapshot.down_card
+                let card = this.snapshot.down_card
                 let suit = card[card.length - 1]
                 this.suitButtons.disable(suit)
                 this.suitButtons.show()

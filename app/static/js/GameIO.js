@@ -1,3 +1,10 @@
+function saveSnapshot(snapshot){
+    const _history = localStorage.getItem("snapshots") ?? "[]"
+    const snapHistory = JSON.parse(_history)
+    snapHistory.push(snapshot)
+    localStorage.setItem("snapshots", JSON.stringify(snapHistory))    
+};
+
 export default class GameIO {
     constructor() {
         const urlParts = window.location.pathname.split("/");
@@ -22,11 +29,13 @@ export default class GameIO {
 
         this.socket.on("snapshot", (data) => {
             const snapshot = JSON.parse(data)
-            this.emit("snapshot", snapshot)
+            saveSnapshot(snapshot)
+            this.emit("snapshot", snapshot)            
         });
 
-        this.socket.on("message", (data) => {
-            console.log(data)
+        this.socket.on("message", (_data) => {
+            console.log(_data)
+            let data = JSON.parse(_data)            
             alert(data.message)
         });        
     }
