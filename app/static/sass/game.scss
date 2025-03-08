@@ -397,3 +397,27 @@ body {
         margin: 0 1% 0 1%;
     }
 }
+
+#control_buttons{
+    position: absolute;
+    display: flex;
+    bottom: -40px;
+    right: 0;
+
+    *{
+        margin: 5px;
+    }
+
+    .snap_index {
+        display: flex;
+        width: 50px;
+        background-color: #4CAF50;
+        border: 2px solid black;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        justify-content: center;
+        align-items: center;
+      }    
+}

@@ -1,5 +1,6 @@
 export default class ChatBubbleManager {
     constructor(containerId = "#chat_bubble") {
+        this.timeout = null
         this.container = document.querySelector(`${containerId}`)
 
         if (!this.container) {
@@ -9,9 +10,14 @@ export default class ChatBubbleManager {
     }
 
     showFade(seat, text) {
+        if (this.timeout != null) {
+            clearTimeout(this.timeout)
+        }
+
         this.show(seat, text)
-        setTimeout(() => {
-            this.hide() 
+        this.timeout = setTimeout(() => {
+            this.hide()
+            this.timeout = null
         }, 2000);
     }
 

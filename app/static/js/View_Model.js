@@ -11,12 +11,8 @@ Array.prototype.has = function (value) {
     return this.indexOf(value) >= 0
 };
 
-export default class ViewManager {
+export default class ViewModel {
     constructor() {
-        this.busy = false
-        this.paused = false
-        this.snapQ = []
-        this.snapIndex = -1
         this.snapshot = null
 
         this.chatBubble = new ChatBubbleManager()
@@ -46,122 +42,20 @@ export default class ViewManager {
         });
     }
 
-    async enqueue(snapshot) {
-        // don't queue old snapshots
-        if (this.snapQ.length > 0 && snapshot.serial_id <= this.snapQ.at(-1).serial_id) return
-        this.snapQ.push(snapshot)
-        this.saveHistory()
-        // await this.run_queue()
-    }
-
-    async run_queue() {
-        if (!this.busy) {
-            this.busy = true
-            while (this.snapQ.length > 0 && !this.paused) {
-                await this.process()
-            }
-            this.busy = false
-        }
-    }
-
-    loadHistory() {
-        const _history = localStorage.getItem("history")
-        const snapHistory = JSON.parse(_history)
-        for (const snap of snapHistory) {
-            this.snapQ.push(snap)
-        }
-
-        this.snapIndex = this.snapQ.length - 1
-        this.process()
-    }
-
-    saveHistory() {
-        localStorage.removeItem("history")
-        const history_json = JSON.stringify(this.snapQ)
-        localStorage.setItem("history", history_json)
-    }    
-
-    list() {
-        for (let i = 0; i < this.snapQ.length; i++) {
-            const snap = this.snapQ[i]
-            if (i == this.snapIndex) {
-                console.log(`>[${i}:${snap.serial_id}]`, snap.last_player, snap.last_action, snap.state)
-            } else {
-                console.log(` [${i}:${snap.serial_id}]`, snap.last_player, snap.last_action, snap.state)
-            }
-        }       
-    }
-
-    async prev() {
-        if (this.snapIndex > 0) this.snapIndex -= 1
-        this.snapshot = null        
-        this.process()
-    }
-
-    async next() {
-        console.log(this.snapIndex, this.snapQ.length, this.snapIndex >= this.snapQ.length)
-        if (this.snapIndex >= this.snapQ.length - 1) return
-        this.snapIndex += 1
-        this.process()
-    }
-
-    async go(index) {
-        if (index < 0) index = 0
-        if (index > this.snapQ.length - 1) index = this.snapQ.length - 1
-        this.snapIndex = index
-        this.snapshot = null        
-        this.process()        
-    }
-
-    async process() {
-        console.log("viewManager.process()")
-        const prevSnap = this.snapshot;
-        this.snapshot = this.snapQ[this.snapIndex]
-        console.log(`*[${this.snapIndex}:${this.snapshot.serial_id}]`, this.snapshot.last_player, this.snapshot.last_action, this.snapshot.state)
-
-        if (prevSnap == null) {
-            console.log("  prevSnap == null")
-            await this.loadView(this.snapshot)
-            if (this.snapshot.current_player == this.snapshot.current_player) {
-                this.updateViewForPlayer()
-            }
-        }
-        else if (this.snapshot.current_player == this.snapshot.for_player) {
-            console.log("  current_player == for_player")
-            this.bubbleMessage()
-            this.updateView()
+    async update(snapshot) {
+        if (this.snapshot == null) {
+            this.snapshot = snapshot
+            this.loadView()
             this.updateViewForPlayer()
+            this.bubbleIf()
         }
         else {
-            if (this.snapshot.last_action == "play") {
-                console.log("  last_action == play")
-                this.bubbleMessage()
-                await this.playCard()
-            }
-            else {
-                console.log("  else...")
-                this.bubbleMessage()
-                await this.updateView(this.snapshot)
-            }
+            this.snapshot = snapshot
+            this.updateView()
+            this.updateViewForPlayer()
+            this.bubbleIf()
         }
-    }
-
-    bubbleMessage() {
-        if (this.snapshot.last_player != this.snapshot.for_player) {
-            const seat = this.getSeat(this.snapshot.last_player, this.snapshot.for_player)      
-            this.chatBubble.showFade(seat, `${this.snapshot.last_action} ${this.snapshot.last_data ?? ""}`)
-        }        
-    }
-
-    resetView() {
-        this.message.hide()
-        this.tokens.hide()
-        this.played.clear()
-        this.suitButtons.hide()
-        this.actionButtons.hide()
-        this.hands[0].clear()
-        this.upcard.show("back")
-    }   
+    } 
 
     async updateView() {
         this.suitButtons.hide()
@@ -178,7 +72,13 @@ export default class ViewManager {
     }
 
     async loadView() {
-        this.resetView()        
+        this.message.hide()
+        this.tokens.hide()
+        this.played.clear()
+        this.suitButtons.hide()
+        this.actionButtons.hide()
+        this.hands[0].clear()
+        this.upcard.show("back")      
 
         // Set names in player icons
         for (const player of this.snapshot.players) {
@@ -272,6 +172,12 @@ export default class ViewManager {
     }
 
     updateViewForPlayer() {
+        this.message.hide()
+        this.actionButtons.hide()
+        this.suitButtons.hide()
+
+        if (this.snapshot.current_player != this.snapshot.for_player) return
+
         switch (this.snapshot.state) {
             case 1:
                 this.actionButtons.setButtons([
@@ -344,4 +250,21 @@ export default class ViewManager {
     getIndex(seat, forPlayer) {
         return (seat + forPlayer) % 4
     }
+
+    bubbleIf() {
+        if ([1, 2, 3, 4].has(this.snapshot.state)) {
+            this.bubbleMessage()
+        }
+
+        if (this.snapshot.state == 5 && this.snapshot.last_action != "play") {
+            this.bubbleMessage()
+        }        
+    }
+
+    bubbleMessage() {
+        if (this.snapshot.last_player != this.snapshot.for_player) {
+            const seat = this.getSeat(this.snapshot.last_player, this.snapshot.for_player)      
+            this.chatBubble.showFade(seat, `${this.snapshot.last_action} ${this.snapshot.last_data ?? ""}`)
+        }        
+    }    
 }
