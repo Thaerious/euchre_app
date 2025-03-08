@@ -130,7 +130,7 @@ export default class ViewController {
 
     async prev() {
         if (this.snapIndex > 0) this.snapIndex -= 1
-        await this.viewModel.update(this.snapshot)
+        await this.viewModel.update(this.snapshot, true)
     }
 
     async next() {
@@ -143,6 +143,6 @@ export default class ViewController {
         if (index < 0) index = 0
         if (index > this.snapQ.length - 1) index = this.snapQ.length - 1
         this.snapIndex = index
-        await this.viewModel.update(this.snapshot)        
+        await this.viewModel.update(this.snapshot, true)        
     }    
 }

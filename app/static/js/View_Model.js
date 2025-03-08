@@ -42,8 +42,8 @@ export default class ViewModel {
         });
     }
 
-    async update(snapshot) {
-        if (this.snapshot == null) {
+    async update(snapshot, doLoad = false) {
+        if (this.snapshot == null || doLoad) {
             this.snapshot = snapshot
             this.loadView()
             this.updateViewForPlayer()
@@ -58,10 +58,14 @@ export default class ViewModel {
     } 
 
     async updateView() {
+        console.log("Load View")
         this.suitButtons.hide()
-        this.actionButtons.hide()   
-        const seat = this.getSeat(this.snapshot.last_player, this.snapshot.for_player)
+        this.actionButtons.hide()
         await this.displayUpcard()
+
+        if (this.snapshot.state == 5) {
+            this.playCard()
+        }
     }
 
     async playCard() {
@@ -72,6 +76,7 @@ export default class ViewModel {
     }
 
     async loadView() {
+        console.log("Load View")
         this.message.hide()
         this.tokens.hide()
         this.played.clear()
