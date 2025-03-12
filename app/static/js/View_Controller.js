@@ -3,12 +3,21 @@
 
 export default class ViewController {
     constructor(viewModel, gameIO) {
+        this.gameIO = gameIO
         this.viewModel = viewModel       
         this.snapQ = []
         this._snapIndex = -1
+        this.paused = true
+        this.isRunning = false
 
         gameIO.on("snapshot", async snapshot => this.enqueue(snapshot))     
         
+        gameIO.on("error", async (error) => {
+            console.log(`Caught EuchreException: ${error.message}`); 
+            await this.viewModel.update(this.snapshot, true)
+            this.viewModel.message.show(error.message);            
+        });
+
         document.querySelector("#next_snap").addEventListener("click", () => {
             this.next()
         });
@@ -18,8 +27,24 @@ export default class ViewController {
         });      
 
         document.querySelector("#prev_snap").addEventListener("click", () => {
+            document.querySelector("#run_queue").classList.remove("disabled")
+            document.querySelector("#pause_queue").classList.add("disabled")            
+            this.paused = true            
             this.prev()
-        });        
+        });    
+        
+        document.querySelector("#run_queue").addEventListener("click", async () => {
+            document.querySelector("#run_queue").classList.add("disabled")
+            document.querySelector("#pause_queue").classList.remove("disabled")
+            this.paused = false
+            this.run()
+        });          
+
+        document.querySelector("#pause_queue").addEventListener("click", () => {
+            document.querySelector("#run_queue").classList.remove("disabled")
+            document.querySelector("#pause_queue").classList.add("disabled")            
+            this.paused = true
+        });                  
 
         this.viewModel.actionButtons.on("change", () => {
             actionButtons.enableAll()
@@ -44,6 +69,10 @@ export default class ViewController {
         this.viewModel.actionButtons.on("order", () => {
             gameIO.doAction("order", null)
         });
+
+        this.viewModel.actionButtons.on("continue", () => {
+            this.next()
+        });        
         
         this.viewModel.hands[0].on("selected", (card) => {
             switch (this.snapshot.state) {
@@ -51,10 +80,11 @@ export default class ViewController {
                     gameIO.doAction("up", card)
                     break;
                 case 5:
+                    console.log("do action")
                     gameIO.doAction("play", card)
                     break;
             }
-        });        
+        });
     }
 
     get snapIndex() {
@@ -70,7 +100,13 @@ export default class ViewController {
             this._snapIndex = value;
         }
 
-        this.updateButtons()     
+        this.updateButtons()  
+        
+        if (this._snapIndex == this.snapQ.length - 1) {
+            this.gameIO.enabled = true
+        } else {
+            this.gameIO.enabled = false
+        }
     }
 
     updateButtons() {
@@ -97,7 +133,18 @@ export default class ViewController {
         if (this.snapQ.length > 0 && snapshot.serial_id <= this.snapQ.at(-1).serial_id) return
         this.snapQ.push(snapshot)
         this.saveHistory()
-        this.updateButtons()
+        this.updateButtons()  
+        await this.run()
+    }
+
+    async run() {
+        if (this.isRunning) return
+        this.isRunning = true
+        while (!this.paused) {
+            if (this.snapIndex >= this.snapQ.length - 1) break
+            await this.next();
+        }
+        this.isRunning = false
     }
 
     async loadHistory() {
@@ -130,13 +177,21 @@ export default class ViewController {
 
     async prev() {
         if (this.snapIndex > 0) this.snapIndex -= 1
+        console.log(`${this.snapIndex}: ${this.snapshot.serial_id} state ${this.snapshot.state}`)
         await this.viewModel.update(this.snapshot, true)
     }
 
     async next() {
         if (this.snapIndex >= this.snapQ.length - 1) return
         this.snapIndex += 1
+        console.log(`${this.snapIndex}: ${this.snapshot.serial_id} state ${this.snapshot.state}`)
         await this.viewModel.update(this.snapshot)
+    }
+
+    async runQueue() {
+        while (this.snapIndex < this.snapQ.length - 1) {
+            await this.next()
+        }
     }
 
     async go(index) {

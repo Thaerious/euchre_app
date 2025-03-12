@@ -296,8 +296,6 @@ body {
 
 .played {
   position: absolute;
-  left: 0;
-  transition: left 3s ease-in-out; /* Smooth movement */
 }
 
 .played[seat="0"] {
@@ -351,24 +349,24 @@ body {
   transform: rotate(90deg);
 }
 
-#tricks_0 {
+.tricks[seat="0"] {
   bottom: 10%;
   left: 70%;
 }
 
-#tricks_1 {
+.tricks[seat="1"] {
   bottom: 18%;
   left: 13%;
   rotate: 90deg;
 }
 
-#tricks_2 {
+.tricks[seat="2"] {
   top: 10%;
   left: 25%;
   rotate: 180deg;
 }
 
-#tricks_3 {
+.tricks[seat="3"] {
   top: 21%;
   right: 13%;
   rotate: -90deg;
@@ -380,11 +378,57 @@ body {
   width: 5%;
   z-index: 100;
 }
+.tricks[value="1"] .trick[index="0"] {
+  display: block;
+}
+.tricks[value="2"] .trick[index="0"] {
+  display: block;
+}
+.tricks[value="2"] .trick[index="1"] {
+  display: block;
+}
+.tricks[value="3"] .trick[index="0"] {
+  display: block;
+}
+.tricks[value="3"] .trick[index="1"] {
+  display: block;
+}
+.tricks[value="3"] .trick[index="2"] {
+  display: block;
+}
+.tricks[value="4"] .trick[index="0"] {
+  display: block;
+}
+.tricks[value="4"] .trick[index="1"] {
+  display: block;
+}
+.tricks[value="4"] .trick[index="2"] {
+  display: block;
+}
+.tricks[value="4"] .trick[index="3"] {
+  display: block;
+}
+.tricks[value="5"] .trick[index="0"] {
+  display: block;
+}
+.tricks[value="5"] .trick[index="1"] {
+  display: block;
+}
+.tricks[value="5"] .trick[index="2"] {
+  display: block;
+}
+.tricks[value="5"] .trick[index="3"] {
+  display: block;
+}
+.tricks[value="5"] .trick[index="4"] {
+  display: block;
+}
 .tricks .trick {
   position: absolute;
   height: 34%;
   top: 0;
   left: 0;
+  display: none;
 }
 .tricks .trick:nth-child(2) {
   transform: translateY(50%) rotate(90deg);
@@ -453,6 +497,20 @@ body {
   position: absolute;
   width: 4%;
   height: 4%;
+  background-size: cover;
+  background-position: center;
+}
+.token[suit=♥] {
+  background-image: url("../images/maker_♥.png");
+}
+.token[suit=♦] {
+  background-image: url("../images/maker_♦.png");
+}
+.token[suit=♣] {
+  background-image: url("../images/maker_♣.png");
+}
+.token[suit=♠] {
+  background-image: url("../images/maker_♠.png");
 }
 .token[seat="0"] {
   left: 50%;

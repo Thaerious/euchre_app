@@ -7,7 +7,7 @@ export default class TokenManager {
     showMaker(seat, suit) {
         this.makerToken.classList.remove("hidden")
         this.makerToken.setAttribute("seat", seat)
-        this.makerToken.setAttribute("src", `../static/images/maker_${suit}.png`)
+        this.makerToken.setAttribute("suit", suit)
     }
 
     showDealer(seat) {

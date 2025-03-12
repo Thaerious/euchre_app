@@ -58,14 +58,26 @@ export default class HandManager extends EventEmitter {
         card.setAttribute("face", face)
         card.style.setProperty("--card_index", cardIndex)
         table.appendChild(card)
+        
+        this.calcOffset()
 
+        card.addEventListener("click", () => {
+            this.emit("selected", card.getAttribute("face"))
+        })   
+    }
+
+    calcOffset() {
         let n = this.count
         let offset = -1 - ((n - 1) * 0.5)
         document.documentElement.style.setProperty(`--hand_${this.seat}_offset`, `${offset}`);
+    }
 
-        card.addEventListener("click", () => {
-            this.emit("selected", face)
-        })   
+    reIndex() {
+        let cards = document.querySelectorAll(`.hand[seat='${this.seat}']`);
+        let i = 0
+        for (let card of cards) {
+            card.style.setProperty("--card_index", i++)
+        }
     }
 
     getCard(face = null) {
@@ -74,7 +86,6 @@ export default class HandManager extends EventEmitter {
             return document.querySelector(q);
         } else {
             const q = `.hand[seat='${this.seat}']`
-            console.log(q)
             return document.querySelector(q);
         }
     }
@@ -82,19 +93,17 @@ export default class HandManager extends EventEmitter {
     setPlayed(card) {
         card.classList.remove("hand")
         card.classList.add("played")
+        this.reIndex()
+        this.calcOffset()
     }
 
     /**
      * @param {number} count
      */
-    set tricks(count) {
+    set tricks(count) {        
         let i = 0;
-        const tricksElement = document.querySelector(`#tricks_${this.seat}`);
-
-        for (const trick of tricksElement.querySelectorAll(".trick")) {
-            if (i++ < count) trick.style.display = "block";
-            else trick.style.display = "none";
-        }
+        const tricksElement = document.querySelector(`.tricks[seat='${this.seat}']`);
+        tricksElement.setAttribute("value", count)
     }
 }
 

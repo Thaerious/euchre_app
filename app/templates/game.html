@@ -25,36 +25,36 @@
         <div class="player_icon large_font" seat="2"></div>
         <div class="player_icon large_font" seat="3"></div>
 
-        <div id="tricks_0" class="tricks">
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
+        <div id="tricks_0" class="tricks" seat="0" value="0">
+            <img class="trick" index="0" src="../static/images/cards/large/back.png" />
+            <img class="trick" index="1" src="../static/images/cards/large/back.png" />
+            <img class="trick" index="2" src="../static/images/cards/large/back.png" />
+            <img class="trick" index="3" src="../static/images/cards/large/back.png" />
+            <img class="trick" index="4" src="../static/images/cards/large/back.png" />
         </div>
 
-        <div id="tricks_1" class="tricks">
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
+        <div id="tricks_1" class="tricks" seat="1">
+            <img class="trick" index="0" src="../static/images/cards/large/back.png" />
+            <img class="trick" index="1" src="../static/images/cards/large/back.png" />
+            <img class="trick" index="2" src="../static/images/cards/large/back.png" />
+            <img class="trick" index="3" src="../static/images/cards/large/back.png" />
+            <img class="trick" index="4" src="../static/images/cards/large/back.png" />
         </div>
 
-        <div id="tricks_2" class="tricks">
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
+        <div id="tricks_2" class="tricks" seat="2">
+            <img class="trick" index="0" src="../static/images/cards/large/back.png" />
+            <img class="trick" index="1" src="../static/images/cards/large/back.png" />
+            <img class="trick" index="2" src="../static/images/cards/large/back.png" />
+            <img class="trick" index="3" src="../static/images/cards/large/back.png" />
+            <img class="trick" index="4" src="../static/images/cards/large/back.png" />
         </div>
 
-        <div id="tricks_3" class="tricks">
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
-            <img class="trick hidden" src="../static/images/cards/large/back.png" />
+        <div id="tricks_3" class="tricks" seat="3">
+            <img class="trick" index="0" src="../static/images/cards/large/back.png" />
+            <img class="trick" index="1" src="../static/images/cards/large/back.png" />
+            <img class="trick" index="2" src="../static/images/cards/large/back.png" />
+            <img class="trick" index="3" src="../static/images/cards/large/back.png" />
+            <img class="trick" index="4" src="../static/images/cards/large/back.png" />
         </div>                
 
         <div id="suit_container" class="hidden">
@@ -78,13 +78,15 @@
         </div>      
         
         <img id="dealer_token" class="token" seat="3" src="../static/images/dealer.png"/>
-        <img id="maker_token" class="token" seat="3" src="../static/images/maker_♠.png"/>
+        <div id="maker_token" class="token" seat="3"></div>
         <div id="message" class="hidden normal_font">Pick a Card</div>
 
         <div id="control_buttons">
             <button id="prev_snap" class="styled_button suit_button black">Prev</button>
             <div id="snap_index" class="snap_index normal_font">0/0</div>
             <button id="next_snap" class="styled_button suit_button black">Next</button>        
+            <button id="run_queue" class="styled_button suit_button black">▶</button>
+            <button id="pause_queue" class="styled_button suit_button black disabled">⏸</button>
         </div>
     </div>
 </body>

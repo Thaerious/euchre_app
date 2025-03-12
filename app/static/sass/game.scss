@@ -130,8 +130,6 @@ body {
 
 .played {
     position: absolute;
-    left: 0;
-    transition: left 3.0s ease-in-out; /* Smooth movement */
 }
  
 .played[seat='0']{
@@ -188,24 +186,24 @@ body {
     transform: rotate(90deg);
 }
 
-#tricks_0{
+.tricks[seat='0']{
     bottom: 10%;
     left: 70%; 
 }
 
-#tricks_1{
+.tricks[seat='1']{
     bottom: 18%;
     left: 13%; 
     rotate: (90deg);
 }
 
-#tricks_2{
+.tricks[seat='2']{
     top: 10%;
     left: 25%; 
     rotate: (180deg);    
 }
 
-#tricks_3{
+.tricks[seat='3']{
     top: 21%;
     right: 13%; 
     rotate: (-90deg);
@@ -217,11 +215,42 @@ body {
     width: 5%;
     z-index: 100;
 
+    &[value='1']{
+        .trick[index='0']{ display: block;}
+    }
+
+    &[value='2']{
+        .trick[index='0']{ display: block;}
+        .trick[index='1']{ display: block;}
+    }
+    
+    &[value='3']{
+        .trick[index='0']{ display: block;}
+        .trick[index='1']{ display: block;}
+        .trick[index='2']{ display: block;}                
+    }
+    
+    &[value='4']{
+        .trick[index='0']{ display: block;}
+        .trick[index='1']{ display: block;}
+        .trick[index='2']{ display: block;} 
+        .trick[index='3']{ display: block;} 
+    }
+    
+    &[value='5']{
+        .trick[index='0']{ display: block;}
+        .trick[index='1']{ display: block;}
+        .trick[index='2']{ display: block;} 
+        .trick[index='3']{ display: block;} 
+        .trick[index='4']{ display: block;}         
+    }    
+
     .trick {
         position: absolute;
         height: 34%;
         top: 0;
         left: 0;
+        display: none;
 
         &:nth-child(2) {
             transform: translateY(50%) rotate(90deg);
@@ -313,6 +342,21 @@ body {
     position: absolute;
     width: 4%;
     height: 4%;
+    background-size: cover;
+    background-position: center;    
+
+    &[suit="♥"]{
+        background-image: url('../images/maker_♥.png');
+    }
+    &[suit="♦"]{
+        background-image: url('../images/maker_♦.png');
+    }
+    &[suit="♣"]{
+        background-image: url('../images/maker_♣.png');
+    }
+    &[suit="♠"]{
+        background-image: url('../images/maker_♠.png');
+    }            
 
     &[seat="0"]{
         left: 50%;

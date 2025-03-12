@@ -8,5 +8,9 @@ export default class UpCardManager {
     hide() {
         this.card.classList.add("hidden");
     }    
+
+    element() {
+        return document.querySelector("#upcard")
+    }
 }
 

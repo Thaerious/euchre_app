@@ -5,6 +5,12 @@ function saveSnapshot(snapshot){
     localStorage.setItem("snapshots", JSON.stringify(snapHistory))    
 };
 
+class EuchreException extends Error {
+    constructor(message) {
+        super(message)
+    }
+}
+
 export default class GameIO {
     constructor() {
         const urlParts = window.location.pathname.split("/");
@@ -13,9 +19,10 @@ export default class GameIO {
         this.snapshots = {}
         this.lastSnapshot = null
         this.events = new Map();
+        this.enabled = true
 
         if (!this.token) {
-            alert("You must log in first.");
+            window.alert("You must log in first.");
             return
         }
 
@@ -24,7 +31,8 @@ export default class GameIO {
         });
 
         this.socket.on("socket_error", (data) => {
-            window.alert(data.message);
+            window.alert(data.message)
+            console.error(data)
         });
 
         this.socket.on("snapshot", (data) => {
@@ -34,9 +42,13 @@ export default class GameIO {
         });
 
         this.socket.on("message", (_data) => {
-            console.log(_data)
-            let data = JSON.parse(_data)            
-            alert(data.message)
+            const data = JSON.parse(_data)
+            if (data.type == "EuchreException") {
+                this.emit("error", new EuchreException(data.message))
+            }
+            else {
+                this.emit("error", new Error(data.message))
+            }            
         });        
     }
 
@@ -56,6 +68,8 @@ export default class GameIO {
     }
 
     joinHub() {
+        if (!this.enabled) return
+        if (!this.socket) return;        
         this.socket.emit("join_hub", {
             token: this.token,
             hub_identity: this.hubIdentity
@@ -63,6 +77,9 @@ export default class GameIO {
     }
 
     doAction(action, data) {
+        if (!this.enabled) return
+        if (!this.socket) return;
+
         this.socket.emit("do_action", {
             token: this.token,
             hub_identity: this.hubIdentity,
@@ -72,6 +89,7 @@ export default class GameIO {
     }
 
     requestSnapshot() {
+        if (!this.enabled) return
         if (!this.socket) return;
         this.socket.emit("request_snapshot", {
             token: this.token,
