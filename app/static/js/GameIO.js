@@ -1,10 +1,3 @@
-function saveSnapshot(snapshot){
-    const _history = localStorage.getItem("snapshots") ?? "[]"
-    const snapHistory = JSON.parse(_history)
-    snapHistory.push(snapshot)
-    localStorage.setItem("snapshots", JSON.stringify(snapHistory))    
-};
-
 class EuchreException extends Error {
     constructor(message) {
         super(message)
@@ -37,7 +30,6 @@ export default class GameIO {
 
         this.socket.on("snapshot", (data) => {
             const snapshot = JSON.parse(data)
-            saveSnapshot(snapshot)
             this.emit("snapshot", snapshot)            
         });
 

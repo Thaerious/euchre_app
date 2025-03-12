@@ -2,7 +2,6 @@
     default-src 'self';
     style-src 'self' https://fonts.googleapis.com;
     font-src 'self' https://fonts.gstatic.com;">
-
 <html>
 
 <head>
@@ -12,14 +11,13 @@
 </head>
 
 <body>
-    <div class="table" id="table">
-        <div id="button_container" class="button_container">
-            <button id="create_button" class="disabled styled_button normal_font">Create Game</button>        
-            <button id="join_button" class="disabled styled_button normal_font">Join Game</button>
-            <button id="quick_button" class="styled_button normal_font">Quick Start Solo</button>
-            <button id="logout_button" class="styled_button normal_font">Logout</button>
+    <div id="game-board" class="game-board">
+        <div id="button-container" class="button-container">
+            <button id="create-button" class="disabled default-button normal-font">Create Game</button>        
+            <button id="join-button" class="disabled default-button normal-font">Join Game</button>
+            <button id="quick-button" class="default-button normal-font">Quick Start Solo</button>
+            <button id="logout-button" class="default-button normal-font">Logout</button>
         </div>
     </div>
 </body>
-
 </html>

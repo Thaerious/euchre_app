@@ -23,7 +23,7 @@ body {
     background-color: #87CEEB;
 }
 
-.table {
+.game-board {
     position: relative;
     background-color: #008000;
     border: 2px solid #ffffff;
@@ -43,7 +43,7 @@ body {
     }
 }
 
-.player_icon{
+.player-icon{
     position: absolute;
     display: flex;
     justify-content: center;
@@ -80,7 +80,7 @@ body {
     }
 }
 
-.chat_bubble {
+.chat-bubble {
     position: absolute;
     width: 30%;
     height: 20%;
@@ -407,7 +407,7 @@ body {
     }    
 }
 
-#suit_container {
+.suit-button-container {
     position: absolute;
     display: flex;
     justify-content: space-between;
@@ -423,7 +423,7 @@ body {
     }
 }
 
-#action_container {
+.action-button-container {
     position: absolute;
     display: flex;
     justify-content: center;
@@ -442,7 +442,7 @@ body {
     }
 }
 
-#control_buttons{
+.control-button-container{
     position: absolute;
     display: flex;
     bottom: -40px;

@@ -1,16 +1,23 @@
 export default class UpCardManager {
+    constructor(elementID = "upcard") {
+        this.card = document.getElementById(elementID)
+    }
+
     show(face) {
-        this.card = document.querySelector("#upcard")
         this.card.setAttribute("face", face)    
-        this.card.classList.remove("hidden");
+        this.card.classList.remove("is-hidden");
     }
     
     hide() {
-        this.card.classList.add("hidden");
+        this.card.classList.add("is-hidden");
     }    
+    
+    get face() {
+        return this.card.getAttribute("face")
+    }
 
-    element() {
-        return document.querySelector("#upcard")
+    set face(value) {
+        return this.card.setAttribute("face", value)
     }
 }
 

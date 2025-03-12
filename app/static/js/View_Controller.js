@@ -148,14 +148,17 @@ export default class ViewController {
     }
 
     async loadHistory() {
+        console.log("loadHistory()")
         const _history = localStorage.getItem("history")
         const snapHistory = JSON.parse(_history)
         for (const snap of snapHistory) {
             this.snapQ.push(snap)
         }
 
-        this.snapIndex = this.snapQ.length - 1
-        await this.viewModel.update(this.snapshot)
+        this._snapIndex = this.snapQ.length - 1        
+        if (this.snapIndex >= 0) {
+            await this.viewModel.update(this.snapshot)
+        }
     }
 
     saveHistory() {

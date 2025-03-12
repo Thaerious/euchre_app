@@ -21,14 +21,14 @@ import EventEmitter from "./modules/Event_Emitter.js";
 export default class SuitButtonManager extends EventEmitter {
     /**
      * Creates an instance of SuitButtonManager.
-     * @param {string} containerId - The CSS selector for the container holding the suit buttons.
+     * @param {string} elementID - The CSS selector for the container holding the suit buttons.
      */
-    constructor(containerId = "#suit_container") {
+    constructor(elementID = "suit-button-container") {
         super();
-        this.container = document.querySelector(containerId);
+        this.container = document.getElementById(elementID)
 
         if (!this.container) {
-            console.error(`SuitButtonManager: Container with ID '${containerId}' not found.`);
+            console.error(`SuitButtonManager: Container with ID '${elementID}' not found.`);
             return;
         }
 
@@ -81,7 +81,7 @@ export default class SuitButtonManager extends EventEmitter {
      * Hides the suit button container.
      */
     hide() {
-        this.container.classList.add("hidden");
+        this.container.classList.add("is-hidden");
     }
 
     /**
@@ -89,6 +89,6 @@ export default class SuitButtonManager extends EventEmitter {
      */
     show() {
         this.clear();
-        this.container.classList.remove("hidden");
+        this.container.classList.remove("is-hidden");
     }    
 }

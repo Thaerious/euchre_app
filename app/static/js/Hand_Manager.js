@@ -26,7 +26,7 @@ export default class HandManager extends EventEmitter {
     }
 
     clear() {
-        const table = document.querySelector("#table")
+        const table = document.querySelector("#game-board")
         const cards = document.querySelectorAll(`.hand[seat='${this.seat}']`);
 
         for (const card of cards) {
@@ -49,7 +49,7 @@ export default class HandManager extends EventEmitter {
 
     addCard(face) {
         let cardIndex = this.count
-        const table = document.querySelector("#table")
+        const table = document.querySelector("#game-board")
         const card = document.createElement("div")
         card.classList.add("card")
         card.classList.add("hand")

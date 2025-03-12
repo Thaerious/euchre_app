@@ -9,12 +9,12 @@ window.addEventListener("load", async () => {
     }
 
     // Adds a click event listener to the login button
-    document.querySelector("#quick_button").addEventListener("click", () => {
+    document.querySelector("#quick-button").addEventListener("click", () => {
         quick_start("Adam", "")
     });
 
     // Adds a click event listener to the start button
-    document.querySelector("#logout_button").addEventListener("click", () => {
+    document.querySelector("#logout-button").addEventListener("click", () => {
         localStorage.removeItem("access_token");
         window.location.href = "/"
     });

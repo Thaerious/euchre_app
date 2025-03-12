@@ -2,7 +2,7 @@ import UpCardManager from "./Up_Card_Manager.js"
 import HandManager from "./Hand_Manager.js"
 import SuitButtonManager from "./Suit_Button_Manager.js"
 import TokenManager from "./Token_Manager.js"
-import ChatBubbleManager from "./Chat_Bubble.js"
+import ChatBubbleManager from "./Chat_Bubble_Manager.js"
 import MessageManager from "./Message_Manager.js"
 import PlayedCardsManager from "./Played_Cards_Manager.js"
 import ActionButtonManager from "./Action_Button_Manager.js"
@@ -294,7 +294,7 @@ export default class ViewModel {
     }
 
     setName(seat, text) {
-        const ele = document.querySelector(`.player_icon[seat='${seat}']`)
+        const ele = document.querySelector(`.player-icon[seat='${seat}']`)
         ele.innerText = text
     }
 
@@ -324,8 +324,7 @@ export default class ViewModel {
 
     swapUpCard(face) {
         const handCard = this.hands[0].getCard(face)
-        const upCard = this.upcard.element()
-        handCard.setAttribute("face", upCard.getAttribute("face"))
-        upCard.setAttribute("face", "back")
+        handCard.setAttribute("face", this.upcard.face)
+        this.upcard.face = "back"
     }
 }

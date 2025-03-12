@@ -1,6 +1,6 @@
-@use 'buttons';
+@use './buttons';
 
-.button_container{
+.button-container{
     position: absolute;
     display: flex;
     flex-direction: column;
@@ -9,7 +9,7 @@
     width: 50%;
     transform: translate(-50%, -50%);
 
-    .styled_button{
+    .default-button{
         height: 50px;
         margin: 5px;
     }

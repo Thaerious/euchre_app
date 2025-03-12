@@ -1,21 +1,21 @@
 /* Buttons */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap');
 
-.normal_font{
+.normal-font{
     font-family: "Montserrat", sans-serif;
     font-size: 2vh;
     font-weight: bolder;
     color: rgb(255, 247, 133);    
 }
 
-.large_font{
+.large-font{
     font-family: "Montserrat", sans-serif;
     font-size: 3vh;
     font-weight: bolder;
     color: rgb(255, 247, 133);    
 }
 
-.styled_button {
+.default-button {
     background-color: #4CAF50;
     border: 2px solid black;
     border-radius: 8px;

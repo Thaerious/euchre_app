@@ -14,7 +14,7 @@ export default class PlayedCardsManager {
     }
 
     setCard(seat, face) {
-        const table = document.querySelector("#table")
+        const table = document.querySelector("#game-board")
         const card = document.createElement("div")
         card.classList.add("card")
         card.classList.add("played")

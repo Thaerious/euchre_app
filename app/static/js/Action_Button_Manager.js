@@ -22,11 +22,11 @@ import EventEmitter from "./modules/Event_Emitter.js";
 export default class ActionButtonManager extends EventEmitter {
     /**
      * Creates an instance of ActionButtonManager.
-     * @param {string} containerId - The CSS selector for the container holding the action buttons.
+     * @param {string} elementID - The CSS selector for the container holding the action buttons.
      */
-    constructor(containerId = "#action_container") {
+    constructor(elementID = "action-button-container") {
         super();
-        this.container = document.querySelector(containerId);
+        this.container = document.getElementById(elementID);
     }
 
     /**
@@ -56,7 +56,7 @@ export default class ActionButtonManager extends EventEmitter {
         for (const data of buttonData) {
             const button = document.createElement('button');
             button.id = `button_${data.name}`;
-            button.classList.add("styled_button", "action_button", "normal_font");
+            button.classList.add("default-button", "action_button", "normal-font");
             button.innerText = data.name;
             data.action = data.action ?? data.name.toLowerCase();
             button.setAttribute("data-action", data.action);
@@ -102,16 +102,16 @@ export default class ActionButtonManager extends EventEmitter {
     }
 
     /**
-     * Hides the action button container by adding the "hidden" class.
+     * Hides the action button container by adding the "is-hidden" class.
      */
     hide() {
-        this.container.classList.add("hidden");
+        this.container.classList.add("is-hidden");
     }
 
     /**
-     * Shows the action button container by removing the "hidden" class.
+     * Shows the action button container by removing the "is-hidden" class.
      */
     show() {
-        this.container.classList.remove("hidden");
+        this.container.classList.remove("is-hidden");
     }
 }
