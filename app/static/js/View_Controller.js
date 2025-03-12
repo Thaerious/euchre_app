@@ -45,15 +45,7 @@ export default class ViewController {
             document.querySelector("#pause_queue").classList.add("disabled")            
             this.paused = true
         });                  
-
-        this.viewModel.actionButtons.on("change", () => {
-            actionButtons.enableAll()
-        });
-    
-        this.viewModel.actionButtons.on("start", () => {
-            gameIO.doAction("start", null)
-        });
-    
+   
         this.viewModel.actionButtons.on("pass", () => {
             gameIO.doAction("pass", this.viewModel.suitButtons.getSuit())
         });

@@ -1,0 +1,119 @@
+📌 Static Code Analysis with ESLint to Find Dead Code
+ESLint can automatically detect unused variables, functions, and imports in your JavaScript files, helping eliminate dead code before it becomes a problem.
+
+1️⃣ Install ESLint
+If you haven’t already set up ESLint, install it with:
+> npm install eslint --save-dev
+
+Or globally:
+> npm install -g eslint
+
+2️⃣ Initialize ESLint in Your Project
+Run:
+> npx eslint --init
+
+Follow the prompts:
+
+* How would you like to use ESLint? → "To check syntax and find problems"
+* Which type of modules does your project use? → Choose "ES Modules" if using import/export or "CommonJS" if using require().
+* Which framework does your project use? → "None" (or "React" if applicable).
+* Does your project use TypeScript? → "No" (unless using TS).
+* What format do you want your config file to be in? → Choose "JSON" or "JavaScript".
+
+3️⃣ Enable Unused Code Detection
+Modify .eslintrc.json (or .eslintrc.js) to include:
+{
+    "rules": {
+        "no-unused-vars": "error",
+        "no-unused-expressions": "warn",
+        "no-empty-function": "warn",
+        "unused-imports/no-unused-imports": "error"
+    },
+    "plugins": ["unused-imports"]
+}
+👉 The no-unused-vars rule will detect unused variables and functions.
+👉 The unused-imports/no-unused-imports plugin helps clean up dead imports.
+
+If you're using .eslintrc.js, it would look like:
+module.exports = {
+    rules: {
+        "no-unused-vars": "error",
+        "no-unused-expressions": "warn",
+        "no-empty-function": "warn"
+    },
+    plugins: ["unused-imports"]
+};
+
+4️⃣ Run ESLint to Find Dead Code
+Run the following command to check your entire project:
+> npx eslint . --rule "no-unused-vars:error"
+
+Or check a specific file:
+> npx eslint path/to/file.js
+
+5️⃣ Auto-Fix and Remove Dead Code
+If you want ESLint to automatically fix some issues:
+
+npx eslint . --fix
+This will: ✅ Remove unused imports
+✅ Remove declared but unused variables
+✅ Optimize some expressions
+
+6️⃣ Example of ESLint Finding Dead Code
+Before Running ESLint (deadCode.js):
+js
+Copy
+Edit
+const unusedVariable = 42;
+
+function neverCalled() {
+    console.log("I am dead code!");
+}
+
+const usedFunction = () => console.log("I am used!");
+
+usedFunction();
+After Running ESLint:
+ESLint output:
+
+vbnet
+Copy
+Edit
+deadCode.js
+  1:7  error  'unusedVariable' is assigned a value but never used  no-unused-vars
+  3:10 error  'neverCalled' is defined but never used             no-unused-vars
+
+✖ 2 problems (2 errors, 0 warnings)
+✅ Fix: Remove unusedVariable and neverCalled() function.
+
+After Fixing:
+js
+Copy
+Edit
+const usedFunction = () => console.log("I am used!");
+
+usedFunction();
+🚀 Best ESLint Setup for Your Euchre App
+Since you have a Flask + WebSockets-based JavaScript frontend, I’d recommend: ✔ Using "no-unused-vars": "error" to catch unused variables early.
+✔ Enabling "unused-imports/no-unused-imports" to automatically remove dead imports.
+✔ Running eslint . --fix regularly to keep your JS clean.
+
+Would you like help configuring ESLint for your specific project setup? 🚀
+
+
+
+
+
+
+
+
+
+
+
+
+Search
+
+Deep research
+
+
+ChatGPT can make mista

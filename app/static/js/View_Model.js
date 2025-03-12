@@ -24,7 +24,7 @@ export default class ViewModel {
         this.hands = [new HandManager(0), new HandManager(1), new HandManager(2), new HandManager(3)]
         this.upcard = new UpCardManager()
 
-        this.suitButtons.on("change", suit => {
+        this.suitButtons.on("change", () => {
             this.actionButtons.enableAll()
         });
 

@@ -101,7 +101,6 @@ export default class HandManager extends EventEmitter {
      * @param {number} count
      */
     set tricks(count) {        
-        let i = 0;
         const tricksElement = document.querySelector(`.tricks[seat='${this.seat}']`);
         tricksElement.setAttribute("value", count)
     }

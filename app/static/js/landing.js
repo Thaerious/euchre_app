@@ -1,5 +1,3 @@
-import checkStatus from "./modules/check_status.js";
-
 // Event listener that waits for the page to fully load before executing
 window.addEventListener("load", async () => {
     const token = localStorage.getItem("access_token");

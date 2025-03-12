@@ -17,7 +17,7 @@ export default class UpCardManager {
     }
 
     set face(value) {
-        return this.card.setAttribute("face", value)
+        this.card.setAttribute("face", value)
     }
 }
 

@@ -1,2 +1,3 @@
 npx sass <input>:<output>
 npx sass app/static/sass/:app/static/css
+npx eslint .
