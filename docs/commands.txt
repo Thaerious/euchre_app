@@ -1,3 +1,4 @@
 npx sass <input>:<output>
-npx sass app/static/sass/:app/static/css
+npx sass -w app/static/sass/:app/static/css &
 npx eslint .
+python app/server/app.py
