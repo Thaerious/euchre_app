@@ -8,19 +8,22 @@
 <head>
     <link rel="stylesheet" href="../static/css/game.css">
     <link rel="stylesheet" href="../static/css/index.css">
-    <script type="module" src="../static/js/index.js"></script>
+    <script type="module" src="../static/js/create.js"></script>
     <script src="../static/js/elements/Styled_Text_Box.js" defer></script>
 </head>
 
 <body>
     <div id="game-board" class="game-board">
         <div id="button-container" class="button-container">
-            <div class="textbox-outer default normal-font" >
+            <div class="textbox-outer normal-font" >
                 <input id="username_txt" class="textbox-inner" type="text" placeholder="username"/>
+                <input id="email_txt" class="textbox-inner" type="text" placeholder="email"/>
                 <input id="password_txt" class="textbox-inner" type="password" placeholder="password"/>
+                <input id="verify_txt" class="textbox-inner" type="password" placeholder="verify password"/>
             </div>
-            <button id="login_button" class="button normal-size normal-font">Login</button>        
-            <button id="create_button" class="button small-size small-font">Create Account</button>            
+
+            <button id="create_button" class="button normal-size normal-font">Create</button>        
+            <button id="back_button" class="button small-size small-font">Return to Login</button>            
         </div>
     </div>
 </body>

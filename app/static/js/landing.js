@@ -1,21 +1,12 @@
 // Event listener that waits for the page to fully load before executing
 window.addEventListener("load", async () => {
-    const token = localStorage.getItem("access_token");
-    if (!token) {
-        // Redirect to login if no token is found
-        window.location.href = "/";
-    }
-
-    // Adds a click event listener to the login button
     document.querySelector("#quick-button").addEventListener("click", () => {
         quick_start("Adam", "")
     });
-
-    // Adds a click event listener to the start button
     document.querySelector("#logout-button").addEventListener("click", () => {
-        localStorage.removeItem("access_token");
-        window.location.href = "/"
-    });
+        logout()
+        window.location = "/"
+    });    
 });
 
 /**
@@ -38,4 +29,13 @@ function quick_start() {
         window.location = `game/${data.identity}`  // Redirect to the game page
     })
     .catch(error => console.error("Error:", error));
+}
+
+async function logout(username, password) {
+    const response = await fetch("/logout", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
 }
