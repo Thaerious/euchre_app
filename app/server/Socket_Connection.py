@@ -3,19 +3,19 @@ from Game_Connection import Game_Connection
 import threading
 
 class Socket_Connection(Game_Connection):
-    def __init__(self, name:str):
+    def __init__(self, name:str, io):
         super().__init__(name)
-        self._socketio = None
+        self._socketio = io
         self.snapshot = None  
         self.last_action = None
         self.condition = threading.Condition()
 
     @property
-    def socketio(self):
+    def io(self):
         return self._socketio
     
-    @socketio.setter
-    def socketio(self, value):
+    @io.setter
+    def io(self, value):
         self._socketio = value
         self._socketio.on_event("request_snapshot", lambda data: self.send_snapshot())
         self._socketio.on_event("do_action", lambda data: self.do_action(data))

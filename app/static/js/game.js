@@ -3,10 +3,10 @@ import ViewModel from "./View_Model.js"
 import ViewController from "./View_Controller.js"
 
 (() => {
-    const token = localStorage.getItem("access_token");    
+    const token = localStorage.getItem("game_token");    
     if (!token) {
         // Redirect to login if no token is found
-        window.location.href = "/";
+        window.location.href = "/landing";
     }
     
     let gameio = null
@@ -21,7 +21,6 @@ import ViewController from "./View_Controller.js"
         window.viewModel = viewModel;
         window.viewController = viewController;        
 
-        console.log("ready", gameio.hubIdentity)
         if (localStorage.getItem("hub") != gameio.hubIdentity) {
             localStorage.history = "[]"
             localStorage.setItem("hub", gameio.hubIdentity)

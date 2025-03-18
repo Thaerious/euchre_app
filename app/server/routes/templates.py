@@ -23,7 +23,7 @@ def landing():
     return render_template("landing.html")
 
 # Template Page 'Game'
-@templates_bp.route("/game/<identity>")
+@templates_bp.route("/game")
 @token_required
-def play_game(identity):
+def play_game():
     return render_template("game.html")

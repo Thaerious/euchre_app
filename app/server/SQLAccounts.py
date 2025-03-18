@@ -70,17 +70,19 @@ class SQLAccounts:
             return bcrypt.checkpw(password_bytes, result[0])
     
     def get_user(self, token):
-        """Retrieve user details including role and status."""
+        """Retrieve user details identified by token."""
         with sqlite3.connect(self.filename) as conn:
+            conn.row_factory = sqlite3.Row  # This makes query results behave like dictionaries
             cursor = conn.cursor()
-            sql = ("SELECT username, email, status_name, role_name, created_at "
+            sql = ("SELECT username, email, status_name as status, role_name as role, created_at as created "
                    "FROM users "
                    "INNER JOIN roles ON users.role_id = roles.id "
                    "INNER JOIN status ON users.status_id = status.id "
                    "WHERE users.id = (SELECT user_id FROM user_sessions WHERE session_token LIKE ?) "
             )
             cursor.execute(sql, (f"{token}%",))
-            return cursor.fetchone()
+            row = cursor.fetchone()
+            return dict(row) if row else None  # Convert to dictionary if data exists
 
     def list_users(self):
         """List all users along with their roles and statuses."""
@@ -141,6 +143,7 @@ class SQLAccounts:
                    "WHERE session_token = ?"
             )
             cursor.execute(sql, (expires_at, session_token))
+            return session_token
 
     def delete_session(self, token):
         """Delete a session for a specific user."""

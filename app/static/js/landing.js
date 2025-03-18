@@ -26,7 +26,9 @@ function quick_start() {
     .then(response => response.json())
     .then(data => {
         console.log("Server Response:", data)
-        window.location = `game/${data.identity}`  // Redirect to the game page
+        console.log(data.token)
+        localStorage.setItem("game_token", data.token);
+        window.location = "/game"
     })
     .catch(error => console.error("Error:", error));
 }

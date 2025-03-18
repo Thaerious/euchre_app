@@ -8,16 +8,11 @@ export default class GameIO {
     constructor() {
         const urlParts = window.location.pathname.split("/");
         this.hubIdentity = urlParts[urlParts.length - 1];
-        this.token = localStorage.getItem("access_token");
+        this.token = localStorage.getItem("game_token");
         this.snapshots = {}
         this.lastSnapshot = null
         this.events = new Map();
         this.enabled = true
-
-        if (!this.token) {
-            window.alert("You must log in first.");
-            return
-        }
 
         this.socket = io.connect("http://" + location.hostname + ":" + location.port, {
             query: { token: this.token }
