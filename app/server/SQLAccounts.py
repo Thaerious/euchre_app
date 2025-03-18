@@ -69,7 +69,7 @@ class SQLAccounts:
             password_bytes = password.encode('utf-8')
             return bcrypt.checkpw(password_bytes, result[0])
     
-    def get_user(self, username):
+    def get_user(self, token):
         """Retrieve user details including role and status."""
         with sqlite3.connect(self.filename) as conn:
             cursor = conn.cursor()
@@ -77,8 +77,9 @@ class SQLAccounts:
                    "FROM users "
                    "INNER JOIN roles ON users.role_id = roles.id "
                    "INNER JOIN status ON users.status_id = status.id "
-                   "WHERE username = ? ")
-            cursor.execute(sql, (username,))
+                   "WHERE users.id = (SELECT user_id FROM user_sessions WHERE session_token LIKE ?) "
+            )
+            cursor.execute(sql, (f"{token}%",))
             return cursor.fetchone()
 
     def list_users(self):
