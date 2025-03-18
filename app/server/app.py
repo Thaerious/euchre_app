@@ -12,6 +12,12 @@ from Bot_Connection import Bot_Connection
 from SQLAccounts import SQLAccounts
 from token_required import token_required
 
+from routes.templates import templates_bp
+from routes.login import login_bp
+from routes.logout import logout_bp
+from routes.create_account import create_account_bp
+from routes.quick_start import quick_start_bp
+
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -20,6 +26,7 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+logging.getLogger("werkzeug").disabled = True
 
 app = Flask(__name__, template_folder="../templates", static_folder="../static")
 app.config["SECRET_KEY"] = "your_secret_key"
@@ -27,126 +34,18 @@ app.config["JWT_SECRET_KEY"] = "your_jwt_secret"
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)  # Extend expiration
 app.config["DEBUG"] = False
 
-logging.getLogger("werkzeug").disabled = True
-
 socketio = SocketIO(app, cors_allowed_origins="*")  # Enable CORS if needed
 jwt = JWTManager(app)
 
 hub_dict = {}
 sqlAccounts = SQLAccounts("./app/accounts.db")
 
-# Template Page 'Root'
-@app.route("/")
-def index():
-    return render_template("index.html")
-
-@app.route("/create")
-def create():
-    return render_template("create.html")
-
-# Template Page 'Landing'
-@app.route("/landing")
-@token_required
-def landing():
-    return render_template("landing.html")
-
-# Template Page 'Game'
-@app.route("/game/<identity>")
-@token_required
-def play_game(identity):
-    return render_template("game.html")
-
-# Template Page 'Game' for dev
-@app.route("/gamedev")
-def play_gamedev():
-    return render_template("game.html")
-
-# API endpoint 'Login'
-@app.route("/logout", methods=["POST"])
-def logout():
-    token = request.cookies.get("session_token")
-    response = make_response(redirect('/'))
-    response.delete_cookie('session_token')
-    sqlAccounts.delete_session(token)
-    return response
-
-# API endpoint 'Login'
-@app.route("/login", methods=["POST"])
-def login():
-    try:
-        data = request.json
-        if not data: return jsonify({"message": "Missing credentials"}), 400
-        if "username" not in data: return jsonify({"message": "Missing credentials"}), 400
-        if "password" not in data: return jsonify({"message": "Missing credentials"}), 400
-
-        username = data.get("username")
-        password = data.get("password")
-
-        if not sqlAccounts.verify_user(username, password):
-            logger.info(f"Invalid credentials: {username}")
-            return jsonify({"message": "Invalid credentials"}), 401
-
-        # todo check for account verification
-
-        session_token = sqlAccounts.create_session(username)
-        logger.info(f"Valid login: {username}")
-        response = jsonify({"message": "login success"})   
-        response.set_cookie(
-                "session_token", 
-                session_token, 
-                httponly=True, 
-                secure=True, 
-                samesite="Strict"
-            )        
-        return response
-    except Exception as ex:
-        logger.warning(str(ex))
-        return jsonify({"message": "Server error"}), 500
-
-# API endpoint 'Create Account'
-@app.route("/create_account", methods=["POST"])
-def createAccount():
-    try:
-        data = request.json
-        if not data: return jsonify({"message": "Missing credentials"}), 400
-        if "username" not in data: return jsonify({"message": "Missing credentials"}), 400
-        if "email" not in data: return jsonify({"message": "Missing credentials"}), 400        
-        if "password" not in data: return jsonify({"message": "Missing credentials"}), 400
-
-        username = data.get("username")
-        email = data.get("email")
-        password = data.get("password")
-
-        if sqlAccounts.user_exists(username):
-            logger.info(f"Username already in use: {username}")
-            return jsonify({"message": "Username or email already in use."}), 409
-
-        if sqlAccounts.email_exists(email):
-            logger.info(f"Email already in use: {email}")
-            return jsonify({"message": "Username or email already in use."}), 409
-
-        sqlAccounts.add_user(username, email, password)
-        logger.info(f"Account Created: {username}")
-        return jsonify({"message": "Account Created"}), 201
-    except Exception as ex:
-        logger.warning(str(ex))
-        return jsonify({"message": "Server error"}), 500
-
-# API endpoint 'Quick Start'
-@app.route("/quick_start", methods=["POST"])
-@jwt_required()
-def quick_start():
-    username = get_jwt_identity()
-
-    hub = Connection_Hub([
-        Socket_Connection(username),
-        Bot_Connection("Botty", Bot_1),
-        Bot_Connection("Botzilla", Bot_1),
-        Bot_Connection("Botward", Bot_1),
-    ]).start()
-
-    hub_dict[hub.identity] = hub
-    return jsonify({"status": "success", "message": "game created", "identity": hub.identity})
+# Routes Registration
+app.register_blueprint(templates_bp)
+app.register_blueprint(login_bp)
+app.register_blueprint(logout_bp)
+app.register_blueprint(create_account_bp)
+app.register_blueprint(quick_start_bp)
 
 # ---- WebSocket Events ----
 @socketio.on('connect')
