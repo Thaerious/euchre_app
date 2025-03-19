@@ -13,7 +13,7 @@ from flask_socketio import SocketIO
 sqlAccounts = SQLAccounts("./app/accounts.db")
 logger = logging.getLogger(__name__)
 quick_start_bp = Blueprint("quick_start", __name__, template_folder="../templates", static_folder="../static")
-io = SocketIO(cors_allowed_origins="*") 
+app = None
 
 @quick_start_bp.route("/quick_start", methods=["POST"])
 @token_required
@@ -22,7 +22,7 @@ def quick_start(token):
     print(user['username'])
 
     hub = Connection_Hub([
-        Socket_Connection(user['username'], io),
+        Socket_Connection(user['username'], app),
         Bot_Connection("Botty", Bot_1),
         Bot_Connection("Botzilla", Bot_1),
         Bot_Connection("Botward", Bot_1),
@@ -32,5 +32,5 @@ def quick_start(token):
     token = generate_jwt(user['username'], hub.identity)
     return jsonify({"status": "success", "message": "game created", "token": token})
 
-def quick_start_init(app):
-    io.init_app(app)
+def quick_start_init(_app):
+    app = _app

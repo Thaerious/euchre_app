@@ -7,7 +7,7 @@ class EuchreException extends Error {
 export default class GameIO {
     constructor() {
         const urlParts = window.location.pathname.split("/");
-        this.hubIdentity = urlParts[urlParts.length - 1];
+        this.hubID = urlParts[urlParts.length - 1];
         this.token = localStorage.getItem("game_token");
         this.snapshots = {}
         this.lastSnapshot = null
@@ -59,7 +59,7 @@ export default class GameIO {
         if (!this.socket) return;        
         this.socket.emit("join_hub", {
             token: this.token,
-            hub_identity: this.hubIdentity
+            hub_id: this.hubID
         });
     }
 
@@ -69,7 +69,7 @@ export default class GameIO {
 
         this.socket.emit("do_action", {
             token: this.token,
-            hub_identity: this.hubIdentity,
+            hub_id: this.hubID,
             action: action,
             data: data
         });
@@ -80,7 +80,7 @@ export default class GameIO {
         if (!this.socket) return;
         this.socket.emit("request_snapshot", {
             token: this.token,
-            identity: this.hubIdentity,
+            identity: this.hubID,
         });
     }
 }

@@ -2,6 +2,10 @@ import inspect
 from functools import wraps
 from flask import request, jsonify, render_template, make_response
 from SQLAccounts import SQLAccounts
+from inject_arg import inject_arg
+
+# Initialize SQLAccounts to handle session authentication
+sqlAccounts = SQLAccounts("./app/accounts.db")
 
 def token_required(f):
     """
@@ -12,10 +16,7 @@ def token_required(f):
     """
     
     @wraps(f)
-    def decorated(*args, **kwargs):
-        # Initialize SQLAccounts to handle session authentication
-        sqlAccounts = SQLAccounts("./app/accounts.db")
-        
+    def decorated(*args, **kwargs):       
         # Retrieve session token from cookies
         token = request.cookies.get("session_token")
 
@@ -28,20 +29,10 @@ def token_required(f):
         # Refresh the session token to extend its validity
         token = sqlAccounts.refresh_session(token)
 
-        # Inject the token if the function has a 'token' parameter
-        sig = inspect.signature(f)
-        params = list(sig.parameters.keys())
-
-        if 'token' in params:
-            index = params.index('token')
-            if index < len(args):        # If 'token' is in positional arguments
-                args = list(args)        # Convert tuple to list for modification
-                args[index] = token      # Replace the existing token argument
-            else:  
-                kwargs['token'] = token  # Set it in kwargs when required
+        kwargs = inject_arg("token", token, f, kwargs)
 
         # Call the wrapped function with the modified args and kwargs
-        response = f(*args, **kwargs)
+        response = f(**kwargs)
 
         # If response is None or a string, convert it to a valid Flask Response object
         if response is None:

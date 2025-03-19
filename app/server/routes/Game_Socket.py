@@ -1,7 +1,8 @@
-from flask_socketio import SocketIO, disconnect, emit
+from flask_socketio import SocketIO
 from flask import request
 from manage_jwt import validate_jwt
 from Hub_Dictionary import Hub_Dictionary
+from game_token_req import game_token_req
 
 class GameSocket:
     def __init__(self, app):
@@ -13,7 +14,6 @@ class GameSocket:
         """Register WebSocket event handlers."""
 
         @self.io.on('connect')
-        def handle_connect():
-            token = request.args.get("token")
-            payload = validate_jwt(token)
-            print(f"User {payload["username"]} connected via WebSocket.")                      
+        @game_token_req
+        def handle_connect(username, hub_id):
+            print(f"User {username} connected via WebSocket to hub {hub_id}.")                      
