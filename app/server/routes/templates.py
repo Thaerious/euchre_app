@@ -1,7 +1,7 @@
 import logging
 from flask import render_template, Blueprint
 from SQLAccounts import SQLAccounts
-from token_required import token_required
+from decorators.token_required import token_required
 
 sqlAccounts = SQLAccounts("./app/accounts.db")
 logger = logging.getLogger(__name__)

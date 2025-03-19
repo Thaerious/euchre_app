@@ -12,7 +12,7 @@ import secrets
 import datetime
 
 class SQLAccounts:
-    token_lifespan = 5
+    token_lifespan = 60 * 24
 
     """
     A class for managing user accounts, authentication, and sessions using SQLite.

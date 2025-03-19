@@ -26,7 +26,7 @@ class Connection_Hub:
         self.game = Game(names)
         self.game.register_hook("after_input", self.report_after) 
         self.game.input(None, "start", None)
-        self.emit_snapshots()
+        self.broadcast_snapshots()
 
         while self.game.current_state != 0 and self.is_running:
             try:
@@ -35,25 +35,21 @@ class Connection_Hub:
                     connection = self.connections[name]
                     descision = connection.get_decision() # this blocks
                     self.game.input(name, descision[0], descision[1])
-                    self.emit_snapshots()
+                    self.broadcast_snapshots()
                 else:
                     self.game.input(None, "continue", None)
-                    self.emit_snapshots()
+                    self.broadcast_snapshots()
             except EuchreException as ex:
                 connection = self.connections[name]
                 connection.send_message(ex.to_json())
 
         return self
 
-    def emit_snapshots(self):
+    def broadcast_snapshots(self):
         for name in self.connections:
             connection = self.connections[name]
             snapshot = Snapshot(self.game, name)
             connection.send_snapshot(snapshot)
-
-    def emit_snapshot(self, name):        
-        snapshot = Snapshot(self.game, name)
-        self[name].send_snapshot(snapshot)
 
     def __getitem__(self, index) -> Game_Connection:
         return self.connections[index]

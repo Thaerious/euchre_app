@@ -1,9 +1,7 @@
-import inspect
 from functools import wraps
-from flask import request, jsonify, render_template, make_response
-from SQLAccounts import SQLAccounts
+from flask import request
 from manage_jwt import validate_jwt
-from inject_arg import inject_arg
+from .inject_arg import inject_arg
 
 def game_token_req(f):
     """

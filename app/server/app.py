@@ -1,17 +1,15 @@
-import traceback
 import logging
-from flask import Flask, render_template, jsonify, request, redirect, make_response
-from flask_socketio import SocketIO, emit
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, decode_token
+from flask import Flask
+from flask_socketio import SocketIO
+from flask_jwt_extended import JWTManager
 from datetime import timedelta
 from SQLAccounts import SQLAccounts
 
-from routes.Game_Socket import GameSocket
 from routes.templates import templates_bp
 from routes.login import login_bp
 from routes.logout import logout_bp
 from routes.create_account import create_account_bp
-from routes.quick_start import quick_start_bp, quick_start_init
+from routes.quick_start import quick_start_factory
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -30,18 +28,16 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)  # Extend expiratio
 app.config["DEBUG"] = False
 
 io = SocketIO(app, cors_allowed_origins="*") 
-quick_start_init(app)
 
 jwt = JWTManager(app)
 sqlAccounts = SQLAccounts("./app/accounts.db")
-GameSocket(app)
 
 # Routes Registration
 app.register_blueprint(templates_bp)
 app.register_blueprint(login_bp)
 app.register_blueprint(logout_bp)
 app.register_blueprint(create_account_bp)
-app.register_blueprint(quick_start_bp)   
+app.register_blueprint(quick_start_factory(app))   
 
 if __name__ == "__main__":    
     io.run(app, debug=True)   

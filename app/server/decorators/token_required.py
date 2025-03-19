@@ -1,8 +1,7 @@
-import inspect
 from functools import wraps
-from flask import request, jsonify, render_template, make_response
+from flask import request, render_template, make_response
 from SQLAccounts import SQLAccounts
-from inject_arg import inject_arg
+from decorators.inject_arg import inject_arg
 
 # Initialize SQLAccounts to handle session authentication
 sqlAccounts = SQLAccounts("./app/accounts.db")
