@@ -57,6 +57,10 @@ body {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);   
     white-space: nowrap;
     overflow: hidden;
+    font-family: "Montserrat", sans-serif;
+    font-size: 1rem;
+    font-weight: bolder;
+    color: rgb(255, 247, 133);   
 
     &[seat="0"]{
         left: 50%;
@@ -435,7 +439,7 @@ body {
     left: 50%;
     transform: translateX(-50%);
 
-    .action_button {
+    .action-size {
         width: 30%;
         height: 100%;
         margin: 0 1% 0 1%;
@@ -446,7 +450,7 @@ body {
     position: absolute;
     display: flex;
     bottom: -40px;
-    right: 0;
+    right: -35px;
 
     *{
         margin: 5px;

@@ -56,7 +56,7 @@ export default class ActionButtonManager extends EventEmitter {
         for (const data of buttonData) {
             const button = document.createElement('button');
             button.id = `button_${data.name}`;
-            button.classList.add("default-button", "action_button", "normal-font");
+            button.classList.add("button", "action-size", "normal-font");
             button.innerText = data.name;
             data.action = data.action ?? data.name.toLowerCase();
             button.setAttribute("data-action", data.action);
