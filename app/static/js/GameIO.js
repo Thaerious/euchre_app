@@ -14,16 +14,29 @@ export default class GameIO {
         this.events = new Map();
         this.enabled = true
 
-        this.socket = io.connect("http://" + location.hostname + ":" + location.port, {
+        this.socket = io("http://" + location.hostname + ":" + location.port, {
             query: { token: this.token }
+        });
+
+        this.socket.on("connect", () => {
+            console.log("Connected to WebSocket!");
+        });
+
+        this.socket.on("connect_error", (error) => {
+            console.log("Connection error:", error);
+        });
+
+        this.socket.on("disconnect", () => {
+            console.log("Disconnected from WebSocket.");
         });
 
         this.socket.on("socket_error", (data) => {
             window.alert(data.message)
             console.error(data)
         });
-
+       
         this.socket.on("snapshot", (data) => {
+            console.log("GameIO received snapshot")
             const snapshot = JSON.parse(data)
             this.emit("snapshot", snapshot)            
         });
@@ -54,15 +67,6 @@ export default class GameIO {
         }
     }
 
-    joinHub() {
-        if (!this.enabled) return
-        if (!this.socket) return;        
-        this.socket.emit("join_hub", {
-            token: this.token,
-            hub_id: this.hubID
-        });
-    }
-
     doAction(action, data) {
         if (!this.enabled) return
         if (!this.socket) return;
@@ -72,15 +76,6 @@ export default class GameIO {
             hub_id: this.hubID,
             action: action,
             data: data
-        });
-    }
-
-    requestSnapshot() {
-        if (!this.enabled) return
-        if (!this.socket) return;
-        this.socket.emit("request_snapshot", {
-            token: this.token,
-            identity: this.hubID,
         });
     }
 }

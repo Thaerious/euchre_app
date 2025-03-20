@@ -28,10 +28,5 @@ import ViewController from "./View_Controller.js"
         else {
             viewController.loadHistory()
         }
-
-        if (gameio.hubIdentity != "gamedev") {
-            gameio.joinHub()
-            gameio.requestSnapshot()
-        }
     });   
 })()

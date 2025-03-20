@@ -1,48 +1,43 @@
 import threading
-from flask_socketio import SocketIO
 from euchre import Snapshot
 from Game_Connection import Game_Connection
-from decorators.game_token_req import game_token_req
+from flask_socketio import SocketIO
 
 class Socket_Connection(Game_Connection):
     def __init__(self, name:str, app):
         super().__init__(name)
+        self.room = None
         self.snapshot = None  
         self.last_action = None
         self.username = None
         self.hub_id = None     
         self.condition = threading.Condition()
-        self.io = SocketIO(app, cors_allowed_origins="*")           
-        self.register_events()
+        self.io = SocketIO(app, cors_allowed_origins="*")  
 
-    def register_events(self):
-        """Register WebSocket event handlers."""
+    def connect(self, room):
+        print(f"Socket_Connection.connect({room})")
+        self.room = room
+        self.send_snapshot()
 
-        @self.io.on('connect')
-        @game_token_req
-        def handle_connect(username, hub_id):
-            self.username = username
-            self.hub_id = hub_id
-            print(f"User {username} connected via WebSocket to hub {hub_id}.") 
-            if self.snapshot is not None: self.send_snapshot()
+    def disconnect(self):
+        self.room = None
 
-        """
-        Update the last_action fields which will get read by the hub when required.
-        See #get_decision.
-        """
-        @self.io.on('do_action')
-        def do_action(data):
-            print(f"User {self.username} do action {data}.")
-            with self.condition:
-                self.last_action = (data["action"], data["data"])
-                self.condition.notify()
+    def do_action(self, data):
+        with self.condition:
+             self.last_action = (data["action"], data["data"])
+             self.condition.notify()
 
-    def send_snapshot(self, snapshot:Snapshot = None):
-        if snapshot is not None: self.snapshot = snapshot
-        self.io.emit("snapshot", self.snapshot.to_json())
+    def send_snapshot(self, snapshot = None):
+        print(f"Socket_Connection.send_snapshot")
+        if snapshot is not None: self.snapshot = snapshot  
+        print(f"Socket_Connection.send_snapshot, snapshot stored")  
+        if self.room is None: return
+        print(f"Socket_Connection.send_snapshot, self.room is not None")
+        self.io.emit("snapshot", self.snapshot.to_json(), room = self.room)
 
     def send_message(self, string):
-        self.io.emit("message", string)
+        if self.room is None: return
+        self.io.emit("message", string, room = self.room)
 
     def get_decision(self):
         with self.condition:

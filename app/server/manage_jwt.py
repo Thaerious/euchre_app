@@ -15,4 +15,4 @@ def validate_jwt(token):
     Decode and validate the JWT.
     """
     payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-    return payload  # Returns decoded user data
+    return payload

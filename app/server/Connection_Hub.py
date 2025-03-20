@@ -53,6 +53,9 @@ class Connection_Hub:
 
     def __getitem__(self, index) -> Game_Connection:
         return self.connections[index]
+    
+    def __contains__(self, key):
+        return key in self.connections
 
     def report_after(self, player, prev_state, action, data):
         if player is None:
