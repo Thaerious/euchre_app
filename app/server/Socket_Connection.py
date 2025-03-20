@@ -22,7 +22,8 @@ class Socket_Connection(Game_Connection):
     def disconnect(self):
         self.room = None
 
-    def do_action(self, data):
+    def set_decision(self, data):
+        print(f"SocketConnection.set_decision({data})")
         with self.condition:
              self.last_action = (data["action"], data["data"])
              self.condition.notify()

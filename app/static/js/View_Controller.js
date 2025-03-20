@@ -1,6 +1,3 @@
-
-
-
 export default class ViewController {
     constructor(viewModel, gameIO) {
         this.gameIO = gameIO

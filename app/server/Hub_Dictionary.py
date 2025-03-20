@@ -13,6 +13,11 @@ class Hub_Dictionary(dict):
     def __init__(self):
         self.sid_dict = {}
 
+    def get_connection(self, sid):
+        if not sid in self.sid_dict:
+            raise Exception("Unknown socket identifier in hub dictionary")        
+        return self.sid_dict[sid]
+
     def set_sid(self, hub_id, username, sid):
         print(f"Hub_Dictionary.set_sid({hub_id}, {username}, {sid})")
         if not hub_id in self: 

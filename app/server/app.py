@@ -48,6 +48,12 @@ def connect():
 def disconnect():
     Hub_Dictionary.singleton.clear_sid(request.sid)
 
+@io.on("do_action")
+def do_action(data):
+    connection = Hub_Dictionary.singleton.get_connection(request.sid)
+    connection.set_decision(data)
+
+
 # Routes Registration
 app.register_blueprint(templates_bp)
 app.register_blueprint(login_bp)

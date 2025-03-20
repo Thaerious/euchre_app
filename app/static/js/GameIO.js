@@ -67,6 +67,7 @@ export default class GameIO {
     }
 
     doAction(action, data) {
+        console.log(`doAction(${action}, ${data})`)
         if (!this.enabled) return
         if (!this.socket) return;
 
