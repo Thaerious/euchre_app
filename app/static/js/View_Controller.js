@@ -10,6 +10,9 @@ export default class ViewController {
         this.paused = true
         this.isRunning = false
 
+        gameIO.on("snapshot", async snapshot => {
+            console.log(`${snapshot.serial_id}: ${snapshot.last_player ?? "server"} ${snapshot.last_action}`)
+        });
         gameIO.on("snapshot", async snapshot => this.enqueue(snapshot))     
         
         gameIO.on("error", async (error) => {

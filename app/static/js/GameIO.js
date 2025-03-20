@@ -36,7 +36,6 @@ export default class GameIO {
         });
        
         this.socket.on("snapshot", (data) => {
-            console.log("GameIO received snapshot")
             const snapshot = JSON.parse(data)
             this.emit("snapshot", snapshot)            
         });

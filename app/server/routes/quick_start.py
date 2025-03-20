@@ -13,7 +13,7 @@ sqlAccounts = SQLAccounts("./app/accounts.db")
 logger = logging.getLogger(__name__)
 quick_start_bp = Blueprint("quick_start", __name__, template_folder="../templates", static_folder="../static")
 
-def quick_start_factory(app):
+def quick_start_factory(io):
 
     @quick_start_bp.route("/quick_start", methods=["POST"])
     @token_required
@@ -21,7 +21,7 @@ def quick_start_factory(app):
         user = sqlAccounts.get_user(token)
 
         hub = Connection_Hub([
-            Socket_Connection(user['username'], app),
+            Socket_Connection(user['username'], io),
             Bot_Connection("Botty", Bot_1),
             Bot_Connection("Botzilla", Bot_1),
             Bot_Connection("Botward", Bot_1),

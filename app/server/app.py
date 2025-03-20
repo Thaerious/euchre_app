@@ -29,13 +29,15 @@ app.config["JWT_SECRET_KEY"] = "your_jwt_secret"
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)  # Extend expiration
 app.config["DEBUG"] = False
 
+jwt = JWTManager(app)
 sqlAccounts = SQLAccounts("./app/accounts.db")
+
 io = SocketIO(app, cors_allowed_origins="*") 
 
 # Handle websocket dis/connect events
 @io.on("connect")
 def connect():
-    print("App io.on('connect')")
+    print("io.on connect")
     token = request.args.get("token")
     payload = validate_jwt(token)
     username = payload["username"]
@@ -51,7 +53,7 @@ app.register_blueprint(templates_bp)
 app.register_blueprint(login_bp)
 app.register_blueprint(logout_bp)
 app.register_blueprint(create_account_bp)
-app.register_blueprint(quick_start_factory(app))
+app.register_blueprint(quick_start_factory(io))
 
 if __name__ == "__main__":    
     io.run(app, debug=True)   
