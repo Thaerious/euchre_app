@@ -37,7 +37,7 @@ export default class GameIO {
        
         this.socket.on("snapshot", (data) => {
             const snapshot = JSON.parse(data)
-            this.emit("snapshot", snapshot)            
+            this.emit("snapshot", snapshot)
         });
 
         this.socket.on("message", (_data) => {

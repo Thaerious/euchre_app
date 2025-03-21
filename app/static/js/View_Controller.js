@@ -10,6 +10,7 @@ export default class ViewController {
         gameIO.on("snapshot", async snapshot => {
             console.log(`${snapshot.serial_id}: ${snapshot.last_player ?? "server"} ${snapshot.last_action}`)
         });
+        
         gameIO.on("snapshot", async snapshot => this.enqueue(snapshot))     
         
         gameIO.on("error", async (error) => {
@@ -64,7 +65,7 @@ export default class ViewController {
 
         this.viewModel.actionButtons.on("continue", () => {
             this.next()
-        });        
+        });
         
         this.viewModel.hands[0].on("selected", (card) => {
             switch (this.snapshot.state) {
@@ -93,12 +94,6 @@ export default class ViewController {
         }
 
         this.updateButtons()  
-        
-        // if (this._snapIndex == this.snapQ.length - 1) {
-        //     this.gameIO.enabled = true
-        // } else {
-        //     this.gameIO.enabled = false
-        // }
     }
 
     updateButtons() {
