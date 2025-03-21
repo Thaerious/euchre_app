@@ -94,11 +94,11 @@ export default class ViewController {
 
         this.updateButtons()  
         
-        if (this._snapIndex == this.snapQ.length - 1) {
-            this.gameIO.enabled = true
-        } else {
-            this.gameIO.enabled = false
-        }
+        // if (this._snapIndex == this.snapQ.length - 1) {
+        //     this.gameIO.enabled = true
+        // } else {
+        //     this.gameIO.enabled = false
+        // }
     }
 
     updateButtons() {

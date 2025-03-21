@@ -60,8 +60,6 @@ export default class ViewModel {
             await this.updateView()
         }
 
-        // if (this.snapshot.last_player == this.snapshot.for_player) return
-        // if (this.snapshot.last_action == "continue") return
         return new Promise(resolve => setTimeout(resolve, 1000));
     } 
 
@@ -75,7 +73,7 @@ export default class ViewModel {
         this.updateTokens()
         this.updateScore()
         this.updateTricks()
-        this.bubbleIf()    
+        this.bubbleIf()
         await this.pauseOn6()
         this.updateViewForPlayer()
     }
@@ -312,7 +310,7 @@ export default class ViewModel {
         if (![1, 2, 3, 4, 5].has(this.snapshot.state)) return
         if (this.snapshot.last_action == "play") return
         if (this.snapshot.last_player == null) return
-            this.bubbleMessage()
+        this.bubbleMessage()
     }
 
     bubbleMessage() {
