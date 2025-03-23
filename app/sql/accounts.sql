@@ -32,7 +32,7 @@ CREATE TABLE user_sessions (
 CREATE TABLE games(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER UNIQUE NOT NULL,
-    socket_id INTEGER UNIQUE NOT NULL,
+    socket_id INTEGER UNIQUE,
     hub_id INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

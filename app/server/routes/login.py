@@ -1,9 +1,9 @@
 import logging
 from flask import jsonify, request, Blueprint
-from SQLAccounts import SQLAccounts
+from SQL_Accounts import SQL_Accounts
 from decorators.fetch_token import fetch_auth_token
 
-sqlAccounts = SQLAccounts("./app/accounts.db")
+sqlAccounts = SQL_Accounts("./app/accounts.db")
 logger = logging.getLogger(__name__)
 login_bp = Blueprint("login", __name__, template_folder="../templates", static_folder="../static")
 

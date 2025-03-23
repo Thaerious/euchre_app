@@ -1,8 +1,8 @@
 import logging
 from flask import jsonify, request, Blueprint, redirect
-from SQLAccounts import SQLAccounts
+from SQL_Accounts import SQL_Accounts
 
-sqlAccounts = SQLAccounts("./app/accounts.db")
+sqlAccounts = SQL_Accounts("./app/accounts.db")
 logger = logging.getLogger(__name__)
 create_account_bp = Blueprint("create_account", __name__, template_folder="../templates", static_folder="../static")
 

@@ -1,7 +1,5 @@
 import threading
-from euchre import Snapshot
 from Game_Connection import Game_Connection
-from flask_socketio import SocketIO
 
 class Socket_Connection(Game_Connection):
     def __init__(self, name:str, io):

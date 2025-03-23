@@ -1,9 +1,9 @@
 import logging
 from flask import render_template, Blueprint, redirect
-from SQLAccounts import SQLAccounts
+from SQL_Accounts import SQL_Accounts
 from decorators.fetch_token import fetch_auth_token
 
-sqlAccounts = SQLAccounts("./app/accounts.db")
+sqlAccounts = SQL_Accounts("./app/accounts.db")
 logger = logging.getLogger(__name__)
 templates_bp = Blueprint("templates", __name__, template_folder="../templates", static_folder="../static")
 
@@ -28,6 +28,6 @@ def landing(token):
 # Template Page 'Game'
 @templates_bp.route("/game")
 @fetch_auth_token
-def play_game(token):
-    if token is not None: return redirect("/")
+def play_game(token):    
+    if token is None: return redirect("/")    
     return render_template("game.html")

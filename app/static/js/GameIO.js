@@ -24,6 +24,7 @@ export default class GameIO {
 
         this.socket.on("connect_error", (error) => {
             console.log("Connection error:", error);
+            window.location = "/landing"
         });
 
         this.socket.on("disconnect", () => {

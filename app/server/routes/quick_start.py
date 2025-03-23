@@ -1,15 +1,16 @@
 import logging
 from flask import Blueprint, jsonify, redirect
-from SQLAccounts import SQLAccounts
+from SQL_Accounts import SQL_Accounts
+from SQL_Games import SQL_Games
 from decorators.fetch_token import fetch_auth_token
-from Hub_Dictionary import Hub_Dictionary
 from Connection_Hub import Connection_Hub
 from Socket_Connection import Socket_Connection
 from Bot_Connection import Bot_Connection
 from euchre.bots.Bot_1 import Bot_1
 from manage_jwt import generate_jwt
 
-sqlAccounts = SQLAccounts("./app/accounts.db")
+sql_accounts = SQL_Accounts("./app/accounts.db")
+sql_games = SQL_Games("./app/accounts.db")
 logger = logging.getLogger(__name__)
 quick_start_bp = Blueprint("quick_start", __name__, template_folder="../templates", static_folder="../static")
 
@@ -19,7 +20,7 @@ def quick_start_factory(io):
     @fetch_auth_token
     def quick_start(token):
         if token is None: return redirect("index.html")        
-        user = sqlAccounts.get_user(token)
+        user = sql_accounts.get_user(token)
 
         hub = Connection_Hub([
             Socket_Connection(user['username'], io),
@@ -28,7 +29,7 @@ def quick_start_factory(io):
             Bot_Connection("Botward", Bot_1),
         ]).start()
 
-        Hub_Dictionary.singleton[hub.identity] = hub
+        sql_games.add(user['username'], hub.identity)
         token = generate_jwt(user['username'], hub.identity)
         return jsonify({"status": "success", "message": "game created", "token": token})
     

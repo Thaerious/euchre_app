@@ -1,10 +1,10 @@
 from functools import wraps
 from flask import request, make_response
-from SQLAccounts import SQLAccounts
+from SQL_Accounts import SQL_Accounts
 from decorators.inject_arg import inject_arg
 
 # Initialize SQLAccounts to handle session authentication
-sqlAccounts = SQLAccounts("./app/accounts.db")
+sqlAccounts = SQL_Accounts("./app/accounts.db")
 
 def fetch_auth_token(f):
     """

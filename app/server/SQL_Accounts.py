@@ -11,7 +11,7 @@ import sys
 import secrets
 import datetime
 
-class SQLAccounts:
+class SQL_Accounts:
     token_lifespan = 60 * 24
 
     """
@@ -124,7 +124,7 @@ class SQLAccounts:
         with sqlite3.connect(self.filename) as conn:
             cursor = conn.cursor()
             session_token = secrets.token_hex(32)
-            expires_at = (datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=SQLAccounts.token_lifespan)).strftime("%Y-%m-%d %H:%M:%S")
+            expires_at = (datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=SQL_Accounts.token_lifespan)).strftime("%Y-%m-%d %H:%M:%S")
             sql = ("INSERT INTO user_sessions (user_id, session_token, expires_at) "
                    "VALUES ((SELECT id FROM users WHERE username = ?), ?, ?) "
                    "ON CONFLICT(user_id) DO UPDATE SET "
@@ -137,7 +137,7 @@ class SQLAccounts:
         """Update a user session with a new expiration time."""
         with sqlite3.connect(self.filename) as conn:
             cursor = conn.cursor()            
-            expires_at = (datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=SQLAccounts.token_lifespan)).strftime("%Y-%m-%d %H:%M:%S")
+            expires_at = (datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=SQL_Accounts.token_lifespan)).strftime("%Y-%m-%d %H:%M:%S")
             sql = ("UPDATE user_sessions "
                    "SET expires_at = ? "
                    "WHERE session_token = ?"
@@ -173,7 +173,7 @@ class SQLAccounts:
 
 def invoke(method_name, *args):
     """Dynamically invoke a method from the SQLAccounts class."""
-    sql = SQLAccounts("./accounts.db")
+    sql = SQL_Accounts("./accounts.db")
     if hasattr(sql, method_name):
         method = getattr(sql, method_name)
         result = method(*args)
@@ -183,7 +183,7 @@ def invoke(method_name, *args):
 
 def print_help():
     """Print available methods for the script."""
-    sql = SQLAccounts("./accounts.db")
+    sql = SQL_Accounts("./accounts.db")
     print("USAGE")
     print("\tpython ./server/SQLAccounts.py <method_name> [args...]\n")
     print("OPTIONS")
@@ -191,13 +191,13 @@ def print_help():
         attr = getattr(sql, method)
         if callable(attr) == False: continue
         if method.startswith("__"): continue
-        if callable(attr):
+        if callable(attr) and attr.__doc__ is not None:            
             print(f"\t{method}\n\t\t{attr.__doc__.splitlines()[0]}\n")
 
 if __name__ == "__main__":
-    if sys.argv[1] == "help":
+    if len(sys.argv) < 2 or sys.argv[1] == "help":
         print_help()
     elif len(sys.argv) < 2:
-        print("Usage: python script.py <method_name> [args...]")
+        print("Usage: python SQLAccounts.py <method_name> [args...]")
     else:
         invoke(sys.argv[1], *sys.argv[2:])
