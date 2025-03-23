@@ -29,6 +29,14 @@ CREATE TABLE user_sessions (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+CREATE TABLE games(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER UNIQUE NOT NULL,
+    socket_id INTEGER UNIQUE NOT NULL,
+    hub_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 -- Insert default roles
 INSERT INTO roles (role_name) VALUES ('admin'), ('user');
 

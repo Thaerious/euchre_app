@@ -12,14 +12,20 @@ class Hub_Dictionary(dict):
 
     def __init__(self):
         self.sid_dict = {}
+        self.user_dict = {}
 
     def get_connection(self, sid):
         if not sid in self.sid_dict:
             raise Exception("Unknown socket identifier in hub dictionary")        
         return self.sid_dict[sid]
 
+    def has_sid(self, sid):
+        return sid in self.sid_dict
+    
+    def has_user(self, sid):
+        return sid in self.user_dict
+
     def set_sid(self, hub_id, username, sid):
-        print(f"Hub_Dictionary.set_sid({hub_id}, {username}, {sid})")
         if not hub_id in self: 
             raise Exception("Unknown hub identifier in hub dictionary")
         hub = self[hub_id]
@@ -32,10 +38,12 @@ class Hub_Dictionary(dict):
             raise Exception(f"Incorrect type, expected 'Socket_Connection' found '{type(socket_connection).__name__}'")
         
         self.sid_dict[sid] = socket_connection
+        self.user_dict[username] = socket_connection
         socket_connection.connect(sid)
 
     def clear_sid(self, sid):
-        socket_connection = self.sid_dict[sid]
-        socket_connection.disconnect()
+        if sid in self.sid_dict:
+            socket_connection = self.sid_dict[sid]
+            socket_connection.disconnect()
         
         

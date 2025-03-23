@@ -1,7 +1,7 @@
 import logging
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, redirect
 from SQLAccounts import SQLAccounts
-from decorators.token_required import token_required
+from decorators.fetch_token import fetch_auth_token
 from Hub_Dictionary import Hub_Dictionary
 from Connection_Hub import Connection_Hub
 from Socket_Connection import Socket_Connection
@@ -16,8 +16,9 @@ quick_start_bp = Blueprint("quick_start", __name__, template_folder="../template
 def quick_start_factory(io):
 
     @quick_start_bp.route("/quick_start", methods=["POST"])
-    @token_required
+    @fetch_auth_token
     def quick_start(token):
+        if token is None: return redirect("index.html")        
         user = sqlAccounts.get_user(token)
 
         hub = Connection_Hub([

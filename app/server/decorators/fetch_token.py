@@ -1,12 +1,12 @@
 from functools import wraps
-from flask import request, render_template, make_response
+from flask import request, make_response
 from SQLAccounts import SQLAccounts
 from decorators.inject_arg import inject_arg
 
 # Initialize SQLAccounts to handle session authentication
 sqlAccounts = SQLAccounts("./app/accounts.db")
 
-def token_required(f):
+def fetch_auth_token(f):
     """
     Decorator to ensure a valid session token is present in cookies.
     - Validates and refreshes the session token.
@@ -19,14 +19,9 @@ def token_required(f):
         # Retrieve session token from cookies
         token = request.cookies.get("session_token")
 
-        # If the token is invalid or missing redirect to the login page
-        if not token:
-            return render_template("index.html")
-        if not sqlAccounts.validate_session(token):
-            return render_template("index.html")
-        
-        # Refresh the session token to extend its validity
-        token = sqlAccounts.refresh_session(token)
+        # If the token is invalid or set token to None
+        if not token: token = None
+        if not sqlAccounts.validate_session(token): token = None
 
         kwargs = inject_arg("token", token, f, kwargs)
 
@@ -39,15 +34,16 @@ def token_required(f):
         elif isinstance(response, str):
             response = make_response(response, 200)
 
-        # Set the updated session token in the cookie with security flags
-        response.set_cookie(
-            "session_token", 
-            token, 
-            httponly=True,  # Prevent JavaScript access for security
-            secure=True,  # Only allow over HTTPS
-            samesite="Strict"  # Prevent cross-site request forgery (CSRF)
-        )     
+        # If valid, refresh the session token to extend its validity
+        if token is not None:
+            token = sqlAccounts.refresh_session(token)
+            response.set_cookie(
+                "session_token", 
+                token, 
+                httponly=True,  # Prevent JavaScript access for security
+                secure=True,  # Only allow over HTTPS
+                samesite="Strict"  # Prevent cross-site request forgery (CSRF)
+            )     
 
-        return response  # Return the final response with the updated cookie
-    
+        return response  # Return the final response with the updated cookie    
     return decorated

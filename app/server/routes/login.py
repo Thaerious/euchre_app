@@ -1,12 +1,14 @@
 import logging
 from flask import jsonify, request, Blueprint
 from SQLAccounts import SQLAccounts
+from decorators.fetch_token import fetch_auth_token
 
 sqlAccounts = SQLAccounts("./app/accounts.db")
 logger = logging.getLogger(__name__)
 login_bp = Blueprint("login", __name__, template_folder="../templates", static_folder="../static")
 
 @login_bp.route("/login", methods=["POST"])
+@fetch_auth_token
 def login():
     try:
         data = request.json
