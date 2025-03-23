@@ -1,3 +1,4 @@
+// game.scss
 @use './components';
 @use './cards';
 
@@ -284,13 +285,13 @@ body {
     }
 
     &#score_0 {
-        left: 5%;
-        top: 5%;
+        right: 10%;
+        bottom: 10%;
     }
 
     &#score_1 {
-        right: 10%;
-        bottom: 10%;
+        left: 5%;
+        top: 5%;
     }
 
     &>.top {
@@ -340,6 +341,39 @@ body {
     bottom: 27%;
     left: 50%;
     transform: translateX(-50%);
+}
+
+#alert{
+    position: absolute;
+    align-items: center;    
+    justify-content: center;    
+    width: 75%;
+    height: 25%;   
+    background-color: #4CAF50;
+    border-radius: 8px;
+    z-index: 1000;
+    border: 2px solid #ffffff;
+    border-radius: 15px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    bottom: 50%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+
+    #alert-message{
+        position: absolute;
+        top: 15%;        
+        left: 0;  
+        width: 100%; 
+        text-align: center;          
+    }
+
+    #alert-button{
+        position: absolute;
+        bottom: 25%;        
+        left: 50%;  
+        width: 25%; 
+        transform: translate(-50%, 50%);             
+    }
 }
 
 .token{

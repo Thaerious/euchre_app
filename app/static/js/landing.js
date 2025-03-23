@@ -6,7 +6,7 @@ window.addEventListener("load", async () => {
     document.querySelector("#logout-button").addEventListener("click", () => {
         logout()
         window.location = "/"
-    });    
+    });
 });
 
 /**

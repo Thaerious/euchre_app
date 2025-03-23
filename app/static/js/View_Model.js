@@ -4,6 +4,7 @@ import SuitButtonManager from "./Suit_Button_Manager.js"
 import TokenManager from "./Token_Manager.js"
 import ChatBubbleManager from "./Chat_Bubble_Manager.js"
 import MessageManager from "./Message_Manager.js"
+import AlertManager from "./Alert_Manger.js"
 import PlayedCardsManager from "./Played_Cards_Manager.js"
 import ActionButtonManager from "./Action_Button_Manager.js"
 
@@ -15,6 +16,7 @@ export default class ViewModel {
     constructor() {
         this.snapshot = null
 
+        // Load components
         this.chatBubble = new ChatBubbleManager()
         this.message = new MessageManager()
         this.tokens = new TokenManager()
@@ -23,7 +25,9 @@ export default class ViewModel {
         this.actionButtons = new ActionButtonManager()
         this.hands = [new HandManager(0), new HandManager(1), new HandManager(2), new HandManager(3)]
         this.upcard = new UpCardManager()
+        this.alert = new AlertManager()
 
+        // Changing a suit button will enable action buttons
         this.suitButtons.on("change", () => {
             this.actionButtons.enableAll()
         });
@@ -63,6 +67,35 @@ export default class ViewModel {
         return new Promise(resolve => setTimeout(resolve, 1000));
     } 
 
+    async loadView() {
+        this.setNames()
+        this.message.hide()
+        this.tokens.hide()
+        this.played.clear()
+        this.suitButtons.hide()
+        this.actionButtons.hide()
+        this.hands[0].clear()
+        this.upcard.show("back")      
+        this.updateTokens()
+
+        if (this.snapshot.state == 7) return;
+
+        this.setCards()
+        this.updateScore()
+        this.updateTricks()
+        await this.displayUpcard()
+        this.setPlayedCards()
+        this.updateActionButtons()
+        await this.pauseOn6()
+        this.bubbleIf()
+
+        if (this.snapshot.state == 0) {
+            this.alert.show("Game Over", () => {
+                window.location = "/landing"
+            })
+        }
+    }
+
     async updateView() {
         this.message.hide()
         this.suitButtons.hide()
@@ -75,7 +108,13 @@ export default class ViewModel {
         this.updateTricks()
         this.bubbleIf()
         await this.pauseOn6()
-        this.updateViewForPlayer()
+        this.updateActionButtons()
+
+        if (this.snapshot.state == 0) {
+            this.alert.show("Game Over", () => {
+                window.location = "/landing"
+            })
+        }
     }
 
     async playCardIf() {
@@ -99,29 +138,6 @@ export default class ViewModel {
         this.hands[seat].setPlayed(card)
     }
 
-    async loadView() {
-        this.setNames()
-        this.message.hide()
-        this.tokens.hide()
-        this.played.clear()
-        this.suitButtons.hide()
-        this.actionButtons.hide()
-        this.hands[0].clear()
-        this.upcard.show("back")      
-        this.updateTokens()
-
-        if (this.snapshot.state == 7) return;
-
-        this.setCards()
-        this.updateScore()
-        this.updateTricks()
-        await this.displayUpcard()
-        this.setPlayedCards()
-        await this.updateViewForPlayer()
-        await this.pauseOn6()
-        this.bubbleIf()
-    }
-
     setPlayedCards() {
         // show played cards
         this.played.clear()
@@ -142,7 +158,8 @@ export default class ViewModel {
         this.hands[0].addCards(this.snapshot.hand) // set the hand cards
         
         // set opponents cards in hand
-        for (let p = 1; p < 4; p++) {
+        for (let p = 0; p < 4; p++) {
+            if (p == this.snapshot.for_player) continue
             let seat = this.getSeat(p, this.snapshot.for_player)
             this.hands[seat].fill("back", this.snapshot.players[p].hand_size)
         }        
@@ -223,12 +240,12 @@ export default class ViewModel {
         });
     }
 
-    updateViewForPlayer() {
+    updateActionButtons() {
         if (this.snapshot.current_player != this.snapshot.for_player) return
-        setTimeout(() => this.doUpdateViewForPlayer(), 1000)
+        setTimeout(() => this.doUpdateActionButtons(), 1000)
     }
 
-    doUpdateViewForPlayer() {
+    doUpdateActionButtons() {
         this.message.hide()
         this.actionButtons.hide()
         this.suitButtons.hide()       
@@ -242,7 +259,7 @@ export default class ViewModel {
                 ])
                 break
             case 2:
-                this.message.show("Choose a Card to Swap")
+                this.message.show("Swap a Card")
                 this.actionButtons.setButtons([
                     { "name": "Down" }
                 ])

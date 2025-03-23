@@ -22,7 +22,7 @@ class Connection_Hub:
 
     def run(self):
         names = list(self.connections.keys())
-        # random.shuffle(names)   todo reenable     
+        random.shuffle(names)
         self.game = Game(names)
         self.game.register_hook("after_input", self.report_after) 
         self.game.input(None, "start", None)
