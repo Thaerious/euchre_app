@@ -10,3 +10,15 @@
     transform: translate(-50%, -50%);
     gap: 10px; 
 }
+
+.game-title{    
+    position: absolute;
+    left: 50%;
+    top: 15%;
+    transform: translate(-50%, -50%);
+    font-family: "Britannic", sans-serif;
+    font-weight: bolder;
+    color: rgb(255, 247, 133);        
+    font-size: 5rem;    
+    -webkit-text-stroke: 3px black;    
+}

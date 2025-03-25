@@ -4,7 +4,7 @@ from Game_Connection import Game_Connection
 class Socket_Connection(Game_Connection):
     def __init__(self, name:str, io):
         super().__init__(name)
-        self.room = None
+        self._room = None
         self.snapshot = None  
         self.last_action = None
         self.username = None
@@ -12,13 +12,15 @@ class Socket_Connection(Game_Connection):
         self.condition = threading.Condition()
         self.io = io
 
-    def connect(self, room):
-        self.room = room
-        if self.snapshot is not None:
-            self.send_snapshot()
+    @property
+    def root(self):
+        return self._room
 
-    def disconnect(self):
-        self.room = None
+    @root.setter
+    def room(self, value):
+        self._room = value        
+        if self.snapshot is not None and self.room is not None:
+            self.send_snapshot()        
 
     def set_decision(self, data):
         print(f"SocketConnection.set_decision({data})")
@@ -28,12 +30,12 @@ class Socket_Connection(Game_Connection):
 
     def send_snapshot(self, snapshot = None):
         if snapshot is not None: self.snapshot = snapshot  
-        if self.room is None: return
-        self.io.emit("snapshot", self.snapshot.to_json(), room = self.room)
+        if self._room is None: return
+        self.io.emit("snapshot", self.snapshot.to_json(), room = self._room)
 
     def send_message(self, string):
-        if self.room is None: return
-        self.io.emit("message", string, room = self.room)
+        if self._room is None: return
+        self.io.emit("message", string, room = self._room)
 
     def get_decision(self):
         with self.condition:

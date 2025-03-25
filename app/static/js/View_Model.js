@@ -12,7 +12,7 @@ Array.prototype.has = function (value) {
     return this.indexOf(value) >= 0
 };
 
-export default class ViewModel {
+export default class ViewModel{
     constructor() {
         this.snapshot = null
 
@@ -46,6 +46,14 @@ export default class ViewModel {
                     break                
             }            
         });
+    }
+
+    get exitButton() {
+        return document.querySelector("#exit_button")
+    }
+
+    get rulesButton() {
+        return document.querySelector("#rules_button")
     }
 
     // Main entry point for view controller

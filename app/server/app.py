@@ -12,6 +12,7 @@ from routes.login import login_bp
 from routes.logout import logout_bp
 from routes.create_account import create_account_bp
 from routes.quick_start import quick_start_factory
+from routes.exit import exit_factory
 
 print("\nStarting Euchre Server")
 print("----------------------")
@@ -45,7 +46,7 @@ def connect():
     token = request.args.get("token")
     payload = validate_jwt(token)
     username = payload["username"]
-    game_entry = sqlGames.get_user(username)
+    game_entry = sqlGames.get_user_by_name(username)
 
     if (game_entry is None):
         msg = f"Websocket connection refused, no game for user '{username}'"
@@ -59,7 +60,7 @@ def disconnect():
 
 @io.on("do_action")
 def do_action(data):
-    connection = sqlGames.get_connection(request.sid, io)
+    connection = sqlGames.get_connection(request.sid)
     connection.set_decision(data)
 
 # Routes Registration
@@ -67,7 +68,8 @@ app.register_blueprint(templates_bp)
 app.register_blueprint(login_bp)
 app.register_blueprint(logout_bp)
 app.register_blueprint(create_account_bp)
-app.register_blueprint(quick_start_factory(io))
+app.register_blueprint(quick_start_factory(io, sqlGames))
+app.register_blueprint(exit_factory(io, sqlGames))
 
 if __name__ == "__main__":    
     io.run(app, debug=True)   

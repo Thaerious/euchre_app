@@ -56,6 +56,9 @@ class Connection_Hub:
     
     def __contains__(self, key):
         return key in self.connections
+    
+    def __iter__(self):
+        return iter(self.connections.values())
 
     def report_after(self, player, prev_state, action, data):
         if player is None:

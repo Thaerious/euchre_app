@@ -1,7 +1,7 @@
 export default class ViewController {
     constructor(viewModel, gameIO) {
         this.gameIO = gameIO
-        this.viewModel = viewModel       
+        this.viewModel = viewModel
         this.snapHistory = []   // An array of all snapshots, the tail is the most recent
         this._snapIndex = -1    // The currently displayed snapshot from snapHistory
         this.paused = false     // When true update view with queued snapshots
@@ -13,13 +13,13 @@ export default class ViewController {
         });
 
         // Websocket event for a new snapshot.
-        gameIO.on("snapshot", async snapshot => this.enqueue(snapshot))     
-        
+        gameIO.on("snapshot", async snapshot => this.enqueue(snapshot))
+
         // Websocket event for server side errors.
         gameIO.on("error", async (error) => {
-            console.log(`Caught EuchreException: ${error.message}`); 
+            console.log(`Caught EuchreException: ${error.message}`);
             await this.viewModel.update(this.snapshot, true)
-            this.viewModel.message.show(error.message);            
+            this.viewModel.message.show(error.message);
         });
 
         // Snapshot Queue button listeners
@@ -29,35 +29,35 @@ export default class ViewController {
 
         document.querySelector("#snap_index").addEventListener("click", () => {
             this.go(this.snapIndex)
-        });      
+        });
 
-        document.querySelector("#prev_snap").addEventListener("click", () => {          
-            this.paused = true            
+        document.querySelector("#prev_snap").addEventListener("click", () => {
+            this.paused = true
             this.prev()
-        });    
-        
+        });
+
         document.querySelector("#run_queue").addEventListener("click", async () => {
             this.paused = false
             this.run()
-        });          
+        });
 
         document.querySelector("#pause_queue").addEventListener("click", () => {
             this.paused = true
-        });                  
-   
+        });
+
         // Action button listeners
         this.viewModel.actionButtons.on("pass", () => {
             gameIO.doAction("pass", this.viewModel.suitButtons.getSuit())
         });
-    
+
         this.viewModel.actionButtons.on("make", () => {
             gameIO.doAction("make", this.viewModel.suitButtons.getSuit())
         });
-    
+
         this.viewModel.actionButtons.on("alone", () => {
             gameIO.doAction("alone", this.viewModel.suitButtons.getSuit())
         });
-    
+
         this.viewModel.actionButtons.on("order", () => {
             gameIO.doAction("order", null)
         });
@@ -65,7 +65,7 @@ export default class ViewController {
         this.viewModel.actionButtons.on("continue", () => {
             this.next()
         });
-        
+
         // Hand card listeners
         this.viewModel.hands[0].on("selected", (card) => {
             switch (this.snapshot.state) {
@@ -78,6 +78,21 @@ export default class ViewController {
                     break;
             }
         });
+
+        // Menu Listeners
+        this.viewModel.exitButton.addEventListener("click", async () => {
+            const response = await fetch("/exit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            
+            if (response.redirected) {
+                window.location.href = response.url;
+            }
+        });
+        this.viewModel.rulesButton.addEventListener("click", () => { });
     }
 
     // getter/setter for pause, changes view state of queue buttons
@@ -122,7 +137,7 @@ export default class ViewController {
         }
         if (this.snapIndex >= this.snapHistory.length - 1) {
             document.querySelector("#next_snap").classList.add("disabled")
-        }   
+        }
 
         document.querySelector("#snap_index").innerText = `${this.snapIndex}`
     }
@@ -137,7 +152,7 @@ export default class ViewController {
         if (this.snapHistory.length > 0 && snapshot.serial_id <= this.snapHistory.at(-1).serial_id) return
         this.snapHistory.push(snapshot)
         this.saveHistory()
-        this.updateButtons()  
+        this.updateButtons()
         await this.run()
     }
 
@@ -158,7 +173,7 @@ export default class ViewController {
             this.snapHistory.push(snap)
         }
 
-        this._snapIndex = this.snapHistory.length - 1        
+        this._snapIndex = this.snapHistory.length - 1
         if (this.snapIndex >= 0) {
             await this.viewModel.update(this.snapshot)
         }
@@ -170,7 +185,7 @@ export default class ViewController {
         localStorage.removeItem("history")
         const history_json = JSON.stringify(this.snapHistory)
         localStorage.setItem("history", history_json)
-    }        
+    }
 
     list() {
         for (let i = 0; i < this.snapHistory.length; i++) {
@@ -180,7 +195,7 @@ export default class ViewController {
             } else {
                 console.log(` [${i}:${snap.serial_id}]`, snap.last_player, snap.last_action, snap.state)
             }
-        }       
+        }
     }
 
     async prev() {
@@ -206,6 +221,6 @@ export default class ViewController {
         if (index < 0) index = 0
         if (index > this.snapHistory.length - 1) index = this.snapHistory.length - 1
         this.snapIndex = index
-        await this.viewModel.update(this.snapshot, true)        
-    }    
+        await this.viewModel.update(this.snapshot, true)
+    }
 }

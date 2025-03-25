@@ -480,6 +480,21 @@ body {
     }
 }
 
+.menu-button-container{
+    position: absolute;
+    display: flex;
+    bottom: -40px;
+    left: 2%;
+    width: 38%;
+    flex-flow: row-reverse;
+    justify-content: center;
+
+    .menu-button{
+        margin: 2px;
+        width: 30%;
+    }
+}
+
 .control-button-container{
     position: absolute;
     display: flex;

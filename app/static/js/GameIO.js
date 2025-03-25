@@ -61,14 +61,13 @@ export default class GameIO {
     }
 
     // Emit event (trigger listeners)
-    emit(event, data) {
+    emit(event, data = "{}") {
         if (this.events.has(event)) {
             this.events.get(event).forEach(callback => callback(data));
         }
     }
 
     doAction(action, data) {
-        console.log(`doAction(${action}, ${data})`)
         if (!this.enabled) return
         if (!this.socket) return;
 

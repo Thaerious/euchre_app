@@ -14,8 +14,7 @@ sql_games = SQL_Games("./app/accounts.db")
 logger = logging.getLogger(__name__)
 quick_start_bp = Blueprint("quick_start", __name__, template_folder="../templates", static_folder="../static")
 
-def quick_start_factory(io):
-
+def quick_start_factory(io, sql_games):
     @quick_start_bp.route("/quick_start", methods=["POST"])
     @fetch_auth_token
     def quick_start(token):
@@ -29,7 +28,7 @@ def quick_start_factory(io):
             Bot_Connection("Botward", Bot_1),
         ]).start()
 
-        sql_games.add(user['username'], hub.identity)
+        sql_games.add_hub(hub)
         token = generate_jwt(user['username'], hub.identity)
         return jsonify({"status": "success", "message": "game created", "token": token})
     
