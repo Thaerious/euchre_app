@@ -22,8 +22,8 @@ def create():
 @templates_bp.route("/landing")
 @fetch_auth_token
 def landing(token):
-    if token is None: return redirect("/")
-    return render_template("landing.html")
+    logged_in = token is not None
+    return render_template("landing.html", logged_in = logged_in)
 
 # Template Page 'Game'
 @templates_bp.route("/game")

@@ -8,15 +8,26 @@
     <link rel="stylesheet" href="../static/css/game.css">
     <link rel="stylesheet" href="../static/css/landing.css">
     <script type="module" src="../static/js/landing.js"></script>
+    <script src="../static/js/elements/Info_Button.js" defer></script>
 </head>
 
 <body>
     <div id="game-board" class="game-board">
         <div class="game-title">Euchre</div>
         <div id="button-container" class="button-container">
-            <button id="private-button" class="button normal-size normal-font">Private Game</button>
-            <button id="quick-button" class="button normal-size normal-font">Quick Start Solo</button>
-            <button id="logout-button" class="button normal-size normal-font">Logout</button>
+            <button id="private-button" class="button normal-size normal-font">
+                Private Game
+                <info-button class="info-button"></info-button>
+                <div class="info-text normal-font">Create a multi-player game with an invite code.</div>         
+            </button>
+            <button id="quick-button" class="button normal-size normal-font">
+                Quick Start Solo
+                <info-button class="info-button"></info-button>                
+                <div class="info-text normal-font">Start an all bot game.</div>                             
+            </button>
+            {% if logged_in %}
+                <button id="logout-button" class="button normal-size normal-font">Logout</button>
+            {% endif %}
         </div>
     </div>
 </body>

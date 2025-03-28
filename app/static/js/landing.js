@@ -1,9 +1,14 @@
 // Event listener that waits for the page to fully load before executing
 window.addEventListener("load", async () => {
+    document.querySelector("#private-button").addEventListener("click", () => {
+        console.log("Start Private Game")
+    });
+
     document.querySelector("#quick-button").addEventListener("click", () => {
         quick_start("Adam", "")
     });
-    document.querySelector("#logout-button").addEventListener("click", () => {
+    
+    document.querySelector("#logout-button")?.addEventListener("click", () => {
         logout()
         window.location = "/"
     });
