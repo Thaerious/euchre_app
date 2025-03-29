@@ -11,8 +11,8 @@ templates_bp = Blueprint("templates", __name__, template_folder="../templates", 
 @templates_bp.route("/")
 @fetch_auth_token
 def index(token):
-    if token is not None: return redirect("/landing")
-    return render_template("index.html")
+    # if token is not None: return redirect("/landing")
+    return render_template("landing.html") # set to landing until there is logged in content
 
 @templates_bp.route("/create")
 def create():
@@ -29,5 +29,5 @@ def landing(token):
 @templates_bp.route("/game")
 @fetch_auth_token
 def play_game(token):    
-    if token is None: return redirect("/")    
+    # if token is None: return redirect("/")    
     return render_template("game.html")
