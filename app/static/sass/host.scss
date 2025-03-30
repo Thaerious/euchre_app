@@ -1,0 +1,29 @@
+@use './game';
+@use './components';
+
+#game-board-inner{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    height: auto;    
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    gap: 10px; 
+}
+
+.game-title{    
+    font-family: "Britannic", sans-serif;
+    font-weight: bolder;
+    color: rgb(255, 247, 133);        
+    font-size: 5rem;    
+    -webkit-text-stroke: 3px black;  
+    margin: 0 0 15% 0;  
+}
+
+.pending-player:empty::before {
+    content: var(--hint, "bot"); 
+    display: inline-block;
+    color: darkgray;
+}    

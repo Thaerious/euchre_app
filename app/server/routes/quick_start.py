@@ -2,7 +2,7 @@ import logging
 from flask import Blueprint, jsonify, redirect
 from SQL_Accounts import SQL_Accounts
 from SQL_Games import SQL_Games
-from decorators.fetch_token import fetch_auth_token
+from decorators.fetch_auth_token import fetch_auth_token
 from Connection_Hub import Connection_Hub
 from Socket_Connection import Socket_Connection
 from Bot_Connection import Bot_Connection

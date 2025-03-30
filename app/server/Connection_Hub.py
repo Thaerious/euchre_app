@@ -1,3 +1,4 @@
+from constants import TOKEN_SIZE
 from Game_Connection import Game_Connection
 from euchre import Game, Snapshot, EuchreException
 import threading
@@ -6,7 +7,7 @@ import random
 class Connection_Hub:
     def __init__(self, connections:list[Game_Connection]):
         self.connections = {connection.name: connection for connection in connections} 
-        self.identity = ''.join(random.choices('0123456789abcdef', k=8))
+        self.identity = ''.join(random.choices('0123456789abcdef', k=TOKEN_SIZE))
         self.thread = None
         self.is_running = False
 

@@ -13,6 +13,7 @@ from routes.logout import logout_bp
 from routes.create_account import create_account_bp
 from routes.quick_start import quick_start_factory
 from routes.exit import exit_factory
+from routes.Host_Manager import Host_Manager
 
 print("\nStarting Euchre Server")
 print("----------------------")
@@ -70,6 +71,7 @@ app.register_blueprint(logout_bp)
 app.register_blueprint(create_account_bp)
 app.register_blueprint(quick_start_factory(io, sqlGames))
 app.register_blueprint(exit_factory(io, sqlGames))
+Host_Manager(app, io)
 
 if __name__ == "__main__":    
     io.run(app, debug=True)   

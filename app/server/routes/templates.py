@@ -1,9 +1,12 @@
 import logging
 from flask import render_template, Blueprint, redirect
 from SQL_Accounts import SQL_Accounts
-from decorators.fetch_token import fetch_auth_token
+from SQL_Anon import SQL_Anon
+from decorators.fetch_auth_token import fetch_auth_token
+from decorators.fetch_anon_token import fetch_anon_token
 
 sqlAccounts = SQL_Accounts("./app/accounts.db")
+sql_anon = SQL_Anon("./app/anon.db")
 logger = logging.getLogger(__name__)
 templates_bp = Blueprint("templates", __name__, template_folder="../templates", static_folder="../static")
 
@@ -31,3 +34,8 @@ def landing(token):
 def play_game(token):    
     # if token is None: return redirect("/")    
     return render_template("game.html")
+
+# Template for private game staging area.
+@templates_bp.route("/staging")
+def guest_staging():    
+    return render_template("guest_staging.html")

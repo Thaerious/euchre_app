@@ -1,0 +1,32 @@
+<meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    style-src 'self' https://fonts.googleapis.com;
+    font-src 'self' https://fonts.gstatic.com;">
+<html>
+
+<head>
+    <script src="../static/js/modules/socket.io.js"></script>
+    <link rel="stylesheet" href="../static/css/host.css">
+    <script type="module" src="../static/js/host.js"></script>
+    <script src="../static/js/elements/Styled_Text_Box.js" defer></script>
+</head>
+
+<body>
+    <div id="game-board" class="game-board" game-token="{{ game_token }}">
+        <div id="game-board-inner">
+            <div class="game-title">Euchre</div>
+            <div class="textbox-outer default normal-font">
+                <input id="username_txt" class="textbox-inner" type="text" placeholder="enter your name"
+                    autocomplete="none" maxlength="12" tabindex="1"/>
+                <div id="player_1_name" class="label-inner pending-player"></div>
+                <div id="player_2_name" class="label-inner pending-player"></div>
+                <div id="player_3_name" class="label-inner pending-player"></div>
+            </div>
+            <button id="start_button" class="button normal-size normal-font disabled" tabindex="0">Start</button>
+            <button id="copy_button" class="button small-size small-font">Copy Invite Code</button>
+            <button id="cancel_button" class="button small-size small-font">Cancel</button>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,1 @@
+TOKEN_SIZE = 12

@@ -77,6 +77,19 @@
         color: grey !important;
         background-color: darkgrey;
     }
+
+    .label-inner{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 90%;
+        background-color: whitesmoke;
+        border: 2px solid black;
+        color: black;
+        border-radius: 8px;
+        text-align: center;
+        height: 25px;
+    }
 }
 
 .button {
