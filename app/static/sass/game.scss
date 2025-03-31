@@ -61,7 +61,7 @@ body {
     font-family: "Montserrat", sans-serif;
     font-size: 1rem;
     font-weight: bolder;
-    color: rgb(255, 247, 133);   
+    color: var(--app-yellow);   
 
     &[seat="0"]{
         left: 50%;

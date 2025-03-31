@@ -16,10 +16,22 @@
 .game-title{    
     font-family: "Britannic", sans-serif;
     font-weight: bolder;
-    color: rgb(255, 247, 133);        
+    display: flex;
+    color: var(--app-yellow);        
     font-size: 5rem;    
-    -webkit-text-stroke: 3px black;  
-    margin: 0 0 15% 0;  
+    -webkit-text-stroke: 3px black; 
+    justify-content: center; 
+}
+
+.by-line{    
+    font-family: "Britannic", sans-serif;
+    font-weight: bolder;
+    display: flex;
+    color: var(--app-yellow);        
+    font-size: 2rem;    
+    -webkit-text-stroke: 1px black;  
+    margin: 0 0 5% 0; 
+    justify-content: center; 
 }
 
 .pending-player:empty::before {

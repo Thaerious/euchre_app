@@ -1,4 +1,4 @@
-import EventEmitter from "./modules/Event_Emitter.js"
+import EventEmitter from "../modules/Event_Emitter.js"
 
 class EuchreException extends Error {
     constructor(message) {
@@ -36,6 +36,15 @@ export default class GameIO extends EventEmitter {
             const data = JSON.parse(dataJSON)
             this.emit("connected", data.seat)
         })       
+
+        this.socket.on("update_names", (dataJSON) => {
+            const data = JSON.parse(dataJSON)
+            this.emit("update_names", data)
+        })           
+
+        this.socket.on("game_cancelled", () => {
+            this.emit("game_cancelled", data)
+        })           
     }
 
     setName(name) {
@@ -43,4 +52,14 @@ export default class GameIO extends EventEmitter {
             name: name
         });
     }
+
+    async exitGame(name) {
+        const response = await fetch("/exit_staging", {
+            method: "POST"
+        })
+        
+        if (response.redirected) {
+            window.location.href = response.url;
+        }
+    }    
 }

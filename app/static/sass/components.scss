@@ -1,6 +1,10 @@
 /* components.scss */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap');
 
+*{
+    --app-yellow: rgb(255, 247, 133);
+}
+
 .is-hidden {
     display: none !important;
 }
@@ -9,14 +13,14 @@
     font-family: "Montserrat", sans-serif;
     font-size: 0.75rem;
     font-weight: bolder;
-    color: rgb(255, 247, 133);    
+    color: var(--app-yellow);
 }
 
 .normal-font{
     font-family: "Montserrat", sans-serif;
     font-size: 1rem;
     font-weight: bolder;
-    color: rgb(255, 247, 133);    
+    color: var(--app-yellow);    
 }
 
 .large-font{
@@ -43,53 +47,53 @@
     padding: 15px;
     box-sizing: border-box;
     overflow: hidden;
+}
 
-    .textbox-inner{
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 90%;
-        background-color: whitesmoke;
-        border: 2px solid black;
-        border-radius: 8px;
-        cursor: text;
-        text-align: center;
-        height: 25px;
-    }
+.textbox-inner{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90%;
+    background-color: whitesmoke;
+    border: 2px solid black;
+    border-radius: 8px;
+    cursor: text;
+    text-align: center;
+    height: 25px;
+}
 
-    .textbox-inner:empty::before {
-        content: var(--hint, "input"); 
-        display: inline-block;
-        color: darkgray;
-    }
+.textbox-inner:empty::before {
+    content: var(--hint, "input"); 
+    display: inline-block;
+    color: darkgray;
+}
 
-    .textbox-hint{
-        color: darkgray;
-    }
+.textbox-hint{
+    color: darkgray;
+}
 
-    .textbox-inner{
-        color: black;
-    }
+.textbox-inner{
+    color: black;
+}
 
-    &.disabled {
-        pointer-events: none;
-        user-select: none;
-        color: grey !important;
-        background-color: darkgrey;
-    }
+.disabled {
+    pointer-events: none;
+    user-select: none;
+    color: grey !important;
+    background-color: darkgrey;
+}
 
-    .label-inner{
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 90%;
-        background-color: whitesmoke;
-        border: 2px solid black;
-        color: black;
-        border-radius: 8px;
-        text-align: center;
-        height: 25px;
-    }
+.label-inner{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90%;
+    background-color: whitesmoke;
+    border: 2px solid black;
+    color: black;
+    border-radius: 8px;
+    text-align: center;
+    height: 25px;
 }
 
 .button {

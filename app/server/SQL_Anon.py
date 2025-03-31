@@ -4,10 +4,39 @@ import sys
 import random
 from Socket_Connection import Socket_Connection
 
+class Name_Dictionary(dict):
+    def next_free_seat(self):
+        max = len(self)
+        for i in range(max):
+            if i not in self: return i
+        return len(self)
+
 class SQL_Anon:
     def __init__(self, filename):
         """Initialize database connection with the given SQLite file."""
         self.filename = filename 
+
+    def get_user(self, user_token):
+        """ Retrive user information """
+        with sqlite3.connect(self.filename) as conn:
+            conn.set_trace_callback(print)
+            conn.row_factory = sqlite3.Row  # This makes query results behave like dictionaries
+            cursor = conn.cursor()
+            sql = ("SELECT * from users where user_token = ?")
+            cursor.execute(sql, (user_token,))
+            row = cursor.fetchone()
+            return dict(row) if row else None       
+
+    def all_users(self, game_token):
+        """ Retrive user information for the specified game"""
+        with sqlite3.connect(self.filename) as conn:
+            conn.set_trace_callback(print)
+            conn.row_factory = sqlite3.Row  # This makes query results behave like dictionaries
+            cursor = conn.cursor()
+            sql = ("SELECT * from users where game_token = ?")
+            cursor.execute(sql, (game_token,))
+            rows = cursor.fetchall()
+            return [dict(row) for row in rows]
 
     def remove_user(self, user_token):
         """ 
@@ -17,11 +46,11 @@ class SQL_Anon:
         with sqlite3.connect(self.filename) as conn:
             conn.set_trace_callback(print)
             cursor = conn.cursor()
-            sql = ("SELECT host, game_token FROM users WHERE user_token = ? ")
+            sql = ("SELECT seat, game_token FROM users WHERE user_token = ? ")
             cursor.execute(sql, (user_token,))
-            (is_host, game_token) = cursor.fetchone()            
+            (seat, game_token) = cursor.fetchone()            
 
-            if is_host: 
+            if seat == 0: 
                 sql = ("DELETE FROM users WHERE game_token = ? ")
                 cursor.execute(sql, (game_token,))
                 return True
@@ -45,28 +74,19 @@ class SQL_Anon:
     def add_user(self, user_token, game_token):
         """ Create a new game with 'host_token' as host """
 
+        print(self.get_names(game_token))
+        seat = self.get_names(game_token).next_free_seat()
+
         with sqlite3.connect(self.filename) as conn:
             conn.set_trace_callback(print)
             cursor = conn.cursor()
 
             sql = ("SELECT * FROM users WHERE game_token = ?")
             cursor.execute(sql, (game_token,))
-            index = len(cursor.fetchall())
 
             sql = ("INSERT INTO users (user_token, game_token, seat) VALUES (?, ?, ?)")
-            cursor.execute(sql, (user_token, game_token, index))
+            cursor.execute(sql, (user_token, game_token, seat))
             return game_token
-
-    def get_game(self, user_token):
-        """ Retrieve the game token (or None) associtated with the user token """
-
-        with sqlite3.connect(self.filename) as conn:
-            conn.set_trace_callback(print)
-            cursor = conn.cursor()
-            sql = ("SELECT game_token FROM users WHERE user_token = ?")
-            cursor.execute(sql, (user_token,))
-            result = cursor.fetchone() or (None,)
-            return result[0]
 
     def set_ws_room(self, user_token, ws_room):
         """ Retrieve the game token (or None) associtated with the user token """
@@ -86,7 +106,7 @@ class SQL_Anon:
             sql = ("UPDATE users SET user_name = ? WHERE user_token = ?")
             cursor.execute(sql, (name, user_token))            
 
-    def get_names(self, game_token):
+    def get_names(self, game_token) -> Name_Dictionary: 
         """ List all names by seat for the specified game """
         with sqlite3.connect(self.filename) as conn:
             conn.set_trace_callback(print)
@@ -95,7 +115,7 @@ class SQL_Anon:
             cursor.execute(sql, (game_token,))
             result = cursor.fetchall()
 
-            name_dict = {}
+            name_dict = Name_Dictionary()
             for row in result:
                 name_dict[row[0]]= row[1]
 

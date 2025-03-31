@@ -30,8 +30,6 @@ function quick_start() {
     })
     .then(response => response.json())
     .then(data => {
-        console.log("Server Response:", data)
-        console.log(data.token)
         localStorage.setItem("game_token", data.token);
         window.location = "/game"
     })

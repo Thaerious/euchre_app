@@ -1,4 +1,4 @@
-import EventEmitter from "./modules/Event_Emitter.js";
+import EventEmitter from "../modules/Event_Emitter.js";
 
 export default class HandManager extends EventEmitter {
     constructor(seat) {
