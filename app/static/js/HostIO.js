@@ -1,11 +1,15 @@
+import EventEmitter from "./modules/Event_Emitter.js"
+
 class EuchreException extends Error {
     constructor(message) {
         super(message)
     }
 }
 
-export default class GameIO {
+export default class GameIO extends EventEmitter {
     constructor() {
+        super()
+
         this.socket = io("http://" + location.hostname + ":" + location.port, {
             query: { token: this.token }
         });
@@ -28,22 +32,10 @@ export default class GameIO {
             console.error(data)
         });
 
-        this.socket.on("update_names", (dataJSON) => {
+        this.socket.on("connected", (dataJSON) => {
             const data = JSON.parse(dataJSON)
-            console.log(data)
-
-            for (const seat in data) {
-                console.log(seat, data[seat])
-                if (seat == 0) {
-                    const startButton = document.querySelector("#start_button")
-                    startButton.classList.remove("disabled")
-                    document.querySelector(`#username_txt.textbox-inner`).value = data[seat]    
-                }
-                else {
-                    document.querySelector(`#player_${seat}_name`).textContent = data[seat]                    
-                }                
-            }
-        })
+            this.emit("connected", data.seat)
+        })       
     }
 
     setName(name) {

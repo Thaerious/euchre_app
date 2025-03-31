@@ -5,6 +5,7 @@ window.addEventListener("load", async () => {
     const copyButton = document.querySelector("#copy_button")
     const startButton = document.querySelector("#start_button")
     const usernameText = document.querySelector("#username_txt")
+    let seat = -1
 
     // Connect to the websocket
     const hostIO = new HostIO()
@@ -33,4 +34,19 @@ window.addEventListener("load", async () => {
         if (username === "") startButton.classList.add("disabled")
         else startButton.classList.remove("disabled")
     });
+
+    hostIO.on("connected", (_seat) => seat = _seat)
+
+    hostIO.on("update_names", (data) => {
+        for (const seat in data) {
+            if (seat == 0) {
+                const startButton = document.querySelector("#start_button")
+                startButton.classList.remove("disabled")
+                document.querySelector(`#username_txt.textbox-inner`).value = data[seat]    
+            }
+            else {
+                document.querySelector(`#player_${seat}_name`).textContent = data[seat]                    
+            }                
+        }
+    })
 })

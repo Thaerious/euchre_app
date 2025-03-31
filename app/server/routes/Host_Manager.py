@@ -12,8 +12,8 @@ class Host_Manager:
         self.sql_anon = SQL_Anon("./app/anon.db")
         app.add_url_rule("/cancel_host", view_func=self.cancel_host)
         app.add_url_rule("/host", view_func=self.create_host)        
-        io.on_event('connect', self.ws_connect)
-        io.on_event('set_name', self.ws_set_name)
+        io.on_event('connect', self.on_connect)
+        io.on_event('set_name', self.on_set_name)
 
     # Serve template file for private game staging area.
     @fetch_anon_token
@@ -31,15 +31,16 @@ class Host_Manager:
         return render_template("landing.html")
 
     # websocket connection endpoint 
-    @fetch_anon_token    
-    def ws_connect(self, token):
+    @fetch_anon_token
+    def on_connect(self, token):
         self.sql_anon.set_ws_room(token, request.sid)
         game_token = self.sql_anon.get_game(token)
         names = self.sql_anon.get_names(game_token)
+        self.io.emit("connected", json.dumps({"seat": 0}), room = request.sid)
         self.io.emit("update_names", json.dumps(names), room = request.sid)
 
     # websocket set name endpoint
     @fetch_anon_token
-    def ws_set_name(self, data, token):
+    def on_set_name(self, data, token):
         print(f"{token}: {data}")
         self.sql_anon.set_name(token, data["name"])
