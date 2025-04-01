@@ -9,22 +9,35 @@
     <link rel="stylesheet" href="../static/css/host.css">
     <script type="module" src="../static/js/join/join.js"></script>
     <script src="../static/js/elements/Styled_Text_Box.js" defer></script>
+    <script src="../static/js/elements/Alert_Dialog.js" defer></script>
+    <script src="../static/js/elements/Name_Dialog.js" defer></script>    
 </head>
 
 <body>
-    {% include 'name_dialog.html' %}
+    <alert-dialog class="hidden"></alert-dialog>
+    <name-dialog class="hidden"></name-dialog>
+
     <div id="game-board" class="game-board" game-token="{{ game_token }}">
-        <div id="gameboard-menu">
-            <div class="game-title">Euchre</div>
-            <div class="by-line">Staging Game</div>
-            <div class="ui-container default font-normal">
-                <div id="player_0_name" class="label-inner pending-player"></div>
-                <div id="player_1_name" class="label-inner pending-player"></div>
-                <div id="player_2_name" class="label-inner pending-player"></div>
-                <div id="player_3_name" class="label-inner pending-player"></div>
+        <div id="host-menu">
+
+            <div class="component-collection">
+                <div class="game-title">Euchre</div>
+                <div class="by-line">Staging Game</div>
             </div>
-            <button id="name_button" class="ui-button size_small font-small">Set Name</button>
-            <button id="cancel_button" class="ui-button size_small font-small">Cancel</button>
+
+            <div class="ui-container horz default font-normal">
+                <div class="name-container">
+                    <div id="player_0_name" class="label-inner pending-player"></div>                
+                    <div id="player_1_name" class="label-inner pending-player"></div>
+                    <div id="player_2_name" class="label-inner pending-player"></div>
+                    <div id="player_3_name" class="label-inner pending-player"></div>
+                </div>
+            </div>
+
+            <div class="component-collection">
+                <button id="name_button" class="ui-button size_small font-small">Set Name</button>
+                <button id="cancel_button" class="ui-button size_small font-small">Cancel</button>
+            </div>            
         </div>
     </div>
 </body>

@@ -8,12 +8,12 @@ alert-dialog, name-dialog{
     z-index: 1000;
 }
 
-#gameboard-menu{
+#host-menu{
     position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-around;
     width: 60%;
     height: 95%;    
     left: 50%;
