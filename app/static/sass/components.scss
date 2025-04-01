@@ -150,8 +150,8 @@
 } 
 
 .ui-button, .ui-textbox{
-    &.size_normal{
-        width: 95%;
+    &.size_full{
+        width: 100%;
         height: calc(var(--box-height) * 0.075);
     }
     
@@ -161,7 +161,7 @@
     }
 
     &.size_small{
-        height: 25px;
+        height: calc(var(--box-height) * 0.05);
         width: 75%;
         align-self: center;
     }  

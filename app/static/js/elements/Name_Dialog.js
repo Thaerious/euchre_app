@@ -1,10 +1,11 @@
 class NameDialog extends HTMLElement {
     constructor() {
         super()
-        this.attachShadow({ mode: 'open' });        
+        this.attachShadow({ mode: 'open' });    
+        this._ready = this.load() // store the promise from load        
     }
 
-    async connectedCallback() {
+    async load() {
         const res = await fetch('/elements/name_dialog.html');
         const html = await res.text();
         this.shadowRoot.innerHTML = html;
@@ -44,6 +45,8 @@ class NameDialog extends HTMLElement {
     }
 
     async show(current = "") {
+        await this._ready; // ensures DOM is ready before using it
+        
         this.classList.remove("hidden")
         this.usernameText.value = current
         this.updateControls()
