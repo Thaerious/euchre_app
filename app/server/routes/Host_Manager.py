@@ -16,6 +16,7 @@ class Host_Manager:
         io.on_event('disconnect', self.on_disconnect)
         io.on_event('connect', self.on_connect)
         io.on_event('set_name', self.on_set_name)
+        io.on_event('kick_player', self.on_kick_player)
 
     # Serve template file for private game staging area.
     @fetch_anon_token
@@ -66,7 +67,6 @@ class Host_Manager:
     # websocket disconnect handler
     def on_disconnect(self, reason=None):
         token = get_anon_token()
-        print(f"disconnect {token}")
         self.sql_anon.set_connected(token, False)
         user = self.sql_anon.get_user(token)
 
@@ -81,10 +81,18 @@ class Host_Manager:
         game_token = self.sql_anon.get_user(token)["game_token"]  
         self.notify_all(game_token, "update_names", self.build_names(game_token))
 
+    @fetch_anon_token
+    def on_kick_player(self, data, token):  
+        game_token = self.sql_anon.get_user(token)["game_token"]  
+        target = self.sql_anon.get_seat(data["seat"], game_token)
+        if target is None: return
+        self.sql_anon.remove_user(target["user_token"])
+        self.io.emit("kicked", json.dumps({}), room = target["websocket_room"])
+        self.notify_all(game_token, "update_names", self.build_names(game_token))
+
     def notify_all(self, game_token, event, data):
         all_users = self.sql_anon.all_users(game_token)
         for user in all_users:
-            print("notify", event, user["websocket_room"], data)
             self.io.emit(event, json.dumps(data), room = user["websocket_room"])
 
     def build_names(self, game_token):
@@ -95,3 +103,4 @@ class Host_Manager:
                 "connected": row["connected"]
             } for row in rows
         }
+   

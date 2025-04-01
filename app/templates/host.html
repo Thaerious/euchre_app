@@ -14,19 +14,31 @@
 <body>
     {% include 'name_dialog.html' %}
     <div id="game-board" class="game-board" game-token="{{ game_token }}">
-        <div id="game-board-inner">
+        <div id="gameboard-menu">
             <div class="game-title">Euchre</div>
             <div class="by-line">Staging Game</div>
-            <div class="textbox-outer default normal-font">
-                <div id="player_0_name" class="label-inner pending-player"></div>
-                <div id="player_1_name" class="label-inner pending-player"></div>
-                <div id="player_2_name" class="label-inner pending-player"></div>
-                <div id="player_3_name" class="label-inner pending-player"></div>
+
+            <div class="container-outer horz default normal-font">
+                <!-- name text boxes -->
+                <div class="name-container">        
+                    <div id="player_0_name" class="label-inner pending-player"></div>                
+                    <div id="player_1_name" class="label-inner pending-player"></div>
+                    <div id="player_2_name" class="label-inner pending-player"></div>
+                    <div id="player_3_name" class="label-inner pending-player"></div>
+                </div>
+                <!-- kick buttons -->
+                <div id="kick-container" class="kick-container">
+                    <div seat="0" class="ui-button round red invisible">X</div>    
+                    <div seat="1" class="ui-button round red">X</div>
+                    <div seat="2" class="ui-button round red">X</div>
+                    <div seat="3" class="ui-button round red">X</div>
+                </div>                
             </div>
-            <button id="start_button" class="button normal-size normal-font" tabindex="0">Start</button>
-            <button id="name_button" class="button small-size small-font">Set Name</button>
-            <button id="copy_button" class="button small-size small-font">Copy Invite Code</button>
-            <button id="cancel_button" class="button small-size small-font">Cancel</button>
+
+            <button id="start_button" class="ui-button size_normal normal-font" tabindex="0">Start</button>
+            <button id="name_button" class="ui-button size_small small-font">Set Name</button>
+            <button id="copy_button" class="ui-button size_small small-font">Copy Invite Code</button>
+            <button id="cancel_button" class="ui-button size_small small-font">Cancel</button>
         </div>
     </div>
 </body>

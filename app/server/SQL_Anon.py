@@ -27,6 +27,17 @@ class SQL_Anon:
             row = cursor.fetchone()
             return dict(row) if row else None       
 
+    def get_seat(self, seat, game_token):
+        """ Retrive user information """
+        with sqlite3.connect(self.filename) as conn:
+            conn.set_trace_callback(print)
+            conn.row_factory = sqlite3.Row  # This makes query results behave like dictionaries
+            cursor = conn.cursor()
+            sql = ("SELECT * from users where seat = ? AND game_token = ?")
+            cursor.execute(sql, (seat, game_token))
+            row = cursor.fetchone()
+            return dict(row) if row else None   
+
     def all_users(self, game_token):
         """ Retrive user information for the specified game"""
         with sqlite3.connect(self.filename) as conn:
@@ -51,17 +62,16 @@ class SQL_Anon:
             (seat, game_token) = cursor.fetchone()            
 
             if seat == 0: 
-                sql = ("DELETE FROM users WHERE game_token = ? ")
+                sql = ("DELETE FROM users game_token = ? ")
                 cursor.execute(sql, (game_token,))
                 return True
             else:
-                sql = ("DELETE FROM users WHERE user_token = ? ")
-                cursor.execute(sql, (user_token,))
-                return False
+                sql = ("DELETE FROM users WHERE seat = ? AND game_token = ? ")
+                cursor.execute(sql, (seat, game_token))
+                return False       
 
     def create_game(self, host_token):
         """ Create a new game with 'host_token' as host """
-
         game_token = ''.join(random.choices('0123456789abcdef', k=TOKEN_SIZE)) 
 
         with sqlite3.connect(self.filename) as conn:

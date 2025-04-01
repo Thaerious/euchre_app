@@ -53,6 +53,12 @@ export default class GameIO extends EventEmitter {
         });
     }
 
+    kickPlayer(seat) {
+        this.socket.emit("kick_player", {
+            seat: seat
+        });
+    }
+
     async exitGame(name) {
         const response = await fetch("/exit_staging", {
             method: "POST"
