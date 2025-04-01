@@ -3,6 +3,8 @@
 
 *{
     --app-yellow: rgb(255, 247, 133);
+    --app-dark-yellow: rgb(255, 245, 0);
+    --app-component-green: #4CAF50;
 }
 
 .hidden {
@@ -13,33 +15,33 @@
     visibility: hidden;
 }
 
-.small-font{
+.font-small{
     font-family: "Montserrat", sans-serif;
     font-size: 0.75rem;
     font-weight: bolder;
     color: var(--app-yellow);
 }
 
-.normal-font{
+.font-normal{
     font-family: "Montserrat", sans-serif;
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-weight: bolder;
     color: var(--app-yellow);    
 }
 
-.large-font{
+.font-large{
     font-family: "Montserrat", sans-serif;
     font-size: 2rem;
     font-weight: bolder;
     color: rgb(255, 247, 133);    
 }
 
-.container-outer {
+.ui-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: #4CAF50;
+    background-color: var(--app-component-green);
     border: 2px solid black;
     border-radius: 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -55,7 +57,7 @@
     }
 }
 
-.textbox-inner{
+.ui-textbox{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -68,7 +70,7 @@
     height: 25px;
 }
 
-.textbox-inner:empty::before {
+.ui-textbox:empty::before {
     content: var(--hint, "input"); 
     display: inline-block;
     color: darkgray;
@@ -78,7 +80,7 @@
     color: darkgray;
 }
 
-.textbox-inner{
+.ui-textbox{
     color: black;
 }
 
@@ -106,12 +108,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #4CAF50;
+    background-color: var(--app-component-green);
     border: 2px solid black;
     border-radius: 8px;
     cursor: pointer;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
     will-change: transform;
 
     &.disabled {
@@ -145,27 +146,34 @@
         background-color: #2E7D32;
         box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
         transform: translateY(2px);
-    }
+    }    
+} 
 
+.ui-button, .ui-textbox{
     &.size_normal{
-        width: 100%;
-        height: 50px;
+        width: 95%;
+        height: calc(var(--box-height) * 0.075);
     }
     
+    &.size_narrow{
+        width: 50%;
+        height: calc(var(--box-height) * 0.075);
+    }
+
     &.size_small{
         height: 25px;
         width: 75%;
         align-self: center;
     }  
 
-    &.round{
+    &.size_round{
         border-radius: 25px;
         text-align: center;
         height: 25px;  
         width: 25px;
         align-self: center;
-    }      
-} 
+    }     
+}
 
 .info-button{
     position: absolute;
@@ -201,14 +209,54 @@
     align-items: center;
     justify-content: center;  
     padding: 10px;    
-    background-color: #4CAF50;
+    background-color: var(--app-component-green);
     border: 2px solid black;
     border-radius: 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     transition: all 0.5s ease;
     width: 50%;
     min-height: 100px;
-    z-index: 10000;
+    z-index: 1000;
     cursor: pointer;
     user-select: none;
+}
+
+.text-area{
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    text-align: center;
+    
+    color: var(--app-dark-yellow);
+    background-color: var(--app-component-green);
+    border: 2px solid;
+    border-color: black;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+.mask{
+    position: fixed;
+    background-color: #008000;
+    opacity: 60%;
+    z-index: 999;  
+    left: 0;
+    top: 0;
+    width: 100%;  
+    height: 100%;
+}
+
+.dialog-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    background-color: #008000;
+    border: 2px solid;
+    border-color: var(--app-yellow);
+    border-radius: 15px;
+    width: 100%;    
+    height: 100%;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.6);
+    z-index: 1000;
 }

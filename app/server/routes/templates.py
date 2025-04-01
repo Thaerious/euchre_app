@@ -17,6 +17,10 @@ def index(token):
     # if token is not None: return redirect("/landing")
     return render_template("landing.html") # set to landing until there is logged in content
 
+@templates_bp.route("/elements/<filename>.html")
+def component(filename):
+    return render_template(f"/elements/{filename}.html")
+
 @templates_bp.route("/create")
 def create():
     return render_template("create.html")

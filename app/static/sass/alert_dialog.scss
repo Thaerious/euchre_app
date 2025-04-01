@@ -1,0 +1,16 @@
+// name_dialog.scss
+@use './components';
+
+#text-area{
+    width: 90%;
+    height: 50%;
+    z-index: 1000;
+}
+
+#ok-button{
+    z-index: 1000;    
+}
+
+#mask{
+    z-index: 900;
+}

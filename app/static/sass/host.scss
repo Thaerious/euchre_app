@@ -1,6 +1,13 @@
 @use './game';
 @use './components';
 
+alert-dialog, name-dialog{
+    position: absolute;
+    width: 50%;
+    aspect-ratio: 5/3;
+    z-index: 1000;
+}
+
 #gameboard-menu{
     position: absolute;
     display: flex;

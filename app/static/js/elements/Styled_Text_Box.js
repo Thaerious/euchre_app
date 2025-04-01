@@ -4,7 +4,7 @@ class StyledTextBox extends HTMLElement {
         super()
 
         // Style the outer text box
-        this.classList.add('container-outer', 'default');
+        this.classList.add('ui-container', 'default');
 
         // Create inner editable div
         this.innerDiv = document.createElement('input');
@@ -12,7 +12,7 @@ class StyledTextBox extends HTMLElement {
         this.innerDiv.setAttribute('type', type);
         const placeholder = this.getAttribute('placeholder') ?? "";
         this.innerDiv.setAttribute('placeholder', placeholder);
-        this.innerDiv.classList.add('textbox-inner');
+        this.innerDiv.classList.add('ui-textbox');
         this.innerDiv.setAttribute('contenteditable', 'true');
 
         // Attach inner and hint to outer

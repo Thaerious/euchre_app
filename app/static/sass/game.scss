@@ -1,10 +1,7 @@
 // game.scss
+@use './dims';
 @use './components';
 @use './cards';
-
-:root {
-    --box-size: 80;
-}
 
 .hidden {
     display: none !important;
