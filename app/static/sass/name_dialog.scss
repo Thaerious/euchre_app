@@ -14,10 +14,12 @@ name-dialog{
     /* Default for landscape */
     height: calc(var(--box-size) * .3vh);
     aspect-ratio: 5/3;
+}
 
-    &.hidden{
-        display: none;
-    }
+.game-board-mask{
+    background-color: #008000;
+    opacity: 60%;
+    z-index: 999;
 }
 
 #username_txt{

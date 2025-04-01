@@ -1,6 +1,7 @@
 class NameDialog extends HTMLElement {
     constructor() {
         super()
+        this.mask = document.querySelector("#game-board-mask")
         this.usernameText = document.querySelector("#username_txt")
         this.okButton = document.querySelector("#ok_button")
 
@@ -21,6 +22,7 @@ class NameDialog extends HTMLElement {
 
     async show(current = "") {
         this.classList.remove("hidden")
+        this.mask.classList.remove("hidden")
         this.usernameText.value = current
 
         if (current !== "") {
@@ -33,6 +35,7 @@ class NameDialog extends HTMLElement {
         return new Promise((resolve, _) => {
             this.okButton.addEventListener("click", () => {
                 this.classList.add("hidden");
+                this.mask.classList.add("hidden")
                 resolve(this.usernameText.value); // Resolving with the entered username.
             }, { once: true });            
         })

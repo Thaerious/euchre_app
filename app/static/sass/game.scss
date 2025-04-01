@@ -6,7 +6,7 @@
     --box-size: 80;
 }
 
-.is-hidden {
+.hidden {
     display: none !important;
 }
 
@@ -25,7 +25,7 @@ body {
 }
 
 .game-board {
-    position: relative;
+    position: absolute;
     background-color: #008000;
     border: 2px solid #ffffff;
     border-radius: 15px;
