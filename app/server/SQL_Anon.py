@@ -98,13 +98,24 @@ class SQL_Anon:
             cursor.execute(sql, (ws_room, user_token))
 
     def set_name(self, user_token, name):
-        """ Set the user name associate with the user_token """
+        """ Set the user name associated with the user_token """
 
         with sqlite3.connect(self.filename) as conn:
             conn.set_trace_callback(print)
             cursor = conn.cursor()
             sql = ("UPDATE users SET user_name = ? WHERE user_token = ?")
             cursor.execute(sql, (name, user_token))            
+
+    def set_connected(self, user_token, value):
+        """ Set the connected status associated with the user_token """
+        if value == False: value = 0
+        if value == True: value = 1
+
+        with sqlite3.connect(self.filename) as conn:
+            conn.set_trace_callback(print)
+            cursor = conn.cursor()
+            sql = ("UPDATE users SET connected = ? WHERE user_token = ?")
+            cursor.execute(sql, (value, user_token))   
 
     def get_names(self, game_token) -> Name_Dictionary: 
         """ List all names by seat for the specified game """
@@ -125,10 +136,12 @@ class SQL_Anon:
         """ List all entries"""
         with sqlite3.connect(self.filename) as conn:
             conn.set_trace_callback(print)
+            conn.row_factory = sqlite3.Row  # This makes query results behave like dictionaries
             cursor = conn.cursor()
             sql = ("SELECT * FROM users")
             cursor.execute(sql)
-            return cursor.fetchall()
+            rows = cursor.fetchall()
+            return [dict(row) for row in rows]
 
 def invoke(method_name, *args):
     """Dynamically invoke a method from the SQL_Games class."""

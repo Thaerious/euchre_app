@@ -19,8 +19,17 @@ class NameDialog extends HTMLElement {
         });        
     }
 
-    async show() {
+    async show(current = "") {
         this.classList.remove("hidden")
+        this.usernameText.value = current
+
+        if (current !== "") {
+            this.okButton.classList.remove("disabled")            
+        }
+        else {
+            this.okButton.classList.add("disabled")
+        }
+
         return new Promise((resolve, _) => {
             this.okButton.addEventListener("click", () => {
                 this.classList.add("hidden");
