@@ -33,6 +33,7 @@ export default class GameIO extends EventEmitter {
         });
 
         this.socket.on("connected", (dataJSON) => {
+            console.log(`HostIO connected ${dataJSON}`)
             const data = JSON.parse(dataJSON)
             this.emit("connected", data.seat)
         })       

@@ -31,6 +31,7 @@ export default class JoinUI {
 
     setupHostIO() {
         this.hostIO.on("connected", (_seat) => {
+            console.log(`JoinUI connected ${_seat}`)
             this.seat = _seat
         })
 

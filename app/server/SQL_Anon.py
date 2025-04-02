@@ -5,7 +5,26 @@ import random
 from Socket_Connection import Socket_Connection
 import json
 
+class UserList(list):
+    def __init__(self, rows):
+        for row in rows:
+            self.append(User(row))
+
+    def emit(self, event, object):
+        for user in self:
+            user.emit(event, object)
+
+    @property
+    def names(self):
+        return {
+            user.seat: {
+                "name": user.username,
+                "connected": user.connected
+            } for user in self
+        }            
+
 class User:
+    """ Represents a single row of the users table. """
     @staticmethod
     def set_io(io):
         User.io = io    
@@ -13,8 +32,23 @@ class User:
     def __init__(self, row):
         self.__dict__.update(row)
 
-    def emit(self, object):
-        User.io.emit("set_name_response", json.dumps(object), room = self.websocket_room)
+    def setRoom(self, room):   
+        SQL_Anon().set_ws_room(self.user_token, room)     
+        self.room = room
+
+    def setConnected(self, value):   
+        SQL_Anon().set_connected(self.user_token, value)     
+        self.connected = value
+
+    def setName(self, name):   
+        SQL_Anon().set_name(self.user_token, name)     
+        self.username = name
+
+    def emit(self, event, object):        
+        User.io.emit(event, json.dumps(object), room = self.room)
+
+    def __str__(self):
+        return str(self.__dict__)
 
 class Name_Dictionary(dict):
     def next_free_seat(self):
@@ -28,7 +62,7 @@ class SQL_Anon:
         """Initialize database connection with the given SQLite file."""
         self.filename = filename 
 
-    def get_user(self, user_token):
+    def get_user(self, user_token) -> User:
         """ Retrive user information """
         with sqlite3.connect(self.filename) as conn:
             conn.set_trace_callback(print)
@@ -37,7 +71,7 @@ class SQL_Anon:
             sql = ("SELECT * from users where user_token = ?")
             cursor.execute(sql, (user_token,))
             row = cursor.fetchone()
-            return User(dict(row)) if row else None       
+            return User(dict(row)) if row else None
 
     def get_seat(self, seat, game_token):
         """ Retrive user information """
@@ -48,7 +82,7 @@ class SQL_Anon:
             sql = ("SELECT * from users where seat = ? AND game_token = ?")
             cursor.execute(sql, (seat, game_token))
             row = cursor.fetchone()
-            return dict(row) if row else None   
+            return User(dict(row)) if row else None
 
     def all_users(self, game_token):
         """ Retrive user information for the specified game"""
@@ -59,7 +93,7 @@ class SQL_Anon:
             sql = ("SELECT * from users where game_token = ?")
             cursor.execute(sql, (game_token,))
             rows = cursor.fetchall()
-            return [dict(row) for row in rows]
+            return UserList(rows)
 
     def remove_user(self, user_token):
         """ 
@@ -116,7 +150,7 @@ class SQL_Anon:
         with sqlite3.connect(self.filename) as conn:
             conn.set_trace_callback(print)
             cursor = conn.cursor()
-            sql = ("UPDATE users SET websocket_room = ? WHERE user_token = ?")
+            sql = ("UPDATE users SET room = ? WHERE user_token = ?")
             cursor.execute(sql, (ws_room, user_token))
 
     def set_name(self, user_token, name):
@@ -125,7 +159,7 @@ class SQL_Anon:
         with sqlite3.connect(self.filename) as conn:
             conn.set_trace_callback(print)
             cursor = conn.cursor()
-            sql = ("UPDATE users SET user_name = ? WHERE user_token = ?")
+            sql = ("UPDATE users SET username = ? WHERE user_token = ?")
             cursor.execute(sql, (name, user_token))            
 
     def set_connected(self, user_token, value):
@@ -144,7 +178,7 @@ class SQL_Anon:
         with sqlite3.connect(self.filename) as conn:
             conn.set_trace_callback(print)
             cursor = conn.cursor()
-            sql = ("SELECT seat, user_name FROM users WHERE game_token = ?")
+            sql = ("SELECT seat, username FROM users WHERE game_token = ?")
             cursor.execute(sql, (game_token,))
             result = cursor.fetchall()
 

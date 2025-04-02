@@ -25,90 +25,77 @@ class Host_Manager:
     @fetch_anon_token
     def host_game(self, token):
         user = self.sql_anon.get_user(token)
+
         if user is None:
             game_token = self.sql_anon.create_game(token)
             return render_template("host.html", game_token = game_token)
         else:
-            return render_template("host.html", game_token = user["game_token"])
+            return render_template("host.html", game_token = user.game_token)
 
     # Serve template file for private game staging area.
     @fetch_anon_token
     def join_game(self, game_token, token):    
         user = self.sql_anon.get_user(token)
+
         if user is None:
             self.sql_anon.add_user(token, game_token)
-        elif user["game_token"] != game_token:
+        elif user.game_token != game_token:
             self.sql_anon.remove_user(token)
             self.sql_anon.add_user(token, game_token)
 
         return render_template("join.html", game_token = game_token)
 
     # api endpoint to cancel a staged game
-    @fetch_anon_token
-    def exit_staging(self, token):
-        user = self.sql_anon.get_user(token)
-        game_token = self.sql_anon.get_user(token)["game_token"]
-        self.sql_anon.remove_user(token)
+    @fetch_user
+    def exit_staging(self, user):
+        self.sql_anon.remove_user(user.user_token)
+        users = self.sql_anon.all_users(user.game_token)
 
-        if user["seat"] == 0:
-            self.notify_all(game_token, "game_cancelled", {})
+        if user.seat == 0:
+            users.emit("game_cancelled", {})
         else:
-            self.notify_all(game_token, "update_names", self.build_names(game_token))
+            users.emit("update_names", users.names)
 
         return redirect("landing")
 
     # websocket connect handler 
-    @fetch_anon_token
-    def on_connect(self, token):
-        self.sql_anon.set_ws_room(token, request.sid)
-        user = self.sql_anon.get_user(token)
-        game_token = user["game_token"]
-        self.sql_anon.set_connected(token, True)
-        self.io.emit("connected", json.dumps({"seat": user["seat"]}), room = request.sid)
-        self.notify_all(game_token, "update_names", self.build_names(game_token))
+    @fetch_user
+    def on_connect(self, user):
+        user.setRoom(request.sid)
+        user.setConnected(True)
+        user.emit("connected", {"seat": user.seat})
+
+        all_users = self.sql_anon.all_users(user.game_token)
+        all_users.emit("update_names", all_users.names)
 
     # websocket disconnect handler
     def on_disconnect(self, reason=None):
         token = get_anon_token()
-        self.sql_anon.set_connected(token, False)
         user = self.sql_anon.get_user(token)
 
         if user is not None:
-            game_token = user["game_token"]
-            self.notify_all(game_token, "update_names", self.build_names(game_token))
+            user.setConnected(False)
+            all_users = self.sql_anon.all_users(user.game_token)
+            all_users.emit("update_names", all_users.names)            
 
     # websocket set name endpoint
     @fetch_user
     def on_set_name(self, data, user):
         print(f" - CALL: on_set_name {data} {user}")
         try:
-            self.sql_anon.set_name(user["user_token"], data["name"])
-            self.io.emit("set_name_response", json.dumps(True), room = user["websocket_room"])
-            self.notify_all(user["game_token"], "update_names", self.build_names(user["game_token"]))
+            user.setName(data["name"])
+            user.emit("set_name_response", True)
+            all_users = self.sql_anon.all_users(user.game_token)
+            all_users.emit("update_names", all_users.names)
         except sqlite3.IntegrityError:
-            self.io.emit("set_name_response", json.dumps(False), room = user["websocket_room"])
+             user.emit("set_name_response", False)
 
-    @fetch_anon_token
-    def on_kick_player(self, data, token):  
-        game_token = self.sql_anon.get_user(token)["game_token"]  
-        target = self.sql_anon.get_seat(data["seat"], game_token)
+    @fetch_user
+    def on_kick_player(self, data, user):
+        target = self.sql_anon.get_seat(data["seat"], user.game_token)
         if target is None: return
 
-        self.sql_anon.remove_user(target["user_token"])
-        self.io.emit("kicked", json.dumps({}), room = target["websocket_room"])
-        self.notify_all(game_token, "update_names", self.build_names(game_token))
-
-    def notify_all(self, game_token, event, data):
-        all_users = self.sql_anon.all_users(game_token)
-        for user in all_users:
-            self.io.emit(event, json.dumps(data), room = user["websocket_room"])
-
-    def build_names(self, game_token):
-        rows = self.sql_anon.all_users(game_token)
-        return {
-            row["seat"]: {
-                "name": row["user_name"],
-                "connected": row["connected"]
-            } for row in rows
-        }
-   
+        self.sql_anon.remove_user(target.user_token)
+        target.emit("kicked", {})
+        all_users = self.sql_anon.all_users(user.game_token)
+        all_users.emit("update_names", all_users.names)
