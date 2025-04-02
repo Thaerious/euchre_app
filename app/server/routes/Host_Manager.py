@@ -1,6 +1,6 @@
 import logging
 from flask import render_template, request, Blueprint, redirect
-from SQL_Anon import SQL_Anon
+from SQL_Anon import SQL_Anon, User
 from decorators.fetch_anon_token import fetch_anon_token, get_anon_token
 from decorators.fetch_user import fetch_user
 import json
@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 class Host_Manager:
     def __init__(self, app, io):
+        User.io = io
         self.io = io
         self.sql_anon = SQL_Anon("./app/anon.db")
         app.add_url_rule("/exit_staging", view_func=self.exit_staging, methods=["POST"])
@@ -79,7 +80,7 @@ class Host_Manager:
     # websocket set name endpoint
     @fetch_user
     def on_set_name(self, data, user):
-        print("on_set_name")
+        print(f" - CALL: on_set_name {data} {user}")
         try:
             self.sql_anon.set_name(user["user_token"], data["name"])
             self.io.emit("set_name_response", json.dumps(True), room = user["websocket_room"])

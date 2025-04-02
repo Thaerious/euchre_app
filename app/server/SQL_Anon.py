@@ -3,6 +3,18 @@ import sqlite3
 import sys
 import random
 from Socket_Connection import Socket_Connection
+import json
+
+class User:
+    @staticmethod
+    def set_io(io):
+        User.io = io    
+
+    def __init__(self, row):
+        self.__dict__.update(row)
+
+    def emit(self, object):
+        User.io.emit("set_name_response", json.dumps(object), room = self.websocket_room)
 
 class Name_Dictionary(dict):
     def next_free_seat(self):
@@ -25,7 +37,7 @@ class SQL_Anon:
             sql = ("SELECT * from users where user_token = ?")
             cursor.execute(sql, (user_token,))
             row = cursor.fetchone()
-            return dict(row) if row else None       
+            return User(dict(row)) if row else None       
 
     def get_seat(self, seat, game_token):
         """ Retrive user information """

@@ -61,7 +61,9 @@ export default class GameIO extends EventEmitter {
                 reject(new Error("Timeout: no response to set_name"));
             }, 5000);
 
-            this.socket.once("set_name_return", (dataJSON) => {
+            console.log("this.socket.once")
+            this.socket.on("set_name_return", (dataJSON) => {
+                console.log("set name return" , dataJSON)
                 clearTimeout(timeout);
                 try {
                     const data = JSON.parse(dataJSON)
