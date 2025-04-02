@@ -14,6 +14,7 @@ export default class JoinUI {
         this.gameCode = document.querySelector("#game-board").getAttribute("game-token")
         this.nameButton = document.querySelector("#name_button")
         this.cancelButton = document.querySelector("#cancel_button")
+        this.alertDialog = document.querySelector("alert-dialog")
     }
 
     addEventListeners() {
@@ -52,13 +53,39 @@ export default class JoinUI {
 
             const textbox = document.querySelector(`#player_${this.seat}_name`)
             if (textbox.textContent == "") {
-                const username = await document.querySelector("name-dialog").show(textbox.textContent)
-                this.hostIO.setName(username)
+                let nameSetSuccess = false
+
+                while (nameSetSuccess === false) {
+                    const username = await document.querySelector("name-dialog").show(textbox.textContent)
+                    try {
+                        nameSetSuccess = await this.hostIO.setName(username)
+                        if (nameSetSuccess == false) {
+                            await this.alertDialog.show(
+                                "Username not set.\n" +
+                                "Choose a different name.\n"
+                            )
+                        }
+                    } catch (e) {
+                        await this.alertDialog.show(e)
+                    }
+                }
             }
 
-            this.hostIO.on("game_cancelled", (data) => {
+            this.hostIO.on("game_cancelled", async (data) => {               
+                await this.alertDialog.show(
+                    "The game has been cancelled.\n" +
+                    "You will be returned to the landing page.\n"
+                )                
                 window.location = "/landing"
             });
+
+            this.hostIO.on("kicked", async () => {
+                await this.alertDialog.show(
+                    "You have been removed from this game.\n" +
+                    "You will be returned to the landing page.\n"
+                )
+                window.location = "/landing"
+            });            
         })
     }
 }

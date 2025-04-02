@@ -43,13 +43,33 @@ export default class GameIO extends EventEmitter {
         })           
 
         this.socket.on("game_cancelled", () => {
-            this.emit("game_cancelled", data)
-        })           
+            this.emit("game_cancelled", null)
+        })      
+        
+        this.socket.on("kicked", () => {
+            this.emit("kicked", null)
+        })          
     }
 
-    setName(name) {
+    async setName(name) {
         this.socket.emit("set_name", {
             name: name
+        });
+
+        return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                reject(new Error("Timeout: no response to set_name"));
+            }, 5000);
+
+            this.socket.once("set_name_return", (dataJSON) => {
+                clearTimeout(timeout);
+                try {
+                    const data = JSON.parse(dataJSON)
+                    resolve(data)
+                } catch (e) {
+                    reject(e)
+                }
+            });
         });
     }
 

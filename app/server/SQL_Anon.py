@@ -12,7 +12,7 @@ class Name_Dictionary(dict):
         return len(self)
 
 class SQL_Anon:
-    def __init__(self, filename):
+    def __init__(self, filename = "./app/anon.db"):
         """Initialize database connection with the given SQLite file."""
         self.filename = filename 
 
@@ -62,7 +62,7 @@ class SQL_Anon:
             (seat, game_token) = cursor.fetchone()            
 
             if seat == 0: 
-                sql = ("DELETE FROM users game_token = ? ")
+                sql = ("DELETE FROM users WHERE game_token = ? ")
                 cursor.execute(sql, (game_token,))
                 return True
             else:

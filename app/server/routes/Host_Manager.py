@@ -2,7 +2,9 @@ import logging
 from flask import render_template, request, Blueprint, redirect
 from SQL_Anon import SQL_Anon
 from decorators.fetch_anon_token import fetch_anon_token, get_anon_token
+from decorators.fetch_user import fetch_user
 import json
+import sqlite3
 
 logger = logging.getLogger(__name__)
 
@@ -75,17 +77,22 @@ class Host_Manager:
             self.notify_all(game_token, "update_names", self.build_names(game_token))
 
     # websocket set name endpoint
-    @fetch_anon_token
-    def on_set_name(self, data, token):
-        self.sql_anon.set_name(token, data["name"])
-        game_token = self.sql_anon.get_user(token)["game_token"]  
-        self.notify_all(game_token, "update_names", self.build_names(game_token))
+    @fetch_user
+    def on_set_name(self, data, user):
+        print("on_set_name")
+        try:
+            self.sql_anon.set_name(user["user_token"], data["name"])
+            self.io.emit("set_name_response", json.dumps(True), room = user["websocket_room"])
+            self.notify_all(user["game_token"], "update_names", self.build_names(user["game_token"]))
+        except sqlite3.IntegrityError:
+            self.io.emit("set_name_response", json.dumps(False), room = user["websocket_room"])
 
     @fetch_anon_token
     def on_kick_player(self, data, token):  
         game_token = self.sql_anon.get_user(token)["game_token"]  
         target = self.sql_anon.get_seat(data["seat"], game_token)
         if target is None: return
+
         self.sql_anon.remove_user(target["user_token"])
         self.io.emit("kicked", json.dumps({}), room = target["websocket_room"])
         self.notify_all(game_token, "update_names", self.build_names(game_token))
