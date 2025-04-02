@@ -1,9 +1,8 @@
 import logging
-from flask import render_template, request, Blueprint, redirect
+from flask import render_template, request, url_for, redirect
 from SQL_Anon import SQL_Anon, User
 from decorators.fetch_anon_token import fetch_anon_token, get_anon_token
 from decorators.fetch_user import fetch_user
-import json
 import sqlite3
 
 logger = logging.getLogger(__name__)
@@ -20,6 +19,7 @@ class Host_Manager:
         io.on_event('connect', self.on_connect)
         io.on_event('set_name', self.on_set_name)
         io.on_event('kick_player', self.on_kick_player)
+        io.on_event('on_start_game', self.on_start_game)
 
     # Serve template file for private game staging area.
     @fetch_anon_token
@@ -36,6 +36,9 @@ class Host_Manager:
     @fetch_anon_token
     def join_game(self, game_token, token):    
         user = self.sql_anon.get_user(token)
+        game = self.sql_anon.get_game(game_token)
+
+        if game is None: return redirect(url_for('templates.landing', reason='expired'))
 
         if user is None:
             self.sql_anon.add_user(token, game_token)
@@ -49,7 +52,7 @@ class Host_Manager:
     @fetch_user
     def exit_staging(self, user):
         self.sql_anon.remove_user(user.user_token)
-        users = self.sql_anon.all_users(user.game_token)
+        users = self.sql_anon.get_game(user.game_token)
 
         if user.seat == 0:
             users.emit("game_cancelled", {})
@@ -65,8 +68,8 @@ class Host_Manager:
         user.setConnected(True)
         user.emit("connected", {"seat": user.seat})
 
-        all_users = self.sql_anon.all_users(user.game_token)
-        all_users.emit("update_names", all_users.names)
+        get_game = self.sql_anon.get_game(user.game_token)
+        get_game.emit("update_names", get_game.names)
 
     # websocket disconnect handler
     def on_disconnect(self, reason=None):
@@ -75,8 +78,8 @@ class Host_Manager:
 
         if user is not None:
             user.setConnected(False)
-            all_users = self.sql_anon.all_users(user.game_token)
-            all_users.emit("update_names", all_users.names)            
+            get_game = self.sql_anon.get_game(user.game_token)
+            get_game.emit("update_names", get_game.names)            
 
     # websocket set name endpoint
     @fetch_user
@@ -85,8 +88,8 @@ class Host_Manager:
         try:
             user.setName(data["name"])
             user.emit("set_name_response", True)
-            all_users = self.sql_anon.all_users(user.game_token)
-            all_users.emit("update_names", all_users.names)
+            get_game = self.sql_anon.get_game(user.game_token)
+            get_game.emit("update_names", get_game.names)
         except sqlite3.IntegrityError:
              user.emit("set_name_response", False)
 
@@ -97,5 +100,10 @@ class Host_Manager:
 
         self.sql_anon.remove_user(target.user_token)
         target.emit("kicked", {})
-        all_users = self.sql_anon.all_users(user.game_token)
-        all_users.emit("update_names", all_users.names)
+        get_game = self.sql_anon.get_game(user.game_token)
+        get_game.emit("update_names", get_game.names)
+
+    @fetch_user
+    def on_start_game(self, user):
+        pass
+        

@@ -2,10 +2,9 @@ from constants import TOKEN_SIZE
 import sqlite3
 import sys
 import random
-from Socket_Connection import Socket_Connection
 import json
 
-class UserList(list):
+class Game(list):
     def __init__(self, rows):
         for row in rows:
             self.append(User(row))
@@ -24,7 +23,7 @@ class UserList(list):
         }            
 
 class User:
-    """ Represents a single row of the users table. """
+    """ Helper object for a single row of the users table. """
     @staticmethod
     def set_io(io):
         User.io = io    
@@ -44,7 +43,8 @@ class User:
         SQL_Anon().set_name(self.user_token, name)     
         self.username = name
 
-    def emit(self, event, object):        
+    def emit(self, event, object):  
+        print(f"* EMIT {self.username} {event} {object} {self.room}")      
         User.io.emit(event, json.dumps(object), room = self.room)
 
     def __str__(self):
@@ -84,8 +84,11 @@ class SQL_Anon:
             row = cursor.fetchone()
             return User(dict(row)) if row else None
 
-    def all_users(self, game_token):
-        """ Retrive user information for the specified game"""
+    def get_game(self, game_token):
+        """ 
+        Retrive user information for the specified game
+        Return an empty list if there is no game
+        """
         with sqlite3.connect(self.filename) as conn:
             conn.set_trace_callback(print)
             conn.row_factory = sqlite3.Row  # This makes query results behave like dictionaries
@@ -93,7 +96,8 @@ class SQL_Anon:
             sql = ("SELECT * from users where game_token = ?")
             cursor.execute(sql, (game_token,))
             rows = cursor.fetchall()
-            return UserList(rows)
+            if len(rows) == 0: return None            
+            return Game(rows)
 
     def remove_user(self, user_token):
         """ 
@@ -125,7 +129,7 @@ class SQL_Anon:
             cursor = conn.cursor()
             sql = ("INSERT INTO users (user_token, game_token, seat) VALUES (?, ?, ?)")
             cursor.execute(sql, (host_token, game_token, 0)) # seat 0 is host
-            return game_token
+            return game_token      
 
     def add_user(self, user_token, game_token):
         """ Create a new game with 'host_token' as host """

@@ -33,7 +33,6 @@ export default class GameIO extends EventEmitter {
         });
 
         this.socket.on("connected", (dataJSON) => {
-            console.log(`HostIO connected ${dataJSON}`)
             const data = JSON.parse(dataJSON)
             this.emit("connected", data.seat)
         })       
@@ -49,7 +48,11 @@ export default class GameIO extends EventEmitter {
         
         this.socket.on("kicked", () => {
             this.emit("kicked", null)
-        })          
+        })       
+        
+        this.socket.onAny((event, ...args) => {
+            console.log("HostIO Received Event:", event, args);
+        });
     }
 
     async setName(name) {
@@ -62,9 +65,7 @@ export default class GameIO extends EventEmitter {
                 reject(new Error("Timeout: no response to set_name"));
             }, 5000);
 
-            console.log("this.socket.once")
-            this.socket.on("set_name_return", (dataJSON) => {
-                console.log("set name return" , dataJSON)
+            this.socket.once("set_name_response", (dataJSON) => {
                 clearTimeout(timeout);
                 try {
                     const data = JSON.parse(dataJSON)

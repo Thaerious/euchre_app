@@ -268,3 +268,10 @@
     align-items: center; 
     gap: 5px       
 }
+
+alert-dialog, name-dialog{
+    position: absolute;
+    width: 50%;
+    aspect-ratio: 5/3;
+    z-index: 1000;
+}
