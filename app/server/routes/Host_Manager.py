@@ -41,10 +41,10 @@ class Host_Manager:
         if game is None: return redirect(url_for('templates.landing', reason='expired'))
 
         if user is None:
-            self.sql_anon.add_user(token, game_token)
+            self.sql_anon.join_game(token, game_token)
         elif user.game_token != game_token:
             self.sql_anon.remove_user(token)
-            self.sql_anon.add_user(token, game_token)
+            self.sql_anon.join_game(token, game_token)
 
         return render_template("join.html", game_token = game_token)
 

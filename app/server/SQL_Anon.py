@@ -5,9 +5,9 @@ import random
 import json
 
 class Game(list):
-    def __init__(self, rows):
-        for row in rows:
-            self.append(User(row))
+    def __init__(self, rows = None):
+        if rows is None: return
+        for row in rows: self.append(User(row))
 
     def emit(self, event, object):
         for user in self:
@@ -44,7 +44,7 @@ class User:
         self.username = name
 
     def emit(self, event, object):  
-        print(f"* EMIT {self.username} {event} {object} {self.room}")      
+        print(f"* EMIT ({self.username}) -> {event} {object} room = {self.room}")      
         User.io.emit(event, json.dumps(object), room = self.room)
 
     def __str__(self):
@@ -86,7 +86,7 @@ class SQL_Anon:
 
     def get_game(self, game_token):
         """ 
-        Retrive user information for the specified game
+        Retrieve list of users for the specified game
         Return an empty list if there is no game
         """
         with sqlite3.connect(self.filename) as conn:
@@ -96,7 +96,7 @@ class SQL_Anon:
             sql = ("SELECT * from users where game_token = ?")
             cursor.execute(sql, (game_token,))
             rows = cursor.fetchall()
-            if len(rows) == 0: return None            
+            if len(rows) == 0: return Game()            
             return Game(rows)
 
     def remove_user(self, user_token):
@@ -127,14 +127,16 @@ class SQL_Anon:
         with sqlite3.connect(self.filename) as conn:
             conn.set_trace_callback(print)
             cursor = conn.cursor()
+            sql = ("INSERT INTO games (game_token) VALUES (?)")
+            cursor.execute(sql, (game_token,))
+
             sql = ("INSERT INTO users (user_token, game_token, seat) VALUES (?, ?, ?)")
             cursor.execute(sql, (host_token, game_token, 0)) # seat 0 is host
-            return game_token      
+            return game_token
 
-    def add_user(self, user_token, game_token):
-        """ Create a new game with 'host_token' as host """
+    def join_game(self, user_token, game_token):
+        """ Associate a player with a game """
 
-        print(self.get_names(game_token))
         seat = self.get_names(game_token).next_free_seat()
 
         with sqlite3.connect(self.filename) as conn:
@@ -188,12 +190,12 @@ class SQL_Anon:
 
             name_dict = Name_Dictionary()
             for row in result:
-                name_dict[row[0]]= row[1]
+                name_dict[row[0]] = row[1]
 
             return name_dict
 
-    def list(self):
-        """ List all entries"""
+    def users(self):
+        """ List all users"""
         with sqlite3.connect(self.filename) as conn:
             conn.set_trace_callback(print)
             conn.row_factory = sqlite3.Row  # This makes query results behave like dictionaries
@@ -202,6 +204,20 @@ class SQL_Anon:
             cursor.execute(sql)
             rows = cursor.fetchall()
             return [dict(row) for row in rows]
+        
+    def games(self):
+        """ List all games"""
+        with sqlite3.connect(self.filename) as conn:
+            conn.set_trace_callback(print)
+            conn.row_factory = sqlite3.Row  # This makes query results behave like dictionaries
+            cursor = conn.cursor()
+            sql = ("SELECT game_token, status_desc as status "
+                   "FROM games INNER JOIN game_status "
+                   "ON game_status = game_status.status_code "
+                  )
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+            return [dict(row) for row in rows]        
 
 def invoke(method_name, *args):
     """Dynamically invoke a method from the SQL_Games class."""
@@ -209,7 +225,11 @@ def invoke(method_name, *args):
     if hasattr(sql, method_name):
         method = getattr(sql, method_name)
         result = method(*args)
-        print(result)
+
+        if isinstance(result, list):
+            for item in result: print(item)
+        else:
+            print(result)
     else:
         print(f"Method '{method_name}' not found in SQL_Games.")
 
