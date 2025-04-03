@@ -8,6 +8,8 @@ export default class JoinUI {
         this.addElements()
         this.addEventListeners()
         this.setupHostIO()
+        
+        window.ui = this
     }
 
     addElements() {

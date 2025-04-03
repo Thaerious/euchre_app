@@ -1,12 +1,11 @@
 from functools import wraps
 from decorators.inject_arg import inject_arg
 from .fetch_anon_token import get_anon_token
-from SQL_Anon import SQL_Anon
+from SQL_Anon import SQL_Anon, User
 
 def fetch_user(func):
     @wraps(func)
     def decorated(*args, **kwargs):  
-        print("decorated")     
         # Retrieve session token from cookies
         token = get_anon_token()
 

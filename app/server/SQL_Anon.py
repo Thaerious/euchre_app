@@ -31,21 +31,13 @@ class User:
     def __init__(self, row):
         self.__dict__.update(row)
 
-    def setRoom(self, room):   
-        SQL_Anon().set_ws_room(self.user_token, room)     
-        self.room = room
-
-    def setConnected(self, value):   
-        SQL_Anon().set_connected(self.user_token, value)     
-        self.connected = value
-
-    def setName(self, name):   
-        SQL_Anon().set_name(self.user_token, name)     
-        self.username = name
-
     def emit(self, event, object):  
         print(f"* EMIT ({self.username}) -> {event} {object} room = {self.room}")      
         User.io.emit(event, json.dumps(object), room = self.room)
+
+    def refresh(self):
+        row = SQL_Anon().get_user_row(self.user_token)
+        self.__dict__.update(row)
 
     def __str__(self):
         return str(self.__dict__)
@@ -62,7 +54,11 @@ class SQL_Anon:
         """Initialize database connection with the given SQLite file."""
         self.filename = filename 
 
-    def get_user(self, user_token) -> User:
+    def get_user(self, user_token):
+        row = self.get_user_row(user_token)
+        return User(row) if row else None
+
+    def get_user_row(self, user_token):
         """ Retrive user information """
         with sqlite3.connect(self.filename) as conn:
             conn.set_trace_callback(print)
@@ -71,7 +67,7 @@ class SQL_Anon:
             sql = ("SELECT * from users where user_token = ?")
             cursor.execute(sql, (user_token,))
             row = cursor.fetchone()
-            return User(dict(row)) if row else None
+            return dict(row) if row else None
 
     def get_seat(self, seat, game_token):
         """ Retrive user information """
@@ -87,7 +83,7 @@ class SQL_Anon:
     def get_game(self, game_token):
         """ 
         Retrieve list of users for the specified game
-        Return an empty list if there is no game
+        Return None list if there is no game
         """
         with sqlite3.connect(self.filename) as conn:
             conn.set_trace_callback(print)
@@ -96,7 +92,7 @@ class SQL_Anon:
             sql = ("SELECT * from users where game_token = ?")
             cursor.execute(sql, (game_token,))
             rows = cursor.fetchall()
-            if len(rows) == 0: return Game()            
+            if len(rows) == 0: return None  
             return Game(rows)
 
     def remove_user(self, user_token):

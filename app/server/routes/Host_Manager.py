@@ -4,6 +4,7 @@ from SQL_Anon import SQL_Anon, User
 from decorators.fetch_anon_token import fetch_anon_token, get_anon_token
 from decorators.fetch_user import fetch_user
 import sqlite3
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +14,7 @@ class Host_Manager:
         self.io = io
         self.sql_anon = SQL_Anon("./app/anon.db")
         app.add_url_rule("/exit_staging", view_func=self.exit_staging, methods=["POST"])
-        app.add_url_rule("/host", view_func=self.host_game)        
+        app.add_url_rule("/host", view_func=self.host_game, endpoint="host")        
         app.add_url_rule("/join/<game_token>", view_func=self.join_game)
         io.on_event('disconnect', self.on_disconnect)
         io.on_event('connect', self.on_connect)
@@ -23,28 +24,32 @@ class Host_Manager:
 
     # Serve template file for private game staging area.
     @fetch_anon_token
-    def host_game(self, token):
-        user = self.sql_anon.get_user(token)
+    def host_game(self, user_token):
+        user = self.sql_anon.get_user(user_token)
 
         if user is None:
-            game_token = self.sql_anon.create_game(token)
+            game_token = self.sql_anon.create_game(user_token)
             return render_template("host.html", game_token = game_token)
         else:
             return render_template("host.html", game_token = user.game_token)
 
     # Serve template file for private game staging area.
     @fetch_anon_token
-    def join_game(self, game_token, token):    
-        user = self.sql_anon.get_user(token)
+    def join_game(self, game_token, user_token):    
+        user = self.sql_anon.get_user(user_token)
         game = self.sql_anon.get_game(game_token)
 
-        if game is None: return redirect(url_for('templates.landing', reason='expired'))
+        if game is None: 
+            return redirect(url_for('templates.landing', reason='expired'))
+
+        if user.game_token == game_token: 
+            return redirect(url_for('host'))           
 
         if user is None:
-            self.sql_anon.join_game(token, game_token)
+            self.sql_anon.join_game(user_token, game_token)
         elif user.game_token != game_token:
-            self.sql_anon.remove_user(token)
-            self.sql_anon.join_game(token, game_token)
+            self.sql_anon.remove_user(user_token)
+            self.sql_anon.join_game(user_token, game_token)
 
         return render_template("join.html", game_token = game_token)
 
@@ -64,8 +69,9 @@ class Host_Manager:
     # websocket connect handler 
     @fetch_user
     def on_connect(self, user):
-        user.setRoom(request.sid)
-        user.setConnected(True)
+        self.sql_anon.set_ws_room(user.user_token, request.sid)
+        self.sql_anon.set_connected(user.user_token, True)
+        user.refresh()
         user.emit("connected", {"seat": user.seat})
 
         get_game = self.sql_anon.get_game(user.game_token)
@@ -73,20 +79,19 @@ class Host_Manager:
 
     # websocket disconnect handler
     def on_disconnect(self, reason=None):
-        token = get_anon_token()
-        user = self.sql_anon.get_user(token)
+        user_token = get_anon_token()
+        user = self.sql_anon.get_user(user_token)
 
         if user is not None:
-            user.setConnected(False)
-            get_game = self.sql_anon.get_game(user.game_token)
-            get_game.emit("update_names", get_game.names)            
+            self.sql_anon.set_connected(user.user_token, False)
+            game = self.sql_anon.get_game(user.game_token)
+            game.emit("update_names", game.names)            
 
     # websocket set name endpoint
     @fetch_user
     def on_set_name(self, data, user):
-        print(f" - CALL: on_set_name {data} {user}")
         try:
-            user.setName(data["name"])
+            self.sql_anon.set_name(user.user_token, data["name"])   
             user.emit("set_name_response", True)
             get_game = self.sql_anon.get_game(user.game_token)
             get_game.emit("update_names", get_game.names)

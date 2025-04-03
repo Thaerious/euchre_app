@@ -6,7 +6,7 @@ from decorators.inject_arg import inject_arg
 import random
 
 COOKIE_NAME = "anon_token"
-ARG_NAME = "token"
+ARG_NAME = "user_token"
 
 sqlAccounts = SQL_Accounts("./app/accounts.db")
 
