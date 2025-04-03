@@ -73,12 +73,14 @@ export default class JoinUI {
                 }
             }
 
-            this.hostIO.on("game_cancelled", async (data) => {               
-                await this.alertDialog.show(
-                    "The game has been cancelled.\n" +
-                    "You will be returned to the landing page.\n"
-                )                
-                window.location = "/landing"
+            this.hostIO.on("game_cancelled", async (data) => { 
+                if (this.seat != 0) {
+                    await this.alertDialog.show(
+                        "The game has been cancelled.\n" +
+                        "You will be returned to the landing page.\n"
+                    )
+                    window.location = "/landing"
+                }
             });
 
             this.hostIO.on("kicked", async () => {

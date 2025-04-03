@@ -40,14 +40,16 @@ class Host_Manager:
         game = self.sql_anon.get_game(game_token)
 
         if game is None: 
-            return redirect(url_for('templates.landing', reason='expired'))
-
-        if user.game_token == game_token: 
-            return redirect(url_for('host'))           
+            return redirect(url_for('templates.landing', reason='expired'))         
 
         if user is None:
+            # if user is not in a game
             self.sql_anon.join_game(user_token, game_token)
-        elif user.game_token != game_token:
+        elif user.game_token == game_token: 
+            # if user is the game's host
+            return redirect(url_for('host'))              
+        else: 
+            # if user is in another game
             self.sql_anon.remove_user(user_token)
             self.sql_anon.join_game(user_token, game_token)
 
