@@ -56,15 +56,16 @@ class Host_Manager:
     # api endpoint to cancel a staged game
     @fetch_user
     def exit_staging(self, user):
-        self.sql_anon.remove_user(user.user_token)
+        print("user", user)
         users = self.sql_anon.get_game(user.game_token)
+        self.sql_anon.remove_user(user.user_token)        
 
         if user.seat == 0:
             users.emit("game_cancelled", {})
         else:
             users.emit("update_names", users.names)
 
-        return redirect("landing")
+        return redirect(url_for('templates.landing', reason='game cancelled'))
 
     # websocket connect handler 
     @fetch_user
