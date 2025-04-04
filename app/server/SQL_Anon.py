@@ -5,13 +5,17 @@ import random
 import json
 
 class Game(list):
-    def __init__(self, rows = None):
+    def __init__(self, token, rows = None):
+        self.token = token
         if rows is None: return
         for row in rows: self.append(User(row))
 
     def emit(self, event, object):
         for user in self:
             user.emit(event, object)
+
+    def refresh(self):
+        return SQL_Anon().get_game(self.token)
 
     @property
     def names(self):
@@ -37,7 +41,7 @@ class User:
 
     def refresh(self):
         row = SQL_Anon().get_user_row(self.user_token)
-        self.__dict__.update(row)
+        return User(row)
 
     def __str__(self):
         return str(self.__dict__)
@@ -93,7 +97,7 @@ class SQL_Anon:
             cursor.execute(sql, (game_token,))
             rows = cursor.fetchall()
             if len(rows) == 0: return None  
-            return Game(rows)
+            return Game(game_token, rows)
 
     def remove_user(self, user_token):
         """ 

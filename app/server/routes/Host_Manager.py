@@ -4,7 +4,6 @@ from SQL_Anon import SQL_Anon, User
 from decorators.fetch_anon_token import fetch_anon_token, get_anon_token
 from decorators.fetch_user import fetch_user
 import sqlite3
-import json
 
 logger = logging.getLogger(__name__)
 
@@ -55,17 +54,19 @@ class Host_Manager:
 
         return render_template("join.html", game_token = game_token)
 
-    # api endpoint to cancel a staged game
+    # api endpoint to leave a staged game
+    # if the host leaves, all players are removed
     @fetch_user
     def exit_staging(self, user):
-        print("user", user)
-        users = self.sql_anon.get_game(user.game_token)
-        self.sql_anon.remove_user(user.user_token)        
+        print(f"exit_staging({user})")
+        game = self.sql_anon.get_game(user.game_token)
+        self.sql_anon.remove_user(user.user_token)                
 
         if user.seat == 0:
-            users.emit("game_cancelled", {})
+            game.emit("game_cancelled", {})
         else:
-            users.emit("update_names", users.names)
+            game = self.sql_anon.get_game(user.game_token)
+            game.emit("update_names", game.names)
 
         return redirect(url_for('templates.landing', reason='game cancelled'))
 
@@ -74,7 +75,7 @@ class Host_Manager:
     def on_connect(self, user):
         self.sql_anon.set_ws_room(user.user_token, request.sid)
         self.sql_anon.set_connected(user.user_token, True)
-        user.refresh()
+        user = user.refresh()
         user.emit("connected", {"seat": user.seat})
 
         get_game = self.sql_anon.get_game(user.game_token)
