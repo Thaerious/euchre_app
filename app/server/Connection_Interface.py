@@ -1,13 +1,13 @@
 from euchre import Snapshot
 
-class Game_Connection:
+class Connection_Interface:
     def __init__(self, name:str):
         self._name = name
 
-    def send_snapshot(self, snapshot:Snapshot):
+    def emit_snapshot(self, snapshot:Snapshot):
         pass
 
-    def send_message(self, string):
+    def emit_message(self, string):
         pass
 
     def get_decision(self):
@@ -16,7 +16,3 @@ class Game_Connection:
     @property
     def name(self):
         return self._name
-
-    
-
-
