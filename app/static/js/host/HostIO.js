@@ -6,11 +6,11 @@ class EuchreException extends Error {
     }
 }
 
-export default class GameIO extends EventEmitter {
+export default class HostIO extends EventEmitter {
     constructor() {
         super()
 
-        this.socket = io("http://" + location.hostname + ":" + location.port, {
+        this.socket = io(`/host`, {
             query: { token: this.token }
         });
 
@@ -20,7 +20,7 @@ export default class GameIO extends EventEmitter {
 
         this.socket.on("connect_error", (error) => {
             console.log("Connection error:", error);
-            window.location = "/landing"
+            window.location = "/lobby"
         });
 
         this.socket.on("disconnect", () => {
@@ -28,30 +28,23 @@ export default class GameIO extends EventEmitter {
         });
 
         this.socket.on("socket_error", (data) => {
+            console.error("Socket Error:", data);
             window.alert(data.message)
-            console.error(data)
         });
-
-        this.socket.on("connected", (dataJSON) => {
-            const data = JSON.parse(dataJSON)
-            this.emit("connected", data.seat)
-        })       
-
-        this.socket.on("update_names", (dataJSON) => {
-            const data = JSON.parse(dataJSON)
-            this.emit("update_names", data)
-        })           
-
-        this.socket.on("game_cancelled", () => {
-            this.emit("game_cancelled", null)
-        })      
         
-        this.socket.on("kicked", () => {
-            this.emit("kicked", null)
-        })       
-        
-        this.socket.onAny((event, ...args) => {
-            console.log("HostIO Received Event:", event, args);
+        this.socket.onAny((event, ...args) => {   
+            if (event.startsWith("response:")){
+                return
+            }
+
+            if (args.length > 0) {
+                const data = JSON.parse(args[0])    
+                console.log("HostIO Received Event:", event, data);
+                this.emit(event, data)
+            } else {
+                console.log("HostIO Received Event:", event);
+                this.emit(event, null)
+            }
         });
     }
 
@@ -65,7 +58,7 @@ export default class GameIO extends EventEmitter {
                 reject(new Error("Timeout: no response to set_name"));
             }, 5000);
 
-            this.socket.once("set_name_response", (dataJSON) => {
+            this.socket.once("response: set_name", (dataJSON) => {
                 clearTimeout(timeout);
                 try {
                     const data = JSON.parse(dataJSON)
@@ -92,4 +85,8 @@ export default class GameIO extends EventEmitter {
             window.location.href = response.url;
         }
     }    
+
+    startGame() {
+        this.socket.emit("start_game", null);
+    }
 }

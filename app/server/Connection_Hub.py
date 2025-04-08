@@ -1,15 +1,20 @@
 from constants import TOKEN_SIZE
-from Game_Connection import Game_Connection
+from Connection_Interface import Connection_Interface
 from euchre import Game, Snapshot, EuchreException
 import threading
 import random
 
 class Connection_Hub:
-    def __init__(self, connections:list[Game_Connection]):
+    def __init__(self, connections:list[Connection_Interface]):
         self.connections = {connection.name: connection for connection in connections} 
         self.identity = ''.join(random.choices('0123456789abcdef', k=TOKEN_SIZE))
         self.thread = None
         self.is_running = False
+
+        names = list(self.connections.keys())
+        random.shuffle(names)
+        self.game = Game(names)
+        self.game.register_hook("after_input", self.report_after) 
 
     def start(self):
         self.is_running = True
@@ -22,10 +27,6 @@ class Connection_Hub:
         self.thread.join()
 
     def run(self):
-        names = list(self.connections.keys())
-        random.shuffle(names)
-        self.game = Game(names)
-        self.game.register_hook("after_input", self.report_after) 
         self.game.input(None, "start", None)
         self.broadcast_snapshots()
 
@@ -42,7 +43,7 @@ class Connection_Hub:
                     self.broadcast_snapshots()
             except EuchreException as ex:
                 connection = self.connections[name]
-                connection.send_message(ex.to_json())
+                connection.emit_message(ex.to_json())
 
         return self
 
@@ -50,9 +51,9 @@ class Connection_Hub:
         for name in self.connections:
             connection = self.connections[name]
             snapshot = Snapshot(self.game, name)
-            connection.send_snapshot(snapshot)
+            connection.emit_snapshot(snapshot)
 
-    def __getitem__(self, index) -> Game_Connection:
+    def __getitem__(self, index) -> Connection_Interface:
         return self.connections[index]
     
     def __contains__(self, key):

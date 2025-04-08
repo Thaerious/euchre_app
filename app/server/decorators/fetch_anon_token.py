@@ -1,14 +1,11 @@
 from constants import TOKEN_SIZE
 from functools import wraps
 from flask import request, make_response
-from SQL_Accounts import SQL_Accounts
 from decorators.inject_arg import inject_arg
 import random
 
 COOKIE_NAME = "anon_token"
 ARG_NAME = "user_token"
-
-sqlAccounts = SQL_Accounts("./app/accounts.db")
 
 def get_anon_token():
     """
@@ -46,16 +43,15 @@ def fetch_anon_token(f):
         elif isinstance(response, str):
             response = make_response(response, 200)
 
-        # If valid, refresh the session token to extend its validity
+        # If valid, set cookie
         if token is not None:
-            token = sqlAccounts.refresh_session(token)
             response.set_cookie(
                 COOKIE_NAME, 
                 token, 
                 httponly=True,  # Prevent JavaScript access for security
                 secure=True,  # Only allow over HTTPS
                 samesite="Strict"  # Prevent cross-site request forgery (CSRF)
-            )     
+            )   
 
         return response  # Return the final response with the updated cookie    
     return decorated

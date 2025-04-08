@@ -1,6 +1,6 @@
 // Event listener that waits for the page to fully load before executing
 window.addEventListener("load", async () => {
-    // if (await checkStatus()) window.location = "/landing"
+    // if (await checkStatus()) window.location = "/lobby"
 
     // Adds a click event listener to the login button
     document.querySelector("#login_button").addEventListener("click", () => {
@@ -39,7 +39,7 @@ async function login(username, password) {
 
     switch (response.status) {
         case 200:
-            window.location = "/landing"
+            window.location = "/lobby"
             break;
         default:
             window.alert(data.message)

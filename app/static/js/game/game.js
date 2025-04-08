@@ -10,7 +10,7 @@ import ViewController from "./View_Controller.js"
     const token = localStorage.getItem("game_token");
     if (!token) {
         // Redirect to login if no token is found
-        window.location.href = "/landing";
+        window.location.href = "/lobby";
     }
 
     // Load IO manager and initialize history

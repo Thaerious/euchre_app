@@ -17,7 +17,7 @@
     <alert-dialog class="hidden"></alert-dialog>
     <name-dialog class="hidden"></name-dialog>
 
-    <div id="game-board" class="game-board" game-token="{{ game_token }}">
+    <div id="game-board" class="game-board" game-token="{{game_token}}" seat="{{seat}}">
         <div id="host-menu">
 
             <div class="component-collection">
@@ -26,12 +26,7 @@
             </div>
 
             <div class="ui-container horz default font-normal">
-                <div class="name-container">
-                    <div id="player_0_name" class="label-inner pending-player"></div>                
-                    <div id="player_1_name" class="label-inner pending-player"></div>
-                    <div id="player_2_name" class="label-inner pending-player"></div>
-                    <div id="player_3_name" class="label-inner pending-player"></div>
-                </div>
+                {% include 'elements/name_container.html' %}
             </div>
 
             <div class="component-collection">

@@ -99,7 +99,7 @@ export default class ViewModel{
 
         if (this.snapshot.state == 0) {
             this.alert.show("Game Over", () => {
-                window.location = "/landing"
+                window.location = "/lobby"
             })
         }
     }
@@ -120,7 +120,7 @@ export default class ViewModel{
 
         if (this.snapshot.state == 0) {
             this.alert.show("Game Over", () => {
-                window.location = "/landing"
+                window.location = "/lobby"
             })
         }
     }

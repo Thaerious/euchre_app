@@ -1,3 +1,5 @@
+import { log, setLogging } from '../modules/log.js'
+
 class EuchreException extends Error {
     constructor(message) {
         super(message)
@@ -14,21 +16,21 @@ export default class GameIO {
         this.events = new Map();
         this.enabled = true
 
-        this.socket = io("http://" + location.hostname + ":" + location.port, {
+        this.socket = io(`/game`, {
             query: { token: this.token }
         });
 
         this.socket.on("connect", () => {
-            console.log("Connected to WebSocket!");
+            log("Connected to WebSocket!");
         });
 
         this.socket.on("connect_error", (error) => {
-            console.log("Connection error:", error);
-            window.location = "/landing"
+            log("Connection error:", error);
+            window.location = "/lobby"
         });
 
         this.socket.on("disconnect", () => {
-            console.log("Disconnected from WebSocket.");
+            log("Disconnected from WebSocket.");
         });
 
         this.socket.on("socket_error", (data) => {
@@ -37,11 +39,13 @@ export default class GameIO {
         });
        
         this.socket.on("snapshot", (data) => {
+            log("Websocket received snaphot");
             const snapshot = JSON.parse(data)
             this.emit("snapshot", snapshot)
         });
 
         this.socket.on("message", (_data) => {
+            log("Websocket received message");
             const data = JSON.parse(_data)
             if (data.type == "EuchreException") {
                 this.emit("error", new EuchreException(data.message))
