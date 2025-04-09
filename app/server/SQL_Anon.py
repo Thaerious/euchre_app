@@ -44,10 +44,12 @@ class User:
         self.__dict__.update(row)
 
     def emit(self, event, object = None):  
-        print(f"* EMIT ({self.username}) -> {event} {object} room = {self.room}")      
+        print(f"* EMIT ({self.username}) -> {event} {str(object)[:16]} room = {self.room}")      
 
         if self.namespace == None: 
             raise RuntimeError("Cannot emit: namespace is not set.")
+        elif isinstance(object, str):
+            User.io.emit(event, object, room=self.room, namespace=self.namespace)
         else:
             User.io.emit(event, json.dumps(object), room=self.room, namespace=self.namespace)
 
