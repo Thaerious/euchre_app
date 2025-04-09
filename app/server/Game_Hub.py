@@ -1,22 +1,30 @@
 from constants import TOKEN_SIZE
 from Connection_Interface import Connection_Interface
 from euchre import Game, Snapshot, EuchreException
+from Auto_Key_Dict import Auto_Key_Dict
 import threading
 import random
 
-class Connection_Hub:
-    def __init__(self, connections:list[Connection_Interface]):
-        self.connections = {connection.name: connection for connection in connections} 
-        self.identity = ''.join(random.choices('0123456789abcdef', k=TOKEN_SIZE))
+class Game_Hub:
+    def __init__(self, game_token):
+        self.connections = Auto_Key_Dict("id")
+        self.game_token = game_token
         self.thread = None
         self.is_running = False
 
+    @property
+    def size(self):
+        return len(self.connections)
+
+    def add(self, connection):
+        self.connections.add(connection)
+
+    def start(self):
         names = list(self.connections.keys())
         random.shuffle(names)
         self.game = Game(names)
-        self.game.register_hook("after_input", self.report_after) 
+        self.game.register_hook("after_input", self.report_after)
 
-    def start(self):
         self.is_running = True
         self.thread = threading.Thread(target=self.run, args=())
         self.thread.start()

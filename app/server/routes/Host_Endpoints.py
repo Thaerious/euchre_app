@@ -6,7 +6,7 @@ from decorators.fetch_user import fetch_user
 import sqlite3
 from constants import *
 import random
-from Connection_Hub import Connection_Hub
+from Game_Hub import Game_Hub
 from Socket_Connection import Socket_Connection
 from Bot_Connection import Bot_Connection
 from euchre.bots.Bot_2 import Bot_2
@@ -146,32 +146,28 @@ class Host_Endpoints:
     def on_start_game(self, data, user):
         game_rec = self.sql_anon.get_game(user.game_token)
         self.sql_anon.set_status(game_rec.token, PLAYING)
-        self.create_game(game_rec.token)        
+        self.create_game(game_rec)        
         game_rec.emit("start_game")
         
-    def create_game(self, game_token):
-        connections = []
-        game_rec = self.sql_anon.get_game(game_token)
+    def create_game(self, game_rec):
+        # Create & store a hub
+        hub = Game_Hub(game_rec.token)
+        self.hubs.add(hub)
 
         # Create a user connector for each user, 
         # store it using the user token as a key
         for user in game_rec.users:
             connection = Socket_Connection(user)
-            connections.append(connection)
-            self.hubs.connections[user.user_token] = connection
+            hub.add(connection)
 
         # Fill remaining connections with bots.
-        while len(connections) < 4:
+        while hub.size < 4:
             bot_name = BOT_NAMES.pop(random.randrange(len(BOT_NAMES)))
-            connections.append(Bot_Connection(bot_name, Bot_2))
+            hub.add(Bot_Connection(bot_name, Bot_2))
 
-        # Build and store the hub
-        hub = Connection_Hub(connections)
-        self.hubs.add_hub(game_rec, hub)
-
-        # Set the seat for each user
+        # Start the hub, record the seats
+        hub.start()
         for user in game_rec.users:
             seat = hub.game.get_player(user.username).index
             self.sql_anon.set_seat(user.user_token, seat)        
 
-        print(self.hubs.connections)

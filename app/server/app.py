@@ -4,9 +4,9 @@ from flask_socketio import SocketIO
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
 from routes.templates import templates_bp
-from routes.Host_Endponts import Host_Endpoints
+from routes.Host_Endpoints import Host_Endpoints
 from routes.Game_Endpoints import Game_Endpoints
-from Hub_Collection import Hub_Collection
+from Auto_Key_Dict import Auto_Key_Dict
 from constants import *
 import os
 
@@ -36,9 +36,9 @@ jwt = JWTManager(app)
 websocket = SocketIO(app, cors_allowed_origins="*") 
 
 # Routes Registration
-hubs = Hub_Collection()
+hubs = Auto_Key_Dict("game_token")
 app.register_blueprint(templates_bp)
-Host_Endpoints(app, websocket,hubs)
+Host_Endpoints(app, websocket, hubs)
 Game_Endpoints(app, websocket, hubs)
 
 if __name__ == "__main__":    

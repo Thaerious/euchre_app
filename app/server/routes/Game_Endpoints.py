@@ -1,9 +1,10 @@
 import logging
 from flask import render_template, request
-from SQL_Anon import SQL_Anon
+from SQL_Anon import SQL_Anon, User
 from decorators.fetch_anon_token import get_anon_token
 from decorators.fetch_user import fetch_user
 from constants import *
+
 
 logger = logging.getLogger(__name__)
 
@@ -19,23 +20,38 @@ class Game_Endpoints:
 
         io.on_event('connect', self.on_connect, namespace=self.NAMESPACE)
         io.on_event('disconnect', self.on_disconnect, namespace=self.NAMESPACE)        
+        io.on_event('join', self.on_join, namespace=self.NAMESPACE)        
         io.on_event('do_action', self.on_action, namespace=self.NAMESPACE)        
+
+    # /game template endpoint
+    @fetch_user()
+    def game(self, user):
+        return render_template("game.html", seat=user.seat)
 
     # websocket connect handler 
     @fetch_user()
-    def on_connect(self, user):
-        print("Game Websocket Connect")
+    def on_connect(self, user: User):
+        print("Game WS Connect")
         self.sql_anon.set_ws_room(user.user_token, request.sid)
         self.sql_anon.set_connected(user.user_token, True)
         game_rec = self.sql_anon.get_game(user.game_token)
-        game_rec.emit("user_joined", {"seat": user.seat})   
+        game_rec.emit("user_connected", {"seat": user.seat})
 
-        socket_connection = self.connections[user.user_token]
-        socket_connection.emit_snapshot()
+        user = user.refresh()
+        print(user)
+        user.emit("test")
+
+    # websocket connect handler 
+    @fetch_user()
+    def on_join(self, user):
+        print("Game WS join")
+        hub = self.hubs[user.game_token]
+        connection = hub[user.username]
+        connection.emit_snapshot()
 
     # websocket disconnect handler
     def on_disconnect(self, reason=None):
-        print("Game Websocket Disconnect")
+        print("Game WS Disconnect")
         user_token = get_anon_token()
         user = self.sql_anon.get_user(user_token)
 
@@ -43,11 +59,6 @@ class Game_Endpoints:
             self.sql_anon.set_connected(user.user_token, False)
             game_rec = self.sql_anon.get_game(user.game_token)
             game_rec.emit("user_left", {"seat": user.seat})  
-
-    # /game template endpoint
-    @fetch_user()
-    def game(self, user):
-        return render_template("game.html", seat=user.seat)
 
     # /do_action websocket on action endpoint
     @fetch_user()

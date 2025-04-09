@@ -17,7 +17,6 @@ class Socket_Connection(Connection_Interface):
 
     def emit_snapshot(self, snapshot = None):
         if snapshot is not None: self.snapshot = snapshot  
-        if self._room is None: return
         self.user.emit("snapshot", self.snapshot.to_json())
 
     def emit_message(self, string):

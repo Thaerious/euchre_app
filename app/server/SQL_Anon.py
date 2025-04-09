@@ -5,6 +5,7 @@ import sys
 import random
 import json
 import os
+from tabulate import tabulate
 
 class Game():
     def __init__(self, game_row, user_rows, namespace):
@@ -42,7 +43,7 @@ class User:
         self.namespace = namespace
         self.__dict__.update(row)
 
-    def emit(self, event, object):  
+    def emit(self, event, object = None):  
         print(f"* EMIT ({self.username}) -> {event} {object} room = {self.room}")      
 
         if self.namespace == None: 
@@ -288,12 +289,13 @@ def invoke(method_name, *args):
         exit()
 
     sql = SQL_Anon(filename="./anon.db")
+
     if hasattr(sql, method_name):
         method = getattr(sql, method_name)
         result = method(*args)
 
         if isinstance(result, list):
-            for item in result: print(item)
+            print(tabulate(result, headers="keys", tablefmt="pretty"))
         else:
             print(result)
     else:
