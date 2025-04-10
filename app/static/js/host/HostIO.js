@@ -34,7 +34,7 @@ export default class HostIO extends BaseIO {
     }
 
     async exitGame(name) {
-        const response = await fetch("/exit_staging", {
+        const response = await fetch("/exit_lobby", {
             method: "POST"
         })
         

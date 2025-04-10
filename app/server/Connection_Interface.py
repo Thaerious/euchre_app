@@ -5,13 +5,13 @@ class Connection_Interface:
         self._identifier = id
 
     def emit_snapshot(self, snapshot:Snapshot):
-        pass
+        raise NotImplementedError("emit_snapshot")
 
     def emit_message(self, string):
-        pass
+        raise NotImplementedError("emit_message")
 
     def get_decision(self):
-        pass
+        raise NotImplementedError("get_decision")
 
     @property
     def id(self):

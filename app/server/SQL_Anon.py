@@ -1,11 +1,15 @@
 from constants import TOKEN_SIZE
+from logger_factory import logger_factory
+from tabulate import tabulate
 from werkzeug.exceptions import Forbidden
 import sqlite3
 import sys
 import random
 import json
 import os
-from tabulate import tabulate
+import traceback
+
+logger = logger_factory(__name__, "SQL")
 
 class Game():
     def __init__(self, game_row, user_rows, namespace):
@@ -42,12 +46,13 @@ class User:
     def __init__(self, row, namespace):
         self.namespace = namespace
         self.__dict__.update(row)
+        self.creation_stack = traceback.format_stack()
 
     def emit(self, event, object = None):  
-        print(f"* EMIT ({self.username}) -> {event} {str(object)[:16]} room = {self.room}")      
+        logger.info(f"EMIT ({self.username}, {event}) -> {str(object)[:16]}:{type(object).__name__}")      
 
         if self.namespace == None: 
-            raise RuntimeError("Cannot emit: namespace is not set.")
+            raise RuntimeError("Cannot emit: namespace is not set.\nInit stack:\n"+ ''.join(self.creation_stack))
         elif isinstance(object, str):
             User.io.emit(event, object, room=self.room, namespace=self.namespace)
         else:
@@ -83,7 +88,7 @@ class SQL_Anon:
     def get_user_row(self, user_token):
         """ Retrive user information """
         with sqlite3.connect(self.filename) as conn:
-            conn.set_trace_callback(print)
+            conn.set_trace_callback(logger.debug)
             conn.row_factory = sqlite3.Row  # This makes query results behave like dictionaries
             cursor = conn.cursor()
             sql = ("SELECT * FROM users WHERE user_token = ?")
@@ -94,7 +99,7 @@ class SQL_Anon:
     def get_seat(self, seat, game_token):
         """ Retrive user information """
         with sqlite3.connect(self.filename) as conn:
-            conn.set_trace_callback(print)
+            conn.set_trace_callback(logger.debug)
             conn.row_factory = sqlite3.Row  # This makes query results behave like dictionaries
             cursor = conn.cursor()
             sql = ("SELECT * FROM users WHERE seat = ? AND game_token = ?")
@@ -105,7 +110,7 @@ class SQL_Anon:
     def set_seat(self, user_token, seat):
         """ Set the seat for a user """
         with sqlite3.connect(self.filename) as conn:
-            conn.set_trace_callback(print)
+            conn.set_trace_callback(logger.debug)
             conn.row_factory = sqlite3.Row  # This makes query results behave like dictionaries
             cursor = conn.cursor()
             sql = ("UPDATE users SET seat = ? WHERE user_token = ?")        
@@ -114,7 +119,7 @@ class SQL_Anon:
     def remove_game(self, game_token):
         """ Remove a game and remove the game's users """
         with sqlite3.connect(self.filename) as conn:
-            conn.set_trace_callback(print)
+            conn.set_trace_callback(logger.debug)
             cursor = conn.cursor()
             sql = ("DELETE FROM users WHERE game_token = ?")
             cursor.execute(sql, (game_token,))
@@ -127,13 +132,12 @@ class SQL_Anon:
             Return None list if there is no game
         """
         with sqlite3.connect(self.filename) as conn:
-            conn.set_trace_callback(print)
+            conn.set_trace_callback(logger.debug)
             conn.row_factory = sqlite3.Row  # This makes query results behave like dictionaries
             cursor = conn.cursor()
             sql = ("SELECT * from users where game_token = ?")
             cursor.execute(sql, (game_token,))
             user_rows = cursor.fetchall()
-            print("in get game", user_rows)
             if len(user_rows) == 0: return None 
 
             sql = ("SELECT status_desc AS status, game_token as token "
@@ -151,7 +155,7 @@ class SQL_Anon:
             Throw an exception if the user is host.
         """
         with sqlite3.connect(self.filename) as conn:
-            conn.set_trace_callback(print)
+            conn.set_trace_callback(logger.debug)
             cursor = conn.cursor()
             sql = ("SELECT seat, game_token FROM users WHERE user_token = ? ")
             cursor.execute(sql, (user_token,))
@@ -168,7 +172,7 @@ class SQL_Anon:
         game_token = ''.join(random.choices('0123456789abcdef', k=TOKEN_SIZE)) 
 
         with sqlite3.connect(self.filename) as conn:
-            conn.set_trace_callback(print)
+            conn.set_trace_callback(logger.debug)
             cursor = conn.cursor()
 
             # create the game row
@@ -187,7 +191,7 @@ class SQL_Anon:
         seat = self.get_names(game_token).next_free_seat()
 
         with sqlite3.connect(self.filename) as conn:
-            conn.set_trace_callback(print)
+            conn.set_trace_callback(logger.debug)
             cursor = conn.cursor()
 
             sql = ("SELECT * FROM users WHERE game_token = ?")
@@ -201,7 +205,7 @@ class SQL_Anon:
         """ Retrieve the game token (or None) associtated with the user token """
 
         with sqlite3.connect(self.filename) as conn:
-            conn.set_trace_callback(print)
+            conn.set_trace_callback(logger.debug)
             cursor = conn.cursor()
             sql = ("UPDATE users SET room = ? WHERE user_token = ?")
             cursor.execute(sql, (ws_room, user_token))
@@ -210,7 +214,7 @@ class SQL_Anon:
         """ Set the user name associated with the user_token """
 
         with sqlite3.connect(self.filename) as conn:
-            conn.set_trace_callback(print)
+            conn.set_trace_callback(logger.debug)
             cursor = conn.cursor()
             sql = ("UPDATE users SET username = ? WHERE user_token = ?")
             cursor.execute(sql, (name, user_token))            
@@ -221,7 +225,7 @@ class SQL_Anon:
         if value == True: value = 1
 
         with sqlite3.connect(self.filename) as conn:
-            conn.set_trace_callback(print)
+            conn.set_trace_callback(logger.debug)
             cursor = conn.cursor()
             sql = ("UPDATE users SET connected = ? WHERE user_token = ?")
             cursor.execute(sql, (value, user_token))   
@@ -229,7 +233,7 @@ class SQL_Anon:
     def get_names(self, game_token) -> Name_Dictionary: 
         """ List all names by seat for the specified game """
         with sqlite3.connect(self.filename) as conn:
-            conn.set_trace_callback(print)
+            conn.set_trace_callback(logger.debug)
             cursor = conn.cursor()
             sql = ("SELECT seat, username FROM users WHERE game_token = ?")
             cursor.execute(sql, (game_token,))
@@ -244,15 +248,23 @@ class SQL_Anon:
     def set_status(self, game_token, value):
         """ Set the status of a game {STAGING, PLAYING, COMPLETE} """
         with sqlite3.connect(self.filename) as conn:            
-            conn.set_trace_callback(print)
+            conn.set_trace_callback(logger.debug)
             cursor = conn.cursor()
             sql = ("UPDATE games SET game_status = ? WHERE game_token = ?")
             cursor.execute(sql, (value, game_token))
 
+    def clear_connected(self):
+        """ Set the connection status of all users to 0 (disconnected) """
+        with sqlite3.connect(self.filename) as conn:            
+            conn.set_trace_callback(logger.debug)
+            cursor = conn.cursor()
+            sql = ("UPDATE users SET connected = 0")
+            cursor.execute(sql)
+
     def users(self):
         """ List all users"""
         with sqlite3.connect(self.filename) as conn:
-            conn.set_trace_callback(print)
+            conn.set_trace_callback(logger.debug)
             conn.row_factory = sqlite3.Row  # This makes query results behave like dictionaries
             cursor = conn.cursor()
             sql = ("SELECT * FROM users")
@@ -263,7 +275,7 @@ class SQL_Anon:
     def games(self):
         """ List all games"""
         with sqlite3.connect(self.filename) as conn:
-            conn.set_trace_callback(print)
+            conn.set_trace_callback(logger.debug)
             conn.row_factory = sqlite3.Row  # This makes query results behave like dictionaries
             cursor = conn.cursor()
             sql = ("SELECT game_token, status_desc as status "
@@ -277,7 +289,7 @@ class SQL_Anon:
     def reset(self):
         """ Clear all tables """
         with sqlite3.connect(self.filename) as conn:
-            conn.set_trace_callback(print)
+            conn.set_trace_callback(logger.debug)
             cursor = conn.cursor()
             cursor.execute("DELETE FROM users")
             cursor.execute("DELETE FROM games")
@@ -286,11 +298,11 @@ class SQL_Anon:
 def invoke(method_name, *args):
     """Dynamically invoke a method from the SQL_Games class."""
 
-    if not os.path.exists("./anon.db"):
-        print("Database file not found: ./anon.db")
+    if not os.path.exists("./app/anon.db"):
+        print("Database file not found: ./app/anon.db")
         exit()
 
-    sql = SQL_Anon(filename="./anon.db")
+    sql = SQL_Anon(filename="./app/anon.db")
 
     if hasattr(sql, method_name):
         method = getattr(sql, method_name)

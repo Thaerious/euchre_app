@@ -6,7 +6,6 @@ sql_anon = SQL_Anon("./app/anon.db")
 logger = logging.getLogger(__name__)
 templates_bp = Blueprint("templates", __name__, template_folder="../templates", static_folder="../static")
 
-# Template Page 'Root'
 @templates_bp.route("/")
 def index():
     return render_template("lobby.html")

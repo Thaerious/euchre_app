@@ -16,18 +16,21 @@ class Game_Hub:
     def size(self):
         return len(self.connections)
 
-    def add(self, connection):
+    def add(self, connection: Connection_Interface):
         self.connections.add(connection)
+        snapshot = Snapshot(self.game, connection.id)
+        connection.emit_snapshot(snapshot)        
 
     def start(self):
         names = list(self.connections.keys())
         random.shuffle(names)
         self.game = Game(names)
-        self.game.register_hook("after_input", self.report_after)
+        return self.restart()
 
+    def restart(self):
         self.is_running = True
         self.thread = threading.Thread(target=self.run, args=())
-        self.thread.start()
+        self.thread.start()        
         return self
 
     def stop(self):
@@ -35,16 +38,23 @@ class Game_Hub:
         self.thread.join()
 
     def run(self):
-        self.game.input(None, "start", None)
-        self.broadcast_snapshots()
+        if self.game.current_state == 0:
+            self.game.input(None, "start", None)
+            self.broadcast_snapshots()
 
         while self.game.current_state != 0 and self.is_running:
             try:
                 if self.game.current_state in [1, 2, 3, 4, 5]:
                     name = self.game.current_player.name
                     connection = self.connections[name]
-                    descision = connection.get_decision() # this blocks
-                    self.game.input(name, descision[0], descision[1])
+                    decision = connection.get_decision() # this blocks
+
+                    try:
+                        self.game.input(name, decision[0], decision[1])
+                    except Exception as ex:
+                        msg = f"Exception with connection '{connection.id}'."
+                        raise RuntimeError(msg) from ex
+
                     self.broadcast_snapshots()
                 else:
                     self.game.input(None, "continue", None)

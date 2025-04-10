@@ -10,8 +10,10 @@ from Game_Hub import Game_Hub
 from Socket_Connection import Socket_Connection
 from Bot_Connection import Bot_Connection
 from euchre.bots.Bot_2 import Bot_2
+from Hub_Manager import Hub_Manager
+from logger_factory import logger_factory
 
-logger = logging.getLogger(__name__)
+logger = logger_factory(__name__, "HOST")
 
 class Host_Endpoints:
     NAMESPACE = "/host"
@@ -19,13 +21,13 @@ class Host_Endpoints:
     def __init__(self, app, io, hubs):
         User.io = io
         self.io = io
-        self.hubs = hubs
+        self.hubs:Hub_Manager = hubs
         self.sql_anon = SQL_Anon(filename="./app/anon.db", namespace=self.NAMESPACE)        
 
         app.add_url_rule("/lobby", view_func=self.lobby, endpoint="lobby")
         app.add_url_rule("/host", view_func=self.host_game, endpoint="host")        
         app.add_url_rule("/join/<game_token>", view_func=self.join_game)
-        app.add_url_rule("/exit_staging", view_func=self.exit_staging, methods=["POST"])                
+        app.add_url_rule("/exit_lobby", view_func=self.exit_lobby, methods=["POST"])                
         
         io.on_event('connect', self.on_connect, namespace=self.NAMESPACE)
         io.on_event('disconnect', self.on_disconnect, namespace=self.NAMESPACE)
@@ -36,22 +38,21 @@ class Host_Endpoints:
     # /lobby template endpoint
     @fetch_anon_token
     def lobby(self):
+        logger.info("/lobby")
         return render_template("lobby.html")
 
     # /host template endpoint
     @fetch_anon_token
     def host_game(self, user_token):
+        logger.info("/host")
         game_rec = None
         user = self.sql_anon.get_user(user_token)
 
         if user is None:
             game_rec = self.sql_anon.create_game(user_token)
             user = self.sql_anon.get_user(user_token)
-            print(game_rec)
         else:            
             game_rec = self.sql_anon.get_game(user.game_token)
-
-        print(game_rec.names)
 
         return render_template("host.html", 
                                 game_token = user.game_token,
@@ -61,7 +62,8 @@ class Host_Endpoints:
 
     # /join template endpoint
     @fetch_anon_token
-    def join_game(self, game_token, user_token):    
+    def join_game(self, game_token, user_token):  
+        logger.info("/exit_lobby")  
         user = self.sql_anon.get_user(user_token) 
 
         if user is None:
@@ -86,10 +88,11 @@ class Host_Endpoints:
                                 names = game_rec.names
                               )  
 
-    # /exit_staging template endpoint
+    # /exit_lobby template endpoint
     # if the host leaves, all players are removed
     @fetch_user()
-    def exit_staging(self, user):
+    def exit_lobby(self, user):
+        logger.info("/exit_lobby")
         if user.seat == 0:
             game_rec = self.sql_anon.get_game(user.game_token)
             self.sql_anon.remove_game(user.game_token)
@@ -104,6 +107,7 @@ class Host_Endpoints:
     # websocket connect handler 
     @fetch_user()
     def on_connect(self, auth, user):
+        logger.info("ws:connect")
         self.sql_anon.set_ws_room(user.user_token, request.sid)
         self.sql_anon.set_connected(user.user_token, True)
         user = user.refresh()
@@ -113,6 +117,7 @@ class Host_Endpoints:
 
     # websocket disconnect handler
     def on_disconnect(self, reason=None):
+        logger.info("ws:disconnect")
         user_token = get_anon_token()
         user = self.sql_anon.get_user(user_token)
 
@@ -124,6 +129,7 @@ class Host_Endpoints:
     # websocket set name endpoint
     @fetch_user()
     def on_set_name(self, data, user):
+        logger.info("ws:set_name")
         try:
             self.sql_anon.set_name(user.user_token, data["name"])   
             user.emit("response: set_name", True)
@@ -134,6 +140,7 @@ class Host_Endpoints:
 
     @fetch_user()
     def on_kick_player(self, data, user):
+        logger.info("ws:kick_player")
         target = self.sql_anon.get_seat(data["seat"], user.game_token)
         if target is None: return
 
@@ -144,6 +151,7 @@ class Host_Endpoints:
 
     @fetch_user()
     def on_start_game(self, data, user):
+        logger.info("ws:start_game")
         game_rec = self.sql_anon.get_game(user.game_token)
         self.sql_anon.set_status(game_rec.token, PLAYING)
         self.create_game(game_rec)        
@@ -169,5 +177,8 @@ class Host_Endpoints:
         hub.start()
         for user in game_rec.users:
             seat = hub.game.get_player(user.username).index
-            self.sql_anon.set_seat(user.user_token, seat)        
+            self.sql_anon.set_seat(user.user_token, seat)
+
+        self.hubs.save_hub(game_rec.token, hub)
+            
 
