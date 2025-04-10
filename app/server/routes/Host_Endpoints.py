@@ -103,7 +103,7 @@ class Host_Endpoints:
 
     # websocket connect handler 
     @fetch_user()
-    def on_connect(self, user):
+    def on_connect(self, auth, user):
         self.sql_anon.set_ws_room(user.user_token, request.sid)
         self.sql_anon.set_connected(user.user_token, True)
         user = user.refresh()
