@@ -18,6 +18,10 @@ class Game():
         self.users = []
         for row in user_rows: self.users.append(User(row, namespace))
 
+    @property
+    def player_count(self):
+        return len(self.users)
+
     def emit(self, event, object = None):
         for user in self.users:
             user.emit(event, object)
@@ -188,7 +192,7 @@ class SQL_Anon:
     def join_game(self, user_token, game_token):
         """ Associate a player with a game """
 
-        seat = self.get_names(game_token).next_free_seat()
+        seat = self.get_user_names(game_token).next_free_seat()
 
         with sqlite3.connect(self.filename) as conn:
             conn.set_trace_callback(logger.debug)
@@ -230,8 +234,8 @@ class SQL_Anon:
             sql = ("UPDATE users SET connected = ? WHERE user_token = ?")
             cursor.execute(sql, (value, user_token))   
 
-    def get_names(self, game_token) -> Name_Dictionary: 
-        """ List all names by seat for the specified game """
+    def get_user_names(self, game_token) -> Name_Dictionary: 
+        """ List all user's names for the specified game """
         with sqlite3.connect(self.filename) as conn:
             conn.set_trace_callback(logger.debug)
             cursor = conn.cursor()
@@ -244,6 +248,53 @@ class SQL_Anon:
                 name_dict[row[0]] = row[1]
 
             return name_dict
+        
+    def get_bots(self, game_token) -> Name_Dictionary: 
+        """ List all bot names for the specified game """
+        with sqlite3.connect(self.filename) as conn:
+            conn.set_trace_callback(logger.debug)
+            conn.row_factory = sqlite3.Row  # This makes query results behave like dictionaries            
+            cursor = conn.cursor()
+            sql = ("SELECT bot_name as name, bot_version as version FROM bots WHERE game_token = ?")
+            cursor.execute(sql, (game_token,))
+            rows = cursor.fetchall()
+            return [dict(row) for row in rows]
+
+    def get_all_names(self, game_token) -> list: 
+        """ List all names (bot and user) for the specified game """
+        with sqlite3.connect(self.filename) as conn:
+            conn.set_trace_callback(logger.debug)
+            cursor = conn.cursor()
+            sql = ("SELECT username AS name "
+                   "FROM users "
+                   "WHERE game_token = ? "
+                   "UNION "
+                   "SELECT bot_name AS name "
+                   "FROM bots "
+                   "WHERE game_token = ? " )
+                
+            cursor.execute(sql, (game_token, game_token))
+            result = cursor.fetchall()
+            return [row[0] for row in result]
+
+    def add_bot(self, game_token, name, version):
+        """ Associate a bot with a game """
+        with sqlite3.connect(self.filename) as conn:            
+            conn.set_trace_callback(logger.debug)
+            cursor = conn.cursor()
+            sql = ("INSERT INTO bots (game_token, bot_name, bot_version) VALUES (?, ?, ?)")
+            cursor.execute(sql, (game_token, name, version))
+
+    def bots(self):
+        """ List all bots"""
+        with sqlite3.connect(self.filename) as conn:
+            conn.set_trace_callback(logger.debug)
+            conn.row_factory = sqlite3.Row  # This makes query results behave like dictionaries
+            cursor = conn.cursor()
+            sql = ("SELECT * FROM bots")
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+            return [dict(row) for row in rows]
 
     def set_status(self, game_token, value):
         """ Set the status of a game {STAGING, PLAYING, COMPLETE} """
@@ -308,7 +359,7 @@ def invoke(method_name, *args):
         method = getattr(sql, method_name)
         result = method(*args)
 
-        if isinstance(result, list):
+        if isinstance(result, list) & isinstance(result[0], dict):
             print(tabulate(result, headers="keys", tablefmt="pretty"))
         else:
             print(result)

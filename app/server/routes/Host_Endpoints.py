@@ -1,6 +1,6 @@
 import logging
 from flask import render_template, request, url_for, redirect
-from SQL_Anon import SQL_Anon, User
+from SQL_Anon import SQL_Anon, User, Game
 from decorators.fetch_anon_token import fetch_anon_token, get_anon_token
 from decorators.fetch_user import fetch_user
 import sqlite3
@@ -157,28 +157,22 @@ class Host_Endpoints:
         self.create_game(game_rec)        
         game_rec.emit("start_game")
         
-    def create_game(self, game_rec):
-        # Create & store a hub
-        hub = Game_Hub(game_rec.token)
+    def create_game(self, game_rec:Game):
+        # Create & store a game hub
+        names = self.sql_anon.get_all_names(game_rec.token)
+        hub = Game_Hub(game_rec.token, names)
         self.hubs.add(hub)
 
-        # Create a user connector for each user, 
-        # store it using the user token as a key
-        for user in game_rec.users:
-            connection = Socket_Connection(user)
-            hub.add(connection)
-
-        # Fill remaining connections with bots.
-        while hub.size < 4:
+        # Generate bots
+        for i in range(4 - game_rec.player_count):
             bot_name = BOT_NAMES.pop(random.randrange(len(BOT_NAMES)))
-            hub.add(Bot_Connection(bot_name, Bot_2))
+            hub.add_connection(Bot_Connection(bot_name, Bot_2))
+            self.sql_anon.add_bot(game_rec.token, bot_name, "Bot_2")
 
         # Start the hub, record the seats
-        hub.start()
+        hub.start_thread()
         for user in game_rec.users:
             seat = hub.game.get_player(user.username).index
             self.sql_anon.set_seat(user.user_token, seat)
 
         self.hubs.save_hub(game_rec.token, hub)
-            
-

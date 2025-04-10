@@ -4,6 +4,7 @@ from decorators.fetch_anon_token import get_anon_token
 from decorators.fetch_user import fetch_user
 from constants import *
 from logger_factory import logger_factory
+from Socket_Connection import Socket_Connection
 
 logger = logger_factory(__name__, "GAME")
 
@@ -36,13 +37,12 @@ class Game_Endpoints:
         self.sql_anon.set_connected(user.user_token, True)
         game_rec = self.sql_anon.get_game(user.game_token)
         game_rec.emit("user_connected", {"seat": user.seat})
-        
-        hub = self.hubs[user.game_token]
-        connection = hub[user.username]
 
         # refresh the user because the namespace & room are different
-        connection.user = user.refresh()
-        connection.emit_snapshot()
+        user = user.refresh()
+
+        hub = self.hubs[user.game_token]
+        hub.add_connection(Socket_Connection(user))
 
     # websocket connect handler 
     @fetch_user()

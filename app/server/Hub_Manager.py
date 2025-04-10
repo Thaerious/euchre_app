@@ -49,18 +49,9 @@ class Hub_Manager(Auto_Key_Dict):
             hub.game = game
             self.add(hub)
 
-            # Create a user connector for each user, 
-            # store it using the user token as a key
-            game_rec = sql_anon.get_game(game_token)
-
-            for user in game_rec.users:
-                connection = Socket_Connection(user)
-                hub.add(connection)
-
-            # Fill remaining connections with bots.
-            while hub.size < 4:
-                bot_name = BOT_NAMES.pop(random.randrange(len(BOT_NAMES)))
-                hub.add(Bot_Connection(bot_name, Bot_2))
+            # Populate bot connections
+            for bot_row in sql_anon.get_bots(game_token):
+                hub.add_connection(Bot_Connection(bot_row["name"], Bot_2)) # todo differentiate versions
 
             # Retart the hub
-            hub.restart()            
+            hub.start_thread()            

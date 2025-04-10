@@ -6,42 +6,41 @@ import threading
 import random
 
 class Game_Hub:
-    def __init__(self, game_token):
+    def __init__(self, game_token, names = None):
         self.connections = Auto_Key_Dict("id")
         self.game_token = game_token
         self.thread = None
         self.is_running = False
 
+        if names:
+            random.shuffle(names)
+            self.game = Game(names)
+            self.game.input(None, "start", None)
+        else:
+            self.game = None
+
     @property
     def size(self):
         return len(self.connections)
 
-    def add(self, connection: Connection_Interface):
+    def add_connection(self, connection: Connection_Interface):
         self.connections.add(connection)
-        snapshot = Snapshot(self.game, connection.id)
-        connection.emit_snapshot(snapshot)        
 
-    def start(self):
-        names = list(self.connections.keys())
-        random.shuffle(names)
-        self.game = Game(names)
-        return self.restart()
+        if self.game:
+            snapshot = Snapshot(self.game, connection.id)
+            connection.emit_snapshot(snapshot)        
 
-    def restart(self):
+    def start_thread(self):
         self.is_running = True
         self.thread = threading.Thread(target=self.run, args=())
         self.thread.start()        
         return self
 
-    def stop(self):
+    def stop_thread(self):
         self.is_running = False
         self.thread.join()
 
     def run(self):
-        if self.game.current_state == 0:
-            self.game.input(None, "start", None)
-            self.broadcast_snapshots()
-
         while self.game.current_state != 0 and self.is_running:
             try:
                 if self.game.current_state in [1, 2, 3, 4, 5]:

@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS games;
+DROP TABLE IF EXISTS bots;
 DROP TABLE IF EXISTS game_status;
 
 CREATE TABLE users (
@@ -16,6 +17,12 @@ CREATE TABLE games(
     game_token VARCHAR(12) PRIMARY KEY, -- token identifier for each game
     game_status INTEGER NOT NULL DEFAULT 1, -- current game status code from game status table
     FOREIGN KEY (game_status) REFERENCES game_status(status_code)
+);
+
+CREATE TABLE bots(
+    game_token VARCHAR(12),
+    bot_name TEXT NOT NULL,
+    bot_version TEXT NOT NULL
 );
 
 CREATE TABLE game_status(

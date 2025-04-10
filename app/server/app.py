@@ -21,7 +21,7 @@ print("----------------------")
 
 os.makedirs(LOG_DIR, exist_ok=True)  # Create the directory if it doesn't exist
 
-SQL_Anon.logger.setLevel(logging.DEBUG)
+SQL_Anon.logger.setLevel(logging.INFO)
 
 logging.basicConfig(
     level    = logging.DEBUG,
