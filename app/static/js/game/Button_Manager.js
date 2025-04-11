@@ -1,5 +1,5 @@
 /**
- * ActionButtonManager
+ * ButtonManager
  * -------------------
  * Manages a set of action buttons within a specified container.
  *
@@ -19,21 +19,30 @@
 
 import EventEmitter from "../modules/Event_Emitter.js";
 
-export default class ActionButtonManager extends EventEmitter {
+export default class ButtonManager extends EventEmitter {
     /**
      * Creates an instance of ActionButtonManager.
      * @param {string} elementID - The CSS selector for the container holding the action buttons.
      */
-    constructor(elementID = "action-button-container") {
+    constructor(elementID) {
         super();
         this.container = document.getElementById(elementID);
         this.buttons = document.querySelectorAll(`#${elementID} > button`)
 
         for (let button of this.buttons) {
-            // When the button is clicked, emit the event defined in its data-action attribute.
-            button.addEventListener("click", () => {
-                this.emit(button.getAttribute("data-action"));
-            });
+            if (button.getAttribute("selectable") != null) {
+                button.addEventListener("click", () => {
+                    this.clearSelected();
+                    button.classList.add("selected");
+                    this.emit(button.dataset.event, button.dataset);
+                });
+            }
+            else {
+                // When the button is clicked, emit the event defined in its data-action attribute.
+                button.addEventListener("click", () => {
+                    this.emit(button.dataset.event, button.dataset);
+                });
+            }
         }
     }
 
@@ -46,18 +55,13 @@ export default class ActionButtonManager extends EventEmitter {
      *   - name {string}: The label for the button.
      *   - action {string} (optional): Custom event name to emit; defaults to the lowercased button name.
      *   - disable {boolean} (optional): If true, the button will be disabled upon creation.
-     * 
-     * Usage:
-     *   this.actionButtons.setButtons([
-     *      { "name": "Pass" },
-     *      { "name": "Make", "action": "do_make", "disable": true },
-     *      { "name": "Alone", "disable": true },
-     *   ])
      */
     showButtons(buttonNames) {
         // Hide all existing buttons
-        for (let button of this.buttons) {            
-            if (buttonNames.indexOf(button.dataset.event) == -1) {
+        for (let button of this.buttons) {     
+            const id = button.id ?? button.dataset.event
+
+            if (buttonNames.indexOf(id) == -1) {
                 button.classList.add("hidden")
             }
             else {
@@ -66,6 +70,25 @@ export default class ActionButtonManager extends EventEmitter {
         }
 
         this.show();
+    }
+
+    disable(buttonNames) {
+        // Hide all existing buttons
+        for (let button of this.buttons) {     
+            const id = button.id ?? button.dataset.event            
+
+            if (buttonNames.indexOf(id) == -1) {
+                button.classList.remove("disabled")
+            }
+            else {
+                console.log(id)
+                button.classList.add("disabled")
+            }
+        }
+    }
+
+    clearSelected() {
+        this.buttons.forEach(button => button.classList.remove("selected"));
     }
 
     /**
@@ -79,6 +102,7 @@ export default class ActionButtonManager extends EventEmitter {
      * Shows the action button container by removing the "is-hidden" class.
      */
     show() {
-        this.container.classList.remove("is-hidden");
+        this.clearSelected()
+        this.container.classList.remove("is-hidden");        
     }
 }

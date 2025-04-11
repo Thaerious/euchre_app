@@ -27,7 +27,7 @@ class Game_Endpoints:
     @fetch_user()
     def game(self, user):
         logger.info("/game")
-        return render_template("game.html", seat=user.seat)
+        return render_template("game.html", seat=user.seat, game_token=user.game_token)
 
     # websocket connect handler 
     @fetch_user()

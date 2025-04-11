@@ -31,3 +31,10 @@ class AlertDialog extends HTMLElement {
 }
 
 customElements.define('alert-dialog', AlertDialog);
+
+let alert = document.querySelector("alert-dialog");
+if (!alert) {
+    alert = document.createElement("alert-dialog");
+    alert.classList.add("hidden");
+    document.body.appendChild(alert);
+}

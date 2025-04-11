@@ -4,9 +4,9 @@ import SuitButtonManager from "./Suit_Button_Manager.js"
 import TokenManager from "./Token_Manager.js"
 import ChatBubbleManager from "./Chat_Bubble_Manager.js"
 import MessageManager from "./Message_Manager.js"
-import AlertManager from "./Alert_Manger.js"
 import PlayedCardsManager from "./Played_Cards_Manager.js"
 import ActionButtonManager from "./Action_Button_Manager.js"
+import ButtonManager from "./Button_Manager.js"
 
 Array.prototype.has = function (value) {
     return this.indexOf(value) >= 0
@@ -21,11 +21,11 @@ export default class ViewModel{
         this.message = new MessageManager()
         this.tokens = new TokenManager()
         this.played = new PlayedCardsManager()
-        this.suitButtons = new SuitButtonManager()
-        this.actionButtons = new ActionButtonManager()
+        this.suitButtons = new ButtonManager("suit-button-container")
+        this.actionButtons = new ButtonManager("action-button-container")
         this.hands = [new HandManager(0), new HandManager(1), new HandManager(2), new HandManager(3)]
         this.upcard = new UpCardManager()
-        this.alert = new AlertManager()
+        this.alert = document.querySelector("alert-dialog")
 
         // Changing a suit button will enable action buttons
         this.suitButtons.on("change", () => {
@@ -46,6 +46,15 @@ export default class ViewModel{
                     break                
             }            
         });
+    }
+
+    get seat() {
+        const seat = document.querySelector("#game-board").getAttribute("seat")
+        return parseInt(seat)
+    }
+
+    get gameToken() {
+        return document.querySelector("#game-board").getAttribute("game-token")
     }
 
     get exitButton() {
@@ -239,7 +248,7 @@ export default class ViewModel{
         this.paused = true
         if (message !== "") this.message.show(message)
 
-        this.actionButtons.setButtons([
+        this.actionButtons.showButtons([
             { "name": "Continue" }
         ])
 
@@ -260,7 +269,7 @@ export default class ViewModel{
 
         switch (this.snapshot.state) {
             case 1:
-                this.actionButtons.setButtons([
+                this.actionButtons.showButtons([
                     { "name": "Pass" },
                     { "name": "Order" },
                     { "name": "Alone" },
@@ -268,13 +277,13 @@ export default class ViewModel{
                 break
             case 2:
                 this.message.show("Swap a Card")
-                this.actionButtons.setButtons([
+                this.actionButtons.showButtons([
                     { "name": "Down" }
                 ])
                 this.hands[0].enable()
                 break
             case 3: {
-                this.actionButtons.setButtons([
+                this.actionButtons.showButtons([
                     { "name": "Pass" },
                     { "name": "Make", "disable": true },
                     { "name": "Alone", "disable": true },
@@ -285,7 +294,7 @@ export default class ViewModel{
                 this.suitButtons.show()
             } break
             case 4: {
-                this.actionButtons.setButtons([
+                this.actionButtons.showButtons([
                     { "name": "Make", "disable": true },
                     { "name": "Alone", "disable": true },
                 ])

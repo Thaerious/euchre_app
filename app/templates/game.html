@@ -8,10 +8,12 @@
     <link rel="stylesheet" href="../static/css/game.css">
     <script src="../static/js/modules/socket.io.js"></script>
     <script type="module" src="../static/js/game/game.js"></script>
+
+    <script src="../static/js/elements/Alert_Dialog.js" defer></script>
 </head>
 
 <body>
-    <div id="game-board" class="game-board" seat="{{seat}}">
+    <div id="game-board" class="game-board" seat="{{seat}}"  game-token="{{game_token}}">
         <div id="upcard" class="card" face="back"></div>
 
         <div id="chat-bubble" class="chat-bubble is-hidden" seat="1">
@@ -57,13 +59,19 @@
         </div>                
 
         <div id="suit-button-container" class="suit-button-container is-hidden">
-            <button id="suit_♠" class="ui-button suit-button black">♠</button>
-            <button id="suit_♥" class="ui-button suit-button red">♥</button>
-            <button id="suit_♣" class="ui-button suit-button black">♣</button>
-            <button id="suit_♦" class="ui-button suit-button red">♦</button>
+            <button id="suit-♠" class="ui-button suit-button black" data-suit="♠" data-event="change-suit" selectable>♠</button>
+            <button id="suit-♥" class="ui-button suit-button red" data-suit="♥" data-event="change-suit" selectable>♥</button>
+            <button id="suit-♣" class="ui-button suit-button black" data-suit="♣" data-event="change-suit" selectable>♣</button>
+            <button id="suit-♦" class="ui-button suit-button red" data-suit="♦" data-event="change-suit" selectable>♦</button>
         </div>
 
-        <div id="action-button-container" class="action-button-container"></div>
+        <div id="action-button-container" class="action-button-container">
+                <button class="ui-button size_full font-normal hidden" data-event="continue">Continue</button>            
+                <button class="ui-button size_full font-normal hidden" data-event="pass">Pass</button>            
+                <button class="ui-button size_full font-normal hidden" data-event="order">Order</button>            
+                <button class="ui-button size_full font-normal hidden" data-event="make">Make</button>            
+                <button class="ui-button size_full font-normal hidden" data-event="alone">Alone</button>            
+        </div>
 
         <div id="score_0" class="score" score="0">
             <div class="card top" face="back"></div>
@@ -78,10 +86,6 @@
         <img id="dealer_token" class="token" seat="3" src="../static/images/dealer.png"/>
         <div id="maker_token" class="token" seat="3"></div>
         <div id="message" class="is-hidden font-normal">Pick a Card</div>
-        <div id="alert" class="is-hidden">
-            <div id="alert-message" class="font-large">---</div>
-            <div id="alert-button" class="ui-button font-normal">OK</div>
-        </div>
 
         <!-- Snapshot queue control buttons -->
         <div class="control-button-container">
@@ -91,6 +95,7 @@
             <button id="run_queue" class="ui-button suit-button black">▶</button>
             <button id="pause_queue" class="ui-button suit-button black">⏸</button>
         </div>
+
         <div class="menu-button-container">
             <button id="rules_button" class="ui-button menu-button font-normal">Rules</button>
             <button id="exit_button" class="ui-button menu-button font-normal">Exit</button>

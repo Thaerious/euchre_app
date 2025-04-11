@@ -7,12 +7,12 @@
     --app-component-green: #4CAF50;
 }
 
-.hidden {
+.hidden, .is-hidden {
     display: none !important;   
 }
 
 .invisible{
-    visibility: hidden;
+    visibility: hidden !important;
 }
 
 .font-small{

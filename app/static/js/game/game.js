@@ -2,31 +2,21 @@ import GameIO from "./GameIO.js"
 import ViewModel from "./View_Model.js"
 import ViewController from "./View_Controller.js"
 
-// This module is the main entry point for 'game.html'.
-// This module is responsible for loading and linking the components,
-// and loading the game's local history.
+window.addEventListener("load", () => new GameUI())
 
-(() => {
-    const token = localStorage.getItem("game_token");
-    if (!token) {
-        // Redirect to login if no token is found
-        window.location.href = "/lobby";
-    }
+class GameUI {
+    constructor() {
+        this.gameIO = new GameIO()
+        this.viewModel = new ViewModel()
+        this.viewController = new ViewController(this.viewModel, this.gameIO)
 
-    // Load IO manager and initialize history
-    window.addEventListener("load", () => {
-
-        // Translates websocket events to custom UI events
-        const viewModel = new ViewModel()
-
-        // Stateless websocket wrapper
-        const gameio = new GameIO()
-
-        // Translates user actions to server API calls
-        const viewController = new ViewController(viewModel, gameio)
-
-        window.viewModel = viewModel;
-        window.viewController = viewController;
+        this.loadHistory()
+        
+        window.ui = this
+    }    
+    
+    loadHistory() {
+        const token = this.viewModel.gameToken
 
         if (localStorage.getItem("history-for") != token) {
             // Clear local history for new games.
@@ -34,7 +24,7 @@ import ViewController from "./View_Controller.js"
             localStorage.setItem("history-for", token)
         }
         else {
-            viewController.loadHistory()
-        }
-    });
-})()
+            this.viewController.loadHistory()
+        }        
+    }
+}
