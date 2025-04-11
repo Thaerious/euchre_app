@@ -59,7 +59,7 @@ export default class ButtonManager extends EventEmitter {
     showButtons(buttonNames) {
         // Hide all existing buttons
         for (let button of this.buttons) {     
-            const id = button.id ?? button.dataset.event
+            const id = button.id ? button.id !== "" : button.dataset.event
 
             if (buttonNames.indexOf(id) == -1) {
                 button.classList.add("hidden")
@@ -85,6 +85,10 @@ export default class ButtonManager extends EventEmitter {
                 button.classList.add("disabled")
             }
         }
+    }
+
+    enableAll() {
+        this.disable([])
     }
 
     clearSelected() {

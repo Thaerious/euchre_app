@@ -6,9 +6,6 @@ export default class GameIO extends BaseIO {
     }
 
     doAction(action, data) {
-        if (!this.enabled) return
-        if (!this.socket) return;
-
         this.socket.emit("do_action", {
             token: this.token,
             hub_id: this.hubID,

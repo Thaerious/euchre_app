@@ -1,25 +1,41 @@
+import ViewUpdate from "./View_Update.js"
+
 export default class ViewController {
+    // This class is the glue between the ViewModel and the this.gameIO
+    // It listens for events emitted from either the ViewModel or this.gameIO and updates
+    // the other objects accordingly.
+    // It will also change the state of the ViewModel based on ViewModel events.
+
     constructor(viewModel, gameIO) {
         this.gameIO = gameIO
         this.viewModel = viewModel
+        this.viewUpdate = new ViewUpdate(viewModel)
+
         this.snapHistory = []   // An array of all snapshots, the tail is the most recent
         this._snapIndex = -1    // The currently displayed snapshot from snapHistory
         this.paused = false     // When true update view with queued snapshots
         this.isRunning = false  // Semaphore around the run loop, prevents update race condition
 
-        // Debug report todo remove
-        gameIO.on("snapshot", async snapshot => {
+        this.addListeners()
+    }
+
+    addListeners() {
+        // Websocket event for a new snapshot.
+        this.gameIO.on("snapshot", async snapshot => {
             console.log(`${snapshot.serial_id}: ${snapshot.last_player ?? "server"} ${snapshot.last_action}`)
+            this.enqueue(snapshot)
         });
 
-        // Websocket event for a new snapshot.
-        gameIO.on("snapshot", async snapshot => this.enqueue(snapshot))
-
         // Websocket event for server side errors.
-        gameIO.on("error", async (error) => {
+        this.gameIO.on("error", async (error) => {
             console.log(`Caught EuchreException: ${error.message}`);
-            await this.viewModel.update(this.snapshot, true)
+            await this.viewUpdate.update(this.snapshot, true)
             this.viewModel.message.show(error.message);
+        });
+
+        // Changing a suit button will enable action buttons
+        this.viewModel.suitButtons.on("change-suit", () => {
+            this.viewModel.actionButtons.enableAll()
         });
 
         // Snapshot Queue button listeners
@@ -45,21 +61,21 @@ export default class ViewController {
             this.paused = true
         });
 
-        // Action button listeners
+        // Event listeners
         this.viewModel.actionButtons.on("pass", () => {
-            gameIO.doAction("pass", this.viewModel.suitButtons.getSuit())
+            this.gameIO.doAction("pass", null)
         });
 
         this.viewModel.actionButtons.on("make", () => {
-            gameIO.doAction("make", this.viewModel.suitButtons.getSuit())
+            this.gameIO.doAction("make", this.viewModel.suitButtons.getSuit())
         });
 
         this.viewModel.actionButtons.on("alone", () => {
-            gameIO.doAction("alone", this.viewModel.suitButtons.getSuit())
+            this.gameIO.doAction("alone", this.viewModel.suitButtons.getSuit())
         });
 
         this.viewModel.actionButtons.on("order", () => {
-            gameIO.doAction("order", null)
+            this.gameIO.doAction("order", null)
         });
 
         this.viewModel.actionButtons.on("continue", () => {
@@ -70,11 +86,11 @@ export default class ViewController {
         this.viewModel.hands[0].on("selected", (card) => {
             switch (this.snapshot.state) {
                 case 2:
-                    gameIO.doAction("up", card)
+                    this.gameIO.doAction("up", card)
                     break;
                 case 5:
                     console.log("do action")
-                    gameIO.doAction("play", card)
+                    this.gameIO.doAction("play", card)
                     break;
             }
         });
@@ -87,12 +103,38 @@ export default class ViewController {
                     "Content-Type": "application/json"
                 }
             })
-            
+
             if (response.redirected) {
                 window.location.href = response.url;
             }
         });
         this.viewModel.rulesButton.addEventListener("click", () => { });
+    }
+
+    async loadHistory() {
+        const token = this.viewModel.gameToken
+
+        if (localStorage.getItem("history-for") != token) {
+            // Clear local history for new games.
+            localStorage.setItem("history", [])
+            localStorage.setItem("history-for", token)
+            return
+        }
+
+        const _history = localStorage.getItem("history")
+        this.snapHistory = JSON.parse(_history)
+        this._snapIndex = this.snapHistory.length - 1
+        this.viewUpdate.load(this.snapHistory.at(-1))
+    }
+
+    async run() {
+        if (this.isRunning) return
+        this.isRunning = true
+        while (!this.paused) {
+            if (this.snapIndex >= this.snapHistory.length - 1) break
+            await this.next();
+        }
+        this.isRunning = false
     }
 
     // getter/setter for pause, changes view state of queue buttons
@@ -149,36 +191,12 @@ export default class ViewController {
 
     async enqueue(snapshot) {
         // don't queue old snapshots
+        console.log("Enqueue", snapshot.serial_id)
         if (this.snapHistory.length > 0 && snapshot.serial_id <= this.snapHistory.at(-1).serial_id) return
         this.snapHistory.push(snapshot)
         this.saveHistory()
         this.updateButtons()
         await this.run()
-    }
-
-    async run() {
-        if (this.isRunning) return
-        this.isRunning = true
-        while (!this.paused) {
-            if (this.snapIndex >= this.snapHistory.length - 1) break
-            await this.next();
-        }
-        this.isRunning = false
-    }
-
-    async loadHistory() {
-        const _history = localStorage.getItem("history")
-        const snapHistory = JSON.parse(_history)
-        for (const snap of snapHistory) {
-            this.snapHistory.push(snap)
-        }
-
-        this._snapIndex = this.snapHistory.length - 1
-        if (this.snapIndex >= 0) {
-            await this.viewModel.update(this.snapshot)
-        }
-
-        this.updateButtons()
     }
 
     saveHistory() {
@@ -201,14 +219,14 @@ export default class ViewController {
     async prev() {
         if (this.snapIndex > 0) this.snapIndex -= 1
         console.log(`${this.snapIndex}: ${this.snapshot.serial_id} state ${this.snapshot.state}`)
-        await this.viewModel.update(this.snapshot, true)
+        await this.viewUpdate.load(this.snapshot)
     }
 
     async next() {
         if (this.snapIndex >= this.snapHistory.length - 1) return
         this.snapIndex += 1
         console.log(`${this.snapIndex}: ${this.snapshot.serial_id} state ${this.snapshot.state}`)
-        await this.viewModel.update(this.snapshot)
+        await this.viewUpdate.update(this.snapshot)
     }
 
     async runQueue() {
@@ -221,6 +239,6 @@ export default class ViewController {
         if (index < 0) index = 0
         if (index > this.snapHistory.length - 1) index = this.snapHistory.length - 1
         this.snapIndex = index
-        await this.viewModel.update(this.snapshot, true)
+        await this.viewUpdate.update(this.snapshot, true)
     }
 }

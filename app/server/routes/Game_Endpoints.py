@@ -67,5 +67,6 @@ class Game_Endpoints:
     @fetch_user()
     def on_action(self, data, user):
         logger.info(f"ws:action {data} {user}")
-        connection = self.connections[user.user_token]
+        hub = self.hubs[user.game_token]
+        connection = hub.connections[user.username]
         connection.set_decision(data)

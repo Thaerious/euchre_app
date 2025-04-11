@@ -55,7 +55,14 @@ class User:
         self.creation_stack = traceback.format_stack()
 
     def emit(self, event, object = None):  
-        logger.info(f"EMIT ({self.username}, {event}) -> {str(object)[:16]}:{type(object).__name__}")      
+        msg = str(object)
+        msg = msg.replace("\n", "")
+
+        if len(msg) > 16:
+            msg = msg[:16]        
+            msg = msg + "... "
+
+        logger.info(f"EMIT ({self.username}, {event}:{type(object).__name__}) -> {msg}")      
 
         if self.namespace == None: 
             raise RuntimeError("Cannot emit: namespace is not set.\nInit stack:\n"+ ''.join(self.creation_stack))
