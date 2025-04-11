@@ -1,3 +1,4 @@
+# Socket_Connection.py
 import threading
 from Connection_Interface import Connection_Interface
 from SQL_Anon import User
@@ -35,13 +36,15 @@ class Socket_Connection(Connection_Interface):
 
         self._user.emit("snapshot", self.snapshot.to_json())
 
-    def emit_message(self, string):
-        self._user.emit("message", string)
+    def emit(self, event, string):
+        self._user.emit(event, string)
 
     def get_decision(self):
         with self.condition:
             while self.last_action is None: 
-                self.condition.wait()
+                if not self._user.is_connected():
+                    raise ConnectionError(f"Client {self._user.username} disconnected.")                
+                self.condition.wait(timeout = 1)
             
             decision = self.last_action
             self.last_action = None

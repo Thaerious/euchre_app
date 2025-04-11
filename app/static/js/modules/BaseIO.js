@@ -30,12 +30,7 @@ export default class BaseIO extends EventEmitter {
             }
 
             if (args.length > 0) {
-                console.log(args[0])
                 const data = JSON.parse(args[0])    
-                console.log(typeof(data))
-                console.log(data)
-                window.data = data
-
                 console.log("IO Received Event:", event, data);
                 this.emit(event, data)
             } else {

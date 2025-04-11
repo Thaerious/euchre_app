@@ -158,18 +158,21 @@ class Host_Endpoints:
         game_rec.emit("start_game")
         
     def create_game(self, game_rec:Game):
-        # Create & store a game hub
+        # Generate bot names
+        for i in range(4 - game_rec.player_count):
+            bot_name = BOT_NAMES.pop(random.randrange(len(BOT_NAMES)))            
+            self.sql_anon.add_bot(game_rec.token, bot_name, "Bot_2")
+
+        # Create & store a new hub
         names = self.sql_anon.get_all_names(game_rec.token)
         hub = Game_Hub(game_rec.token, names)
         self.hubs.add(hub)
 
-        # Generate bots
-        for i in range(4 - game_rec.player_count):
-            bot_name = BOT_NAMES.pop(random.randrange(len(BOT_NAMES)))
-            hub.add_connection(Bot_Connection(bot_name, Bot_2))
-            self.sql_anon.add_bot(game_rec.token, bot_name, "Bot_2")
+        # Generate bot connections
+        for bot_row in self.sql_anon.get_bots(game_rec.token):
+            hub.add_connection(Bot_Connection(bot_row["name"], Bot_2)) # todo differentiate versions
 
-        # Start the hub, record the seats
+        # Start the hub, record the seats (they change when a new game is started)
         hub.start_thread()
         for user in game_rec.users:
             seat = hub.game.get_player(user.username).index

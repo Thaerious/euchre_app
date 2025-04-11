@@ -10,6 +10,9 @@ class Bot_Connection(Connection_Interface):
     def emit_snapshot(self, snapshot:Snapshot):
         self.snapshot = snapshot
 
+    def emit(self, event, string):
+        pass
+
     def get_decision(self):
         if self.snapshot == None: raise Exception("Snapshot not set.")
         return self.bot.decide(self.snapshot)

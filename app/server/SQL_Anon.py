@@ -1,3 +1,4 @@
+# SQL_Anon.py
 from constants import TOKEN_SIZE
 from logger_factory import logger_factory
 from tabulate import tabulate
@@ -8,6 +9,7 @@ import random
 import json
 import os
 import traceback
+import socketio
 
 logger = logger_factory(__name__, "SQL")
 
@@ -65,6 +67,9 @@ class User:
     def refresh(self):
         row = SQL_Anon(namespace=self.namespace).get_user_row(self.user_token)
         return User(row, namespace=self.namespace)
+
+    def is_connected(self) -> bool:
+        return User.io.server.manager.is_connected(self.room, self.namespace)
 
     def __str__(self):
         return str(self.__dict__)
@@ -345,7 +350,6 @@ class SQL_Anon:
             cursor.execute("DELETE FROM users")
             cursor.execute("DELETE FROM games")
 
-
 def invoke(method_name, *args):
     """Dynamically invoke a method from the SQL_Games class."""
 
@@ -358,8 +362,10 @@ def invoke(method_name, *args):
     if hasattr(sql, method_name):
         method = getattr(sql, method_name)
         result = method(*args)
-
-        if isinstance(result, list) & isinstance(result[0], dict):
+ 
+        if result is None:
+            pass
+        elif isinstance(result, list) & isinstance(result[0], dict):
             print(tabulate(result, headers="keys", tablefmt="pretty"))
         else:
             print(result)

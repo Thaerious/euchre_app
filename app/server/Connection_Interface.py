@@ -7,7 +7,7 @@ class Connection_Interface:
     def emit_snapshot(self, snapshot:Snapshot):
         raise NotImplementedError("emit_snapshot")
 
-    def emit_message(self, string):
+    def emit(self, event, string):
         raise NotImplementedError("emit_message")
 
     def get_decision(self):
