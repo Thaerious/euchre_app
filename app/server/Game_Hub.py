@@ -1,6 +1,6 @@
 from constants import TOKEN_SIZE
 from Connection_Interface import Connection_Interface
-from euchre import Game, Snapshot, EuchreException
+from euchre import Game, Snapshot, EuchreException, ActionException
 from Auto_Key_Dict import Auto_Key_Dict
 from logger_factory import logger_factory
 from typing import Optional
@@ -82,19 +82,25 @@ class Game_Hub:
         """Main game loop that waits for player decisions and progresses the game state."""
         while self.game.current_state != 0 and self.is_running:
             try:
+                # States 1-5 require user action
                 if self.game.current_state in [1, 2, 3, 4, 5]:
                     name, decision = self.await_player_decision()
+
                     if decision is None:
                         continue
 
                     try:
                         self.game.input(name, decision[0], decision[1])
+                    except EuchreException as ex:
+                        connection = self.connections[name]
+                        connection.emit("exception", ex)                        
                     except Exception as ex:
                         msg = f"Exception with connection '{name}'."
                         raise RuntimeError(msg) from ex
 
                     self.broadcast_snapshots()
                 else:
+                    # States 6, 7 require server action
                     self.game.input(None, "continue", None)
                     self.broadcast_snapshots()
             except EuchreException as ex:

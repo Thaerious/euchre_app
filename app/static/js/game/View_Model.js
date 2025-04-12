@@ -30,9 +30,13 @@ export default class ViewModel extends EventEmitter{
             new HandManager(3, null)
         ]
         this.upcard = new UpCardManager()
-        this.alert = document.querySelector("alert-dialog")
+        this.alertDialog = document.querySelector("alert-dialog")
     }
     
+    alert(message) {
+        this.alertDialog.show(message)
+    }
+
     playCardAnimation(hand, face, swap) {
         const card = this.hands[0].getCard(face)
         

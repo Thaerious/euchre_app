@@ -20,10 +20,14 @@ export default class ViewController {
     }
 
     addListeners() {
-        // Websocket event for a new snapshot.
+        // Websocket incoming events.
         this.gameIO.on("snapshot", async snapshot => {
             console.log(`${snapshot.hash.substring(0, 8)}:Snapshot`)
             this.enqueue(snapshot)
+        });
+
+        this.gameIO.on("exception", async ex => {
+            this.viewModel.alert(ex.message)
         });
 
         // Websocket event for server side errors.
