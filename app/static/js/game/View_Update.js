@@ -184,14 +184,12 @@ export default class View_Update{
 
     async pauseForContinue(message = "") {
         this.paused = true
-        if (message !== "") this.viewModel.message.show(message)
+        if (message !== "") this.viewModel.showMessage(message)
 
-        this.viewModel.actionButtons.showButtons([
-            { "name": "Continue" }
-        ])
+        this.viewModel.showButtons(["continue"])
 
         await new Promise(resolve => {
-            this.viewModel.actionButtons.once("continue", resolve);
+            this.viewModel.once("continue", resolve);
         });
     }
 
@@ -201,11 +199,8 @@ export default class View_Update{
     }
 
     doUpdateActionButtons() {
-        this.viewModel.message.hide()
-        this.viewModel.actionButtons.hide()
-        this.viewModel.suitButtons.hide()       
+        this.viewModel.hideButtons()
 
-        console.log(`update action buttons ${this.snapshot.state}`)
         switch (this.snapshot.state) {
             case 1:
                 this.viewModel.actionButtons.showButtons(["pass", "order", "alone"])
@@ -278,11 +273,5 @@ export default class View_Update{
             const seat = this.getSeat(this.snapshot.last_player, this.snapshot.for_player)      
             this.viewModel.chatBubble.showFade(seat, `${this.snapshot.last_action} ${this.snapshot.last_data ?? ""}`)
         }        
-    }    
-
-    swapUpCard(face) {
-        const handCard = this.viewModel.hands[0].getCard(face)
-        handCard.setAttribute("face", this.viewModel.upcard.face)
-        this.viewModel.upcard.face = "back"
     }    
 }

@@ -3,13 +3,12 @@ from constants import TOKEN_SIZE
 from logger_factory import logger_factory
 from tabulate import tabulate
 from werkzeug.exceptions import Forbidden
+from euchre.custom_json_serializer import custom_json_serializer
 import sqlite3
 import sys
 import random
 import json
 import os
-import traceback
-import socketio
 
 logger = logger_factory(__name__, "SQL")
 
@@ -52,24 +51,18 @@ class User:
     def __init__(self, row, namespace):
         self.namespace = namespace
         self.__dict__.update(row)
-        self.creation_stack = traceback.format_stack()
 
-    def emit(self, event, object = None):  
-        msg = str(object)
-        msg = msg.replace("\n", "")
-
-        if len(msg) > 16:
-            msg = msg[:16]        
-            msg = msg + "... "
-
-        logger.info(f"EMIT ({self.username}, {event}:{type(object).__name__}) -> {msg}")      
+    def emit(self, event, object = None):                  
 
         if self.namespace == None: 
-            raise RuntimeError("Cannot emit: namespace is not set.\nInit stack:\n"+ ''.join(self.creation_stack))
+            raise RuntimeError("Cannot emit: namespace is not set.")
         elif isinstance(object, str):
             User.io.emit(event, object, room=self.room, namespace=self.namespace)
+            logger.info(f"EMIT ({self.username}, {event}:{type(object).__name__}) -> {object}")
         else:
-            User.io.emit(event, json.dumps(object), room=self.room, namespace=self.namespace)
+            json_string = json.dumps(object, indent=2, default=custom_json_serializer)
+            User.io.emit(event, json_string, room=self.room, namespace=self.namespace)
+            logger.info(f"EMIT ({self.username}, {event}:{type(object).__name__}) -> {object.__repr__()}")
 
     def refresh(self):
         row = SQL_Anon(namespace=self.namespace).get_user_row(self.user_token)

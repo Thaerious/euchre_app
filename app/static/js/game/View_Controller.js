@@ -22,7 +22,7 @@ export default class ViewController {
     addListeners() {
         // Websocket event for a new snapshot.
         this.gameIO.on("snapshot", async snapshot => {
-            console.log(`${snapshot.serial_id}: ${snapshot.last_player ?? "server"} ${snapshot.last_action}`)
+            console.log(`${snapshot.hash.substring(0, 8)}:Snapshot`)
             this.enqueue(snapshot)
         });
 
@@ -34,8 +34,8 @@ export default class ViewController {
         });
 
         // Changing a suit button will enable action buttons
-        this.viewModel.suitButtons.on("change-suit", () => {
-            this.viewModel.actionButtons.enableAll()
+        this.viewModel.on("change-suit", () => {
+            this.viewModel.enableAllActions()
         });
 
         // Snapshot Queue button listeners
@@ -62,28 +62,34 @@ export default class ViewController {
         });
 
         // Event listeners
-        this.viewModel.actionButtons.on("pass", () => {
+        this.viewModel.on("pass", () => {
             this.gameIO.doAction("pass", null)
         });
 
-        this.viewModel.actionButtons.on("make", () => {
+        this.viewModel.on("make", () => {
             this.gameIO.doAction("make", this.viewModel.suitButtons.getSuit())
         });
 
-        this.viewModel.actionButtons.on("alone", () => {
+        this.viewModel.on("alone", () => {
             this.gameIO.doAction("alone", this.viewModel.suitButtons.getSuit())
         });
 
-        this.viewModel.actionButtons.on("order", () => {
+        this.viewModel.on("order", () => {
             this.gameIO.doAction("order", null)
         });
 
-        this.viewModel.actionButtons.on("continue", () => {
+        this.viewModel.on("continue", () => {
             this.next()
         });
 
+        // Animation when a player plays a card
+        this.viewModel.on("card-selected", (face) => {
+            if (this.snapshot.current_player != this.snapshot.for_player) return;
+            this.viewModel.playCardAnimation(0, face)
+        });
+
         // Hand card listeners
-        this.viewModel.hands[0].on("selected", (card) => {
+        this.viewModel.on("card-selected", (card) => {
             switch (this.snapshot.state) {
                 case 2:
                     this.gameIO.doAction("up", card)
@@ -116,15 +122,18 @@ export default class ViewController {
 
         if (localStorage.getItem("history-for") != token) {
             // Clear local history for new games.
-            localStorage.setItem("history", [])
+            localStorage.setItem("history", "[]")
             localStorage.setItem("history-for", token)
             return
         }
 
-        const _history = localStorage.getItem("history")
-        this.snapHistory = JSON.parse(_history)
+        const history = localStorage.getItem("history")
+        this.snapHistory = JSON.parse(history)
         this._snapIndex = this.snapHistory.length - 1
-        this.viewUpdate.load(this.snapHistory.at(-1))
+
+        if (history.length > 0) {
+            this.viewUpdate.load(this.snapHistory.at(-1))
+        }
     }
 
     async run() {
@@ -191,12 +200,13 @@ export default class ViewController {
 
     async enqueue(snapshot) {
         // don't queue old snapshots
-        console.log("Enqueue", snapshot.serial_id)
-        if (this.snapHistory.length > 0 && snapshot.serial_id <= this.snapHistory.at(-1).serial_id) return
-        this.snapHistory.push(snapshot)
-        this.saveHistory()
-        this.updateButtons()
-        await this.run()
+        const lastHash = this.snapHistory.at(-1)?.hash
+        if (lastHash !== snapshot.hash) {
+            this.snapHistory.push(snapshot)
+            this.saveHistory()
+            this.updateButtons()
+            await this.run()            
+        }
     }
 
     saveHistory() {
@@ -225,7 +235,7 @@ export default class ViewController {
     async next() {
         if (this.snapIndex >= this.snapHistory.length - 1) return
         this.snapIndex += 1
-        console.log(`${this.snapIndex}: ${this.snapshot.serial_id} state ${this.snapshot.state}`)
+        console.log(`${this.snapshot.hash.substring(0, 8)}: state ${this.snapshot.state}`)
         await this.viewUpdate.update(this.snapshot)
     }
 

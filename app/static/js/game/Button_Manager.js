@@ -17,30 +17,28 @@
  *   });
  */
 
-import EventEmitter from "../modules/Event_Emitter.js";
-
-export default class ButtonManager extends EventEmitter {
+export default class ButtonManager {
     /**
      * Creates an instance of ActionButtonManager.
      * @param {string} elementID - The CSS selector for the container holding the action buttons.
      */
-    constructor(elementID) {
-        super();
+    constructor(elementID, eventSource) {
         this.container = document.getElementById(elementID);
         this.buttons = document.querySelectorAll(`#${elementID} > button`)
+        this.eventSource = eventSource
 
         for (let button of this.buttons) {
             if (button.getAttribute("selectable") != null) {
                 button.addEventListener("click", () => {
                     this.clearSelected();
                     button.classList.add("selected");
-                    this.emit(button.dataset.event, button.dataset);
+                    this.eventSource.emit(button.dataset.event, button.dataset);
                 });
             }
             else {
                 // When the button is clicked, emit the event defined in its data-action attribute.
                 button.addEventListener("click", () => {
-                    this.emit(button.dataset.event, button.dataset);
+                    this.eventSource.emit(button.dataset.event, button.dataset);
                 });
             }
         }
@@ -85,10 +83,6 @@ export default class ButtonManager extends EventEmitter {
                 button.classList.add("disabled")
             }
         }
-    }
-
-    enableAll() {
-        this.disable([])
     }
 
     clearSelected() {

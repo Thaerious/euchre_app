@@ -11,8 +11,8 @@ BOT_NAMES = [
     "Botzilla",
     "Botasaurus",
     "Botanicus",
-    "Boptimus",
+    "Botimus",
     "Botneto",
     "Botworthy",
-    "ChatBotché"
+    "Botché Libré"
 ]

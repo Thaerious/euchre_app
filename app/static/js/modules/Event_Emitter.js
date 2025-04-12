@@ -18,6 +18,10 @@ export default class EventEmitter {
         this.events[event].push(listener);
     }
 
+    off(event, listener) {
+        this.removeListener(event, listener);
+    }
+
     removeListener(event, listener) {
         if (!this.events[event]) return;
         this.events[event] = this.events[event].filter(l => l !== listener);
@@ -25,7 +29,8 @@ export default class EventEmitter {
 
     emit(event, ...args) {
         if (this.events[event]) {
-            this.events[event].forEach(listener => listener(...args));
+            const listeners = [...this.events[event]];
+            listeners.forEach(listener => listener(...args));
         }
     }
 }

@@ -34,7 +34,7 @@ class Socket_Connection(Connection_Interface):
         if not isinstance(self.snapshot, Snapshot):
             raise TypeError(f"Expected type '{Snapshot.__name__}' found '{type(snapshot).__name__}'")        
 
-        self._user.emit("snapshot", self.snapshot.to_json())
+        self._user.emit("snapshot", self.snapshot)
 
     def emit(self, event, string):
         self._user.emit(event, string)

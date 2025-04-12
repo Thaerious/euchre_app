@@ -1,9 +1,7 @@
-import EventEmitter from "../modules/Event_Emitter.js";
-
-export default class HandManager extends EventEmitter {
-    constructor(seat) {
-        super();
+export default class HandManager {
+    constructor(seat, eventSource) {
         this.seat = seat
+        this.eventSource = eventSource
     }
 
     get count() {
@@ -61,9 +59,11 @@ export default class HandManager extends EventEmitter {
         
         this.calcOffset()
 
-        card.addEventListener("click", () => {
-            this.emit("selected", card.getAttribute("face"))
-        })   
+        if (this.eventSource !== null) {
+            card.addEventListener("click", () => {
+                this.eventSource.emit("card-selected", card.getAttribute("face"))
+            })
+        }
     }
 
     calcOffset() {
