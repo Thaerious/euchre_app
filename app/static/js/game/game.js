@@ -1,11 +1,13 @@
 import GameIO from "./GameIO.js"
 import ViewModel from "./View_Model.js"
 import ViewController from "./View_Controller.js"
+import ViewHistory from "./View_History.js"
 
 window.addEventListener("load", async () => {
     const gameIO = new GameIO()
     const viewModel = new ViewModel()
-    const viewController = new ViewController(viewModel, gameIO)
+    const viewHistory = new ViewHistory(gameIO, viewModel)
+    const viewController = new ViewController(viewModel, viewHistory, gameIO)
 
     window.ui = {
         gameIO: gameIO,
@@ -13,6 +15,6 @@ window.addEventListener("load", async () => {
         viewController: viewController,
     }
 
-    await viewController.loadHistory()
-    await viewController.run()
+    await viewHistory.loadHistory()
+    await viewHistory.run()
 });
