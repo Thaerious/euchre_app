@@ -21,7 +21,7 @@ export default class ViewModel extends EventEmitter{
         this.message = new MessageManager()
         this.tokens = new TokenManager()
         this.played = new PlayedCardsManager()
-        this.suitButtons = new ButtonManager("suit-button-container", this)
+        this.suitButtons = new ButtonManager("suit-button-container", this, {dataFieldID: "suit"})
         this.actionButtons = new ButtonManager("action-button-container", this)
         this.hands = [
             new HandManager(0, this),

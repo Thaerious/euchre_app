@@ -1,15 +1,13 @@
-import ViewUpdate from "./View_Update.js"
-
 export default class ViewController {
     // This class is the glue between the ViewModel and the this.gameIO
     // It listens for events emitted from either the ViewModel or this.gameIO and updates
     // the other objects accordingly.
     // It will also change the state of the ViewModel based on ViewModel events.
-    constructor(viewModel, viewHistory, gameIO) {
+    constructor(viewModel, viewHistory, viewUpdate, gameIO) {
         this.viewModel = viewModel
         this.viewHistory = viewHistory
         this.gameIO = gameIO
-        this.viewUpdate = new ViewUpdate(viewModel)
+        this.viewUpdate = viewUpdate
         this.addListeners()
     }
 
@@ -48,7 +46,11 @@ export default class ViewController {
         });
 
         this.viewModel.on("make", () => {
-            this.gameIO.doAction("make", this.viewModel.suitButtons.getSuit())
+            const selected = this.viewModel.suitButtons.selected
+            if (selected.length == 0) throw Exception("No suit selected")
+            const suit = selected[0].dataset.suit
+
+            this.gameIO.doAction("make", suit)
         });
 
         this.viewModel.on("alone", () => {

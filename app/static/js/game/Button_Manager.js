@@ -11,7 +11,7 @@
  * - Emits an event with the name defined by the button's data-action attribute when clicked.
  *
  * Usage:
- *   const actionManager = new ActionButtonManager();
+ *   const actionManager = new ButtonManager();
  *   actionManager.on("continue", () => {
  *       // Handle the continue action.
  *   });
@@ -19,13 +19,14 @@
 
 export default class ButtonManager {
     /**
-     * Creates an instance of ActionButtonManager.
+     * Creates an instance of ButtonManager.
      * @param {string} elementID - The CSS selector for the container holding the action buttons.
      */
-    constructor(elementID, eventSource) {
+    constructor(elementID, eventSource, settings = {dataFieldID : "event"}) {
         this.container = document.getElementById(elementID);
         this.buttons = document.querySelectorAll(`#${elementID} > button`)
         this.eventSource = eventSource
+        this.dataFieldID = settings.dataFieldID // the data field used to identify the button
 
         for (let button of this.buttons) {
             if (button.getAttribute("selectable") != null) {
@@ -54,10 +55,12 @@ export default class ButtonManager {
      *   - action {string} (optional): Custom event name to emit; defaults to the lowercased button name.
      *   - disable {boolean} (optional): If true, the button will be disabled upon creation.
      */
-    showButtons(buttonNames) {
+    showButtons(...buttonNames) {
+        buttonNames = buttonNames.flat()
+
         // Hide all existing buttons
         for (let button of this.buttons) {     
-            const id = button.id ? button.id !== "" : button.dataset.event
+            let id = button.dataset[this.dataFieldID]   
 
             if (buttonNames.indexOf(id) == -1) {
                 button.classList.add("hidden")
@@ -70,10 +73,12 @@ export default class ButtonManager {
         this.show();
     }
 
-    disable(buttonNames) {
+    disable(...buttonNames) {
+        buttonNames = buttonNames.flat()
+
         // Hide all existing buttons
-        for (let button of this.buttons) {     
-            const id = button.id ?? button.dataset.event            
+        for (let button of this.buttons) {
+            let id = button.dataset[this.dataFieldID]            
 
             if (buttonNames.indexOf(id) == -1) {
                 button.classList.remove("disabled")
@@ -83,6 +88,16 @@ export default class ButtonManager {
                 button.classList.add("disabled")
             }
         }
+    }
+
+    get selected() {
+        const selected = []
+        this.buttons.forEach(button => {
+            if (button.classList.contains("selected")) {
+                selected.push(button)
+            }
+        });
+        return selected
     }
 
     clearSelected() {

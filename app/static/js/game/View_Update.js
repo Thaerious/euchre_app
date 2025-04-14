@@ -28,7 +28,7 @@ export default class View_Update{
         this.viewModel.suitButtons.hide()
         this.viewModel.actionButtons.hide()
         this.viewModel.hands[0].clear()
-        this.viewModel.upcard.show("back")      
+        this.viewModel.upcard.show("back")
         this.updateTokens()
 
         if (this.snapshot.state == 7) return;
@@ -201,7 +201,7 @@ export default class View_Update{
 
         switch (this.snapshot.state) {
             case 1:
-                this.viewModel.actionButtons.showButtons(["pass", "order", "alone"])
+                this.viewModel.actionButtons.showButtons("pass", "order", "alone")
                 break
             case 2:
                 this.viewModel.message.show("Swap a Card")
@@ -209,14 +209,20 @@ export default class View_Update{
                 this.viewModel.hands[0].enable()
                 break
             case 3: {
-                this.viewModel.actionButtons.showButtons(["pass", "make", "alone"])
+                this.viewModel.actionButtons.showButtons("pass", "make", "alone")
+                this.viewModel.actionButtons.disable("make")
                 let card = this.snapshot.down_card
                 let suit = card[card.length - 1]
                 this.viewModel.suitButtons.disable(suit)
                 this.viewModel.suitButtons.show()
+
+                this.viewModel.once("change-suit", () => {
+                    this.viewModel.actionButtons.disable([])
+                });
+
             } break
             case 4: {
-                his.viewModel.actionButtons.showButtons(["make", "alone"])
+                his.viewModel.actionButtons.showButtons("make", "alone")
                 let card = this.snapshot.down_card
                 let suit = card[card.length - 1]
                 this.viewModel.suitButtons.disable(suit)
