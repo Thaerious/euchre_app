@@ -159,8 +159,9 @@ class Host_Endpoints:
         
     def create_game(self, game_rec:Game):
         # Generate bot names
+        bot_names = BOT_NAMES.copy()
         for i in range(4 - game_rec.player_count):
-            bot_name = BOT_NAMES.pop(random.randrange(len(BOT_NAMES)))            
+            bot_name = bot_names.pop(random.randrange(len(bot_names)))            
             self.sql_anon.add_bot(game_rec.token, bot_name, "Bot_2")
 
         # Create & store a new hub
