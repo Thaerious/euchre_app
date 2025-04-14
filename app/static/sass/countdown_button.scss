@@ -1,0 +1,16 @@
+.countdown-wrapper {    
+    position: relative;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;    
+    width: 65%;
+}
+
+.countdown-timer {
+    position: absolute;
+    right: 0;   /* slightly to the right of the edge */
+}
+
+.countdown-label {
+   text-align: center;
+}

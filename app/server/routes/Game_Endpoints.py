@@ -16,7 +16,8 @@ class Game_Endpoints:
         self.sql_anon = SQL_Anon(filename="./app/anon.db", namespace=self.NAMESPACE)
         self.hubs = hubs
 
-        app.add_url_rule(self.NAMESPACE, view_func=self.game, endpoint="game")
+        app.add_url_rule("/game", view_func=self.game, endpoint="game")
+        app.add_url_rule("/view", view_func=self.view, endpoint="view")
 
         io.on_event('connect', self.on_connect, namespace=self.NAMESPACE)
         io.on_event('disconnect', self.on_disconnect, namespace=self.NAMESPACE)        
@@ -28,6 +29,11 @@ class Game_Endpoints:
     def game(self, user):
         logger.info("/game")
         return render_template("game.html", seat=user.seat, game_token=user.game_token)
+
+    @fetch_user()
+    def view(self, user):
+        logger.info("/view")
+        return render_template("game.html", seat=user.seat, game_token=user.game_token, view=True)
 
     # websocket connect handler 
     @fetch_user()

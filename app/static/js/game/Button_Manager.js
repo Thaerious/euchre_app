@@ -24,7 +24,7 @@ export default class ButtonManager {
      */
     constructor(elementID, eventSource, settings = {dataFieldID : "event"}) {
         this.container = document.getElementById(elementID);
-        this.buttons = document.querySelectorAll(`#${elementID} > button`)
+        this.buttons = document.querySelectorAll(`#${elementID} > *`)
         this.eventSource = eventSource
         this.dataFieldID = settings.dataFieldID // the data field used to identify the button
 
