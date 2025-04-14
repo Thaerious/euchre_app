@@ -9,10 +9,12 @@ export default class ViewHistory extends EventEmitter {
         this._snapIndex = -1    // The currently displayed snapshot from snapHistory
         this.paused = false     // When true update view with queued snapshots
         this.isRunning = false  // Semaphore around the run loop, prevents update race condition
+        
+        this.addButtonListeners()
 
         // Websocket incoming events.
         this.gameIO.on("snapshot", async snapshot => {
-            console.log(`${snapshot.hash.substring(0, 8)}:Snapshot`)
+            console.log(`received ${snapshot.hash.substring(0, 8)}:Snapshot`)
             this.enqueue(snapshot)
         });
     }
@@ -32,29 +34,6 @@ export default class ViewHistory extends EventEmitter {
             document.querySelector("#run_queue").classList.add("disabled")
             document.querySelector("#pause_queue").classList.remove("disabled")
         }
-    }
-
-    async run() {
-        if (this.isRunning) return
-        this.isRunning = true
-        while (!this.paused) {
-            if (this.snapIndex >= this.snapHistory.length - 1) break
-            await this.next();
-        }
-        this.isRunning = false
-    }
-
-    async prev() {
-        if (this.snapIndex > 0) this.snapIndex -= 1
-        console.log(`${this.snapIndex}: ${this.snapshot.serial_id} state ${this.snapshot.state}`)
-        this.emit("load", this.snapshot)
-    }
-
-    async next() {
-        if (this.snapIndex >= this.snapHistory.length - 1) return
-        this.snapIndex += 1
-        console.log(`${this.snapshot.hash.substring(0, 8)}: state ${this.snapshot.state}`)
-        this.emit("update", this.snapshot)
     }
 
     get snapshot() {
@@ -78,6 +57,31 @@ export default class ViewHistory extends EventEmitter {
         this.updateButtons()
     }
 
+    async run() {
+        if (this.isRunning) return
+        this.isRunning = true
+        while (!this.paused) {
+            if (this.snapIndex >= this.snapHistory.length - 1) {
+                // Stop the loop when caught up
+                break
+            }
+            await this.next();
+        }
+        this.isRunning = false
+    }
+
+    async prev() {
+        if (this.snapIndex > 0) this.snapIndex -= 1
+        this.emit("load", this.snapshot)
+    }
+
+    async next() {
+        if (this.snapIndex >= this.snapHistory.length - 1) return
+        this.snapIndex += 1
+        this.emit("load", this.snapshot)
+        return new Promise(resolve => setTimeout(resolve, 1000));
+    }
+   
     addButtonListeners() {
         // Snapshot Queue button listeners
         document.querySelector("#next_snap").addEventListener("click", () => {
@@ -111,7 +115,7 @@ export default class ViewHistory extends EventEmitter {
             this.snapHistory.push(snapshot)
             this.save()
             this.updateButtons()
-            await this.run()
+            await this.run() // Won't run when paused
         }
     }
 
@@ -120,11 +124,11 @@ export default class ViewHistory extends EventEmitter {
         localStorage.setItem("history", history_json)
     }
 
-    async loadHistory() {
+    async load() {
         const token = this.viewModel.gameToken
 
+        // Clear local history for new games.
         if (localStorage.getItem("history-for") != token) {
-            // Clear local history for new games.
             localStorage.setItem("history", "[]")
             localStorage.setItem("history-for", token)
             return
@@ -132,7 +136,7 @@ export default class ViewHistory extends EventEmitter {
 
         const history = localStorage.getItem("history")
         this.snapHistory = JSON.parse(history)
-        this._snapIndex = this.snapHistory.length - 1
+        this.snapIndex = this.snapHistory.length - 1
 
         if (history.length > 0) {
             this.emit("load", this.snapshot)

@@ -12,9 +12,10 @@ window.addEventListener("load", async () => {
     window.ui = {
         gameIO: gameIO,
         viewModel: viewModel,
+        viewHistory, viewHistory,
         viewController: viewController,
     }
 
-    await viewHistory.loadHistory()
+    await viewHistory.load()
     await viewHistory.run()
 });

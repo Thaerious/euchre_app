@@ -10,6 +10,8 @@ import random
 import json
 import os
 
+DEFAULT_FILENAME = "./app/anon.db"
+
 logger = logger_factory(__name__, "SQL")
 
 class Game():
@@ -290,17 +292,6 @@ class SQL_Anon:
             sql = ("INSERT INTO bots (game_token, bot_name, bot_version) VALUES (?, ?, ?)")
             cursor.execute(sql, (game_token, name, version))
 
-    def bots(self):
-        """ List all bots"""
-        with sqlite3.connect(self.filename) as conn:
-            conn.set_trace_callback(logger.debug)
-            conn.row_factory = sqlite3.Row  # This makes query results behave like dictionaries
-            cursor = conn.cursor()
-            sql = ("SELECT * FROM bots")
-            cursor.execute(sql)
-            rows = cursor.fetchall()
-            return [dict(row) for row in rows]
-
     def set_status(self, game_token, value):
         """ Set the status of a game {STAGING, PLAYING, COMPLETE} """
         with sqlite3.connect(self.filename) as conn:            
@@ -340,7 +331,18 @@ class SQL_Anon:
                   )
             cursor.execute(sql)
             rows = cursor.fetchall()
-            return [dict(row) for row in rows]     
+            return [dict(row) for row in rows]    
+
+    def bots(self):
+        """ List all bots"""
+        with sqlite3.connect(self.filename) as conn:
+            conn.set_trace_callback(logger.debug)
+            conn.row_factory = sqlite3.Row  # This makes query results behave like dictionaries
+            cursor = conn.cursor()
+            sql = ("SELECT * FROM bots")
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+            return [dict(row) for row in rows]        
 
     def reset(self):
         """ Clear all tables """
@@ -349,15 +351,16 @@ class SQL_Anon:
             cursor = conn.cursor()
             cursor.execute("DELETE FROM users")
             cursor.execute("DELETE FROM games")
+            cursor.execute("DELETE FROM bots")
 
 def invoke(method_name, *args):
     """Dynamically invoke a method from the SQL_Games class."""
 
-    if not os.path.exists("./app/anon.db"):
-        print("Database file not found: ./app/anon.db")
+    if not os.path.exists(DEFAULT_FILENAME):
+        print(f"Database file not found: {DEFAULT_FILENAME}.")
         exit()
 
-    sql = SQL_Anon(filename="./app/anon.db")
+    sql = SQL_Anon(filename=DEFAULT_FILENAME)
 
     if hasattr(sql, method_name):
         method = getattr(sql, method_name)
@@ -374,7 +377,7 @@ def invoke(method_name, *args):
 
 def print_help():
     """Print available methods for the script."""
-    sql = SQL_Anon(filename="./anon.db")
+    sql = SQL_Anon(filename=DEFAULT_FILENAME)
     print("USAGE")
     print("\tpython ./server/SQL_Games.py <method_name> [args...]\n")
     print("OPTIONS")

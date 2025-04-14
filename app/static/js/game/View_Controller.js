@@ -20,12 +20,14 @@ export default class ViewController {
 
         // Events for view history
         this.viewHistory.on("load", async snapshot => {
-            this.viewUpdate.load(snapshot)
+            console.log(`load ${snapshot.hash.substring(0, 8)}: state ${snapshot.state}`)
+            await this.viewUpdate.load(snapshot)
         })
 
         // Events for view history
         this.viewHistory.on("update", async snapshot => {
-            this.viewUpdate.update(snapshot)
+            console.log(`update ${snapshot.hash.substring(0, 8)}: state ${snapshot.state}`)
+            await this.viewUpdate.update(snapshot)
         })
 
         // Websocket event for server side errors.
@@ -63,13 +65,16 @@ export default class ViewController {
 
         // Animation when a player plays a card
         this.viewModel.on("card-selected", (face) => {
-            if (this.snapshot.current_player != this.snapshot.for_player) return;
+            const snapshot = this.viewUpdate.snapshot
+            if (snapshot.current_player != snapshot.for_player) return;
             this.viewModel.playCardAnimation(0, face)
         });
 
         // Hand card listeners
         this.viewModel.on("card-selected", (card) => {
-            switch (this.snapshot.state) {
+            const snapshot = this.viewUpdate.snapshot
+
+            switch (snapshot.state) {
                 case 2:
                     this.gameIO.doAction("up", card)
                     break;

@@ -5,8 +5,8 @@ export default class View_Update{
 
     async load(snapshot) {
         this.snapshot = snapshot
+        console.log(`ViewUpdate.load ${snapshot.hash.substring(0, 8)}:Snapshot`)
         await this.loadView()
-        return new Promise(resolve => setTimeout(resolve, 1000));
     }
 
     // Main entry point for view controller
@@ -18,8 +18,6 @@ export default class View_Update{
 
         this.snapshot = snapshot
         await this.updateView()
-
-        return new Promise(resolve => setTimeout(resolve, 1000));
     } 
 
     async loadView() {
