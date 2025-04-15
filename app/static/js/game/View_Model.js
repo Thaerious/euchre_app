@@ -63,8 +63,8 @@ export default class ViewModel extends EventEmitter{
 
     hideButtons() {
         this.message.hide()
-        this.actionButtons.hide()
-        this.suitButtons.hide()       
+        this.actionButtons.hideContainer()
+        this.suitButtons.hideContainer()       
     }
 
     get seat() {

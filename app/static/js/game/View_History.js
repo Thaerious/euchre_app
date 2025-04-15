@@ -78,7 +78,7 @@ export default class ViewHistory extends EventEmitter {
     async next() {
         if (this.snapIndex >= this.snapHistory.length - 1) return
         this.snapIndex += 1
-        this.emit("load", this.snapshot)
+        await this.emit("load", this.snapshot)
         return new Promise(resolve => setTimeout(resolve, 1000));
     }
    
@@ -105,7 +105,6 @@ export default class ViewHistory extends EventEmitter {
         document.querySelector("#pause_queue").addEventListener("click", () => {
             this.paused = true
         });
-
     }
 
     async enqueue(snapshot) {

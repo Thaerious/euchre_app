@@ -59,11 +59,7 @@ export default class ViewController {
 
         this.viewModel.on("order", () => {
             this.gameIO.doAction("order", null)
-        });
-
-        this.viewModel.on("continue", () => {
-            this.next()
-        });
+        });       
 
         // Animation when a player plays a card
         this.viewModel.on("card-selected", (face) => {

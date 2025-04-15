@@ -28,11 +28,13 @@ class CountdownButton extends HTMLElement {
 
     countdown() {
         const tick = () => {
-            if (this.time <= 0) {
-                this.dispatchEvent(new Event("click")); // auto-fire
-                return;
-            }
             this.timer.textContent = this.time;
+
+            if (this.time <= 0) {
+                this.dispatchEvent(new Event("click"));
+                return;
+            }            
+
             this.time -= 1;
             this._timeout = setTimeout(tick, 1000);
         };
@@ -53,13 +55,17 @@ class CountdownButton extends HTMLElement {
                 if (m.attributeName === "class") {
                     const wasHidden = m.oldValue?.includes("hidden");
                     const isNowHidden = m.target.classList.contains("hidden");
-
+                    
                     if (wasHidden && !isNowHidden) {
-                        console.log("'hidden' was removed!");
+                        console.trace("'hidden' was removed!");
                         this.time = parseInt(this.getAttribute("timeout"))
                         this.timer.textContent = this.getAttribute("timeout")
                         this.countdown()
                     }
+                    if (!wasHidden && isNowHidden) {
+                        console.trace("'hidden' was added!");
+                        clearTimeout(this._timeout);
+                    }                    
                 }
             }
         });

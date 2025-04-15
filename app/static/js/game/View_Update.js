@@ -1,4 +1,4 @@
-export default class View_Update{
+export default class View_Update {
     constructor(viewModel) {
         this.viewModel = viewModel
     }
@@ -18,15 +18,15 @@ export default class View_Update{
 
         this.snapshot = snapshot
         await this.updateView()
-    } 
+    }
 
     async loadView() {
         this.setNames()
         this.viewModel.message.hide()
         this.viewModel.tokens.hide()
         this.viewModel.played.clear()
-        this.viewModel.suitButtons.hide()
-        this.viewModel.actionButtons.hide()
+        this.viewModel.suitButtons.hideButtons()
+        this.viewModel.actionButtons.hideButtons()
         this.viewModel.hands[0].clear()
         this.viewModel.upcard.show("back")
         this.updateTokens()
@@ -82,12 +82,12 @@ export default class View_Update{
         let card = null
 
         if (seat == 0) {
-            card = this.viewModel.hands[seat].getCard(this.snapshot.last_data)        
+            card = this.viewModel.hands[seat].getCard(this.snapshot.last_data)
         } else {
-            card = this.viewModel.hands[seat].getCard()        
-            card.setAttribute("face", this.snapshot.last_data)            
+            card = this.viewModel.hands[seat].getCard()
+            card.setAttribute("face", this.snapshot.last_data)
         }
-        
+
         this.viewModel.hands[seat].setPlayed(card)
     }
 
@@ -96,7 +96,7 @@ export default class View_Update{
         this.viewModel.played.clear()
         if ([5, 6].has(this.snapshot.state)) {
             let current_trick = this.snapshot.tricks.at(-1)
-            
+
             let pindex = this.snapshot.lead
             let seat = this.getSeat(pindex, this.snapshot.for_player)
 
@@ -104,18 +104,18 @@ export default class View_Update{
                 this.viewModel.played.setCard(seat, card)
                 if (++seat > 3) seat = 0
             }
-        }        
+        }
     }
 
     setCards() {
         this.viewModel.hands[0].addCards(this.snapshot.hand) // set the hand cards
-        
+
         // set opponents cards in hand
         for (let p = 0; p < 4; p++) {
             if (p == this.snapshot.for_player) continue
             let seat = this.getSeat(p, this.snapshot.for_player)
             this.viewModel.hands[seat].fill("back", this.snapshot.players[p].hand_size)
-        }        
+        }
     }
 
     setNames() {
@@ -123,7 +123,7 @@ export default class View_Update{
         for (const player of this.snapshot.players) {
             const seat = this.getSeat(player.index, this.snapshot.for_player)
             this.setName(seat, player.name)
-        }        
+        }
     }
 
     updateTokens() {
@@ -135,7 +135,7 @@ export default class View_Update{
         if ([2, 4, 5, 6].has(this.snapshot.state)) {
             const makerSeat = this.getSeat(this.snapshot.maker, this.snapshot.for_player)
             this.viewModel.tokens.showMaker(makerSeat, this.snapshot.trump)
-        }        
+        }
     }
 
     updateTricks() {
@@ -153,7 +153,7 @@ export default class View_Update{
         } else {
             this.setScore(1, this.snapshot.score[0])
             this.setScore(0, this.snapshot.score[1])
-        }        
+        }
     }
 
     async clearHandIf5() {
@@ -165,7 +165,7 @@ export default class View_Update{
     async pauseOn6() {
         if (this.snapshot.state != 6) return
         await this.pauseForContinue()
-    }    
+    }
 
     async displayUpcard() {
         // display upcard
@@ -177,30 +177,28 @@ export default class View_Update{
             }
         } else {
             this.viewModel.upcard.hide()
-        }        
+        }
     }
 
-    async pauseForContinue(message = "") {
-        this.paused = true
-        if (message !== "") this.viewModel.showMessage(message)
-
-        this.viewModel.showButtons(["continue"])
-
-        await new Promise(resolve => {
-            this.viewModel.once("continue", resolve);
+    pauseForContinue(message = "") {
+        if (message !== "") this.viewModel.showMessage(message);
+        this.viewModel.showButtons(["continue"]);
+    
+        return new Promise((resolve) => {
+            this.viewModel.once("continue", () => {
+                this.viewModel.hideButtons();
+                console.log("Resolve in view update")
+                resolve(); 
+            });
         });
     }
 
     updateActionButtons() {
         if (this.snapshot.current_player != this.snapshot.for_player) return
-        setTimeout(() => this.doUpdateActionButtons(), 1000)
-    }
-
-    doUpdateActionButtons() {
-        this.viewModel.hideButtons()
 
         switch (this.snapshot.state) {
             case 1:
+                console.log("HERE")
                 this.viewModel.actionButtons.showButtons("pass", "order", "alone")
                 break
             case 2:
@@ -245,7 +243,7 @@ export default class View_Update{
         }
         else if (team == 1) {
             document.querySelector(`#score_${team} .top`).setAttribute("face", "5♠")
-        }        
+        }
 
         document.querySelector(`#score_${team}`).setAttribute("score", value)
     }
@@ -274,8 +272,8 @@ export default class View_Update{
 
     bubbleMessage() {
         if (this.snapshot.last_player != this.snapshot.for_player) {
-            const seat = this.getSeat(this.snapshot.last_player, this.snapshot.for_player)      
+            const seat = this.getSeat(this.snapshot.last_player, this.snapshot.for_player)
             this.viewModel.chatBubble.showFade(seat, `${this.snapshot.last_action} ${this.snapshot.last_data ?? ""}`)
-        }        
-    }    
+        }
+    }
 }

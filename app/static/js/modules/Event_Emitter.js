@@ -27,10 +27,16 @@ export default class EventEmitter {
         this.events[event] = this.events[event].filter(l => l !== listener);
     }
 
-    emit(event, ...args) {
+    removeAllListeners(event) {
+        if (this.events[event]) {
+            delete this.events[event];
+        }
+    }
+
+    async emit(event, ...args) {
         if (this.events[event]) {
             const listeners = [...this.events[event]];
-            listeners.forEach(listener => listener(...args));
+            await Promise.all(listeners.map(listener => listener(...args)));
         }
     }
 }

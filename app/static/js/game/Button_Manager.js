@@ -56,11 +56,12 @@ export default class ButtonManager {
      *   - disable {boolean} (optional): If true, the button will be disabled upon creation.
      */
     showButtons(...buttonNames) {
+        console.trace("showButtons", buttonNames)
         buttonNames = buttonNames.flat()
 
         // Hide all existing buttons
         for (let button of this.buttons) {     
-            let id = button.dataset[this.dataFieldID]   
+            let id = button.dataset[this.dataFieldID]  
 
             if (buttonNames.indexOf(id) == -1) {
                 button.classList.add("hidden")
@@ -69,8 +70,12 @@ export default class ButtonManager {
                 button.classList.remove("hidden")
             }
         }
+    }
 
-        this.show();
+    hideButtons() {
+        for (let button of this.buttons) {
+            button.classList.add("hidden")
+        }
     }
 
     disable(...buttonNames) {
@@ -107,14 +112,14 @@ export default class ButtonManager {
     /**
      * Hides the action button container by adding the "is-hidden" class.
      */
-    hide() {
+    hideContainer() {
         this.container.classList.add("is-hidden");
     }
 
     /**
      * Shows the action button container by removing the "is-hidden" class.
      */
-    show() {
+    showContainer() {
         this.clearSelected()
         this.container.classList.remove("is-hidden");        
     }
