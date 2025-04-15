@@ -57,13 +57,11 @@ class CountdownButton extends HTMLElement {
                     const isNowHidden = m.target.classList.contains("hidden");
                     
                     if (wasHidden && !isNowHidden) {
-                        console.trace("'hidden' was removed!");
                         this.time = parseInt(this.getAttribute("timeout"))
                         this.timer.textContent = this.getAttribute("timeout")
                         this.countdown()
                     }
                     if (!wasHidden && isNowHidden) {
-                        console.trace("'hidden' was added!");
                         clearTimeout(this._timeout);
                     }                    
                 }

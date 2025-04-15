@@ -1,3 +1,5 @@
+import playable_suits from "./playable_suits.js"
+
 export default class View_Update {
     constructor(viewModel) {
         this.viewModel = viewModel
@@ -25,7 +27,8 @@ export default class View_Update {
         this.viewModel.message.hide()
         this.viewModel.tokens.hide()
         this.viewModel.played.clear()
-        this.viewModel.suitButtons.hideButtons()
+        this.viewModel.suitButtons.clearSelected()
+        this.viewModel.suitButtons.hideContainer()
         this.viewModel.actionButtons.hideButtons()
         this.viewModel.hands[0].clear()
         this.viewModel.upcard.show("back")
@@ -51,8 +54,9 @@ export default class View_Update {
 
     async updateView() {
         this.viewModel.message.hide()
-        this.viewModel.suitButtons.hide()
-        this.viewModel.actionButtons.hide()
+        this.viewModel.suitButtons.clearSelected()
+        this.viewModel.suitButtons.hideContainer()
+        this.viewModel.actionButtons.hideButtons()
         await this.clearHandIf5()
         await this.displayUpcard()
         await this.playCardIf()
@@ -182,11 +186,11 @@ export default class View_Update {
 
     pauseForContinue(message = "") {
         if (message !== "") this.viewModel.showMessage(message);
-        this.viewModel.showButtons(["continue"]);
+        this.viewModel.actionButtons.showButtons(["continue"]);
     
         return new Promise((resolve) => {
             this.viewModel.once("continue", () => {
-                this.viewModel.hideButtons();
+                this.viewModel.actionButtons.hideButtons()
                 console.log("Resolve in view update")
                 resolve(); 
             });
@@ -198,7 +202,6 @@ export default class View_Update {
 
         switch (this.snapshot.state) {
             case 1:
-                console.log("HERE")
                 this.viewModel.actionButtons.showButtons("pass", "order", "alone")
                 break
             case 2:
@@ -212,7 +215,7 @@ export default class View_Update {
                 let card = this.snapshot.down_card
                 let suit = card[card.length - 1]
                 this.viewModel.suitButtons.disable(suit)
-                this.viewModel.suitButtons.show()
+                this.viewModel.suitButtons.showContainer()
 
                 this.viewModel.once("change-suit", () => {
                     this.viewModel.actionButtons.disable([])
@@ -224,12 +227,13 @@ export default class View_Update {
                 let card = this.snapshot.down_card
                 let suit = card[card.length - 1]
                 this.viewModel.suitButtons.disable(suit)
-                this.viewModel.suitButtons.show()
+                this.viewModel.suitButtons.showContainer()
             } break
             case 5:
-                this.viewModel.message.show("Play a Card")
-                this.viewModel.hands[0].enable()
-                this.viewModel.actionButtons.hide()
+                this.viewModel.message.show("Play a Card")    
+                const suits = playable_suits(this.snapshot)
+                this.viewModel.hands[0].enable(suits)
+                this.viewModel.actionButtons.hideButtons()
                 break
         }
     }

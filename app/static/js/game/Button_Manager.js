@@ -56,7 +56,6 @@ export default class ButtonManager {
      *   - disable {boolean} (optional): If true, the button will be disabled upon creation.
      */
     showButtons(...buttonNames) {
-        console.trace("showButtons", buttonNames)
         buttonNames = buttonNames.flat()
 
         // Hide all existing buttons
@@ -120,7 +119,6 @@ export default class ButtonManager {
      * Shows the action button container by removing the "is-hidden" class.
      */
     showContainer() {
-        this.clearSelected()
         this.container.classList.remove("is-hidden");        
     }
 }

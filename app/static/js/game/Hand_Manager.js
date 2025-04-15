@@ -9,17 +9,21 @@ export default class HandManager {
         return cards.length
     }
 
-    enable() {
+    enable(suits = ["♠", "♥", "♦", "♣"]) {
         const cards = document.querySelectorAll(`.hand[seat='${this.seat}']`);
+
         for (const card of cards) {
-           card.classList.add("enabled")
+            const suit = card.getAttribute("face").at(-1)
+            if (suits.indexOf(suit) != -1) {
+                card.classList.add("enabled")
+            }
         }
     }
 
     disable() {
         const cards = document.querySelectorAll(`.hand[seat='${this.seat}']`);
         for (const card of cards) {
-           card.classList.remove("enabled")
+            card.classList.remove("enabled")
         }
     }
 
@@ -29,7 +33,7 @@ export default class HandManager {
 
         for (const card of cards) {
             table.removeChild(card);
-        }        
+        }
     }
 
     fill(face, count) {
@@ -56,7 +60,7 @@ export default class HandManager {
         card.setAttribute("face", face)
         card.style.setProperty("--card_index", cardIndex)
         table.appendChild(card)
-        
+
         this.calcOffset()
 
         if (this.eventSource !== null) {
@@ -100,7 +104,7 @@ export default class HandManager {
     /**
      * @param {number} count
      */
-    set tricks(count) {        
+    set tricks(count) {
         const tricksElement = document.querySelector(`.tricks[seat='${this.seat}']`);
         tricksElement.setAttribute("value", count)
     }

@@ -42,4 +42,8 @@
     height: 15%;
     aspect-ratio: 2.5 / 3.5;
     --offset_width: 5.35%;
+
+    &:not(.enabled) {
+        pointer-events: none;
+    }
 }

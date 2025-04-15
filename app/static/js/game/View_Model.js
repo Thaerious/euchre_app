@@ -55,17 +55,7 @@ export default class ViewModel extends EventEmitter{
 
     showMessage(message) {
         if (message !== "") this.message.show(message)        
-    }
-    
-    showButtons(buttons) {
-        this.actionButtons.showButtons(buttons)        
-    }
-
-    hideButtons() {
-        this.message.hide()
-        this.actionButtons.hideContainer()
-        this.suitButtons.hideContainer()       
-    }
+    }   
 
     get seat() {
         const seat = document.querySelector("#game-board").getAttribute("seat")
