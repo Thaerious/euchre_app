@@ -18,12 +18,12 @@ class AlertDialog extends HTMLElement {
 
     async show(message) {
         await this._ready; // ensures DOM is ready before using it
-        this.classList.remove("hidden")
+        this.classList.remove("is-hidden")
         this.textArea.textContent = message
 
         return new Promise((resolve, _) => {
             this.okButton.addEventListener("click", () => {
-                this.classList.add("hidden");
+                this.classList.add("is-hidden");
                 resolve();
             }, { once: true });
         })
@@ -35,6 +35,6 @@ customElements.define('alert-dialog', AlertDialog);
 let alert = document.querySelector("alert-dialog");
 if (!alert) {
     alert = document.createElement("alert-dialog");
-    alert.classList.add("hidden");
+    alert.classList.add("is-hidden");
     document.body.appendChild(alert);
 }

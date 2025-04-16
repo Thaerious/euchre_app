@@ -63,17 +63,17 @@ export default class ButtonManager {
             let id = button.dataset[this.dataFieldID]  
 
             if (buttonNames.indexOf(id) == -1) {
-                button.classList.add("hidden")
+                button.classList.add("is-hidden")
             }
             else {
-                button.classList.remove("hidden")
+                button.classList.remove("is-hidden")
             }
         }
     }
 
     hideButtons() {
         for (let button of this.buttons) {
-            button.classList.add("hidden")
+            button.classList.add("is-hidden")
         }
     }
 

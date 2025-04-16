@@ -29,7 +29,7 @@ class NameDialog extends HTMLElement {
         
         // Hide dialog when OK is pressed
         this.okButton.addEventListener("click", () => {
-            this.classList.add("hidden");
+            this.classList.add("is-hidden");
         })
 
         this.updateControls()
@@ -47,7 +47,7 @@ class NameDialog extends HTMLElement {
     async show(current = "") {
         await this._ready; // ensures DOM is ready before using it
         
-        this.classList.remove("hidden")
+        this.classList.remove("is-hidden")
         this.usernameText.value = current
         this.updateControls()
 

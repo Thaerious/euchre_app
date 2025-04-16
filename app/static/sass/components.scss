@@ -1,10 +1,12 @@
 /* components.scss */
+@use './constants';
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap');
-
-*{
-    --app-yellow: rgb(255, 247, 133);
-    --app-dark-yellow: rgb(255, 245, 0);
-    --app-component-green: rgba(76, 175, 80);
+ 
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #87CEEB; 
 }
 
 .hidden, .is-hidden {
@@ -13,6 +15,26 @@
 
 .invisible{
     visibility: hidden !important;
+}
+
+.game-board {
+    position: absolute;
+    background-color: var(--app-board-green);
+    border: 2px solid #ffffff;
+    border-radius: 15px;
+    margin: 0 auto;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    font-size: calc(var(--box-size) * 0.05vmin);
+
+    @media (orientation: landscape) {
+        height: calc(var(--box-size) * 1vh);
+        width: calc(var(--box-size) * 1vh);
+    }
+
+    @media (orientation: portrait) {
+        width: calc(var(--box-size) * 1vw);
+        height: calc(var(--box-size) * 1vw);
+    }
 }
 
 .font-small{

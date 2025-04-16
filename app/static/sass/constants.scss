@@ -1,0 +1,10 @@
+:root {
+    --box-size: 80;
+    --box-height: calc(var(--box-size) * 1vh);
+    --box-width: calc(var(--box-size) * 1vh);  
+
+    --app-yellow: rgb(255, 247, 133);
+    --app-dark-yellow: rgb(255, 245, 0);
+    --app-component-green: rgb(76, 175, 80);   
+    --app-board-green: rgb(0, 128, 0);   
+}

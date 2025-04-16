@@ -11,14 +11,22 @@
     gap: 10px;
 }
 
-.game-title{    
-    position: absolute;
-    left: 50%;
-    top: 15%;
-    transform: translate(-50%, -50%);
-    font-family: "Britannic", sans-serif;
-    font-weight: bolder;
-    color: var(--app-yellow);        
-    font-size: 5rem;    
-    -webkit-text-stroke: 3px black;    
+// .game-title{    
+//     position: absolute;
+//     left: 50%;
+//     top: 15%;
+//     transform: translate(-50%, -50%);
+//     font-family: "Britannic", sans-serif;
+//     font-weight: bolder;
+//     color: var(--app-yellow);        
+//     font-size: 5rem;    
+//     -webkit-text-stroke: 3px black;    
+// }
+
+.game-title {
+    font-size: 1em;
+    font-weight: bold;
+    text-align: center;
+    color: white;
+    margin-bottom: 1em;
 }
