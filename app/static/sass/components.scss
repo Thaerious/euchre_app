@@ -9,6 +9,13 @@ body {
     background-color: #87CEEB; 
 }
 
+:root{
+    font-family: "Montserrat", sans-serif;
+    font-size: calc(var(--box-size) * 0.05vmin);
+    color: var(--app-yellow);
+    font-weight: bolder;    
+}
+
 .hidden, .is-hidden {
     display: none !important;   
 }
@@ -24,7 +31,6 @@ body {
     border-radius: 15px;
     margin: 0 auto;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    font-size: calc(var(--box-size) * 0.05vmin);
 
     @media (orientation: landscape) {
         height: calc(var(--box-size) * 1vh);
@@ -38,24 +44,15 @@ body {
 }
 
 .font-small{
-    font-family: "Montserrat", sans-serif;
     font-size: 0.75rem;
-    font-weight: bolder;
-    color: var(--app-yellow);
 }
 
 .font-normal{
-    font-family: "Montserrat", sans-serif;
     font-size: 1.2rem;
-    font-weight: bolder;
-    color: var(--app-yellow);    
 }
 
 .font-large{
-    font-family: "Montserrat", sans-serif;
-    font-size: 2rem;
-    font-weight: bolder;
-    color: rgb(255, 247, 133);    
+    font-size: 2rem;   
 }
 
 .ui-container {
