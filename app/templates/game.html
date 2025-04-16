@@ -8,10 +8,10 @@
     <link rel="stylesheet" href="../static/css/game.css">
     <script src="../static/js/modules/socket.io.js"></script>
 
-    {% if view %}    
-        <script type="module" src="../static/js/game/view.js"></script>
+    {% if view %}
+    <script type="module" src="../static/js/game/view.js"></script>
     {% else %}
-        <script type="module" src="../static/js/game/game.js"></script>
+    <script type="module" src="../static/js/game/game.js"></script>
     {% endif %}
 
     <script src="../static/js/elements/Alert_Dialog.js" defer></script>
@@ -33,35 +33,19 @@
         <div class="player-icon" seat="3"></div>
 
         <div id="tricks_0" class="tricks" seat="0" value="0">
-            <img class="trick" index="0" src="../static/images/cards/large/back.png" />
-            <img class="trick" index="1" src="../static/images/cards/large/back.png" />
-            <img class="trick" index="2" src="../static/images/cards/large/back.png" />
-            <img class="trick" index="3" src="../static/images/cards/large/back.png" />
-            <img class="trick" index="4" src="../static/images/cards/large/back.png" />
+            {% include 'elements/trick.html' %}
         </div>
 
         <div id="tricks_1" class="tricks" seat="1">
-            <img class="trick" index="0" src="../static/images/cards/large/back.png" />
-            <img class="trick" index="1" src="../static/images/cards/large/back.png" />
-            <img class="trick" index="2" src="../static/images/cards/large/back.png" />
-            <img class="trick" index="3" src="../static/images/cards/large/back.png" />
-            <img class="trick" index="4" src="../static/images/cards/large/back.png" />
+            {% include 'elements/trick.html' %}
         </div>
 
         <div id="tricks_2" class="tricks" seat="2">
-            <img class="trick" index="0" src="../static/images/cards/large/back.png" />
-            <img class="trick" index="1" src="../static/images/cards/large/back.png" />
-            <img class="trick" index="2" src="../static/images/cards/large/back.png" />
-            <img class="trick" index="3" src="../static/images/cards/large/back.png" />
-            <img class="trick" index="4" src="../static/images/cards/large/back.png" />
+            {% include 'elements/trick.html' %}
         </div>
 
         <div id="tricks_3" class="tricks" seat="3">
-            <img class="trick" index="0" src="../static/images/cards/large/back.png" />
-            <img class="trick" index="1" src="../static/images/cards/large/back.png" />
-            <img class="trick" index="2" src="../static/images/cards/large/back.png" />
-            <img class="trick" index="3" src="../static/images/cards/large/back.png" />
-            <img class="trick" index="4" src="../static/images/cards/large/back.png" />
+            {% include 'elements/trick.html' %}
         </div>
 
         <div id="suit-button-container" class="suit-button-container">
@@ -72,19 +56,20 @@
         </div>
 
         <div id="action-button-container" class="action-button-container">
-            <countdown-button class="ui-button size_full font-normal hidden" timeout="5" data-event="continue">Continue</countdown-button>
+            <countdown-button class="ui-button size_full font-normal hidden" timeout="5"
+                data-event="continue">Continue</countdown-button>
             <button class="ui-button size_full font-normal hidden" data-event="pass">Pass</button>
             <button class="ui-button size_full font-normal hidden" data-event="order">Order</button>
             <button class="ui-button size_full font-normal hidden" data-event="make">Make</button>
             <button class="ui-button size_full font-normal hidden" data-event="alone">Alone</button>
         </div>
 
-        <div id="score_0" class="score" score="0">
+        <div id="score_0" class="score-cards" score="0">
             <div class="card top" face="back"></div>
             <div class="card bottom" face="5♦"></div>
         </div>
 
-        <div id="score_1" class="score" score="0">
+        <div id="score_1" class="score-cards" score="0">
             <div class="card top" face="back"></div>
             <div class="card bottom" face="5♣"></div>
         </div>
@@ -106,7 +91,21 @@
             <button id="rules_button" class="ui-button menu-button font-normal">Rules</button>
             <button id="exit_button" class="ui-button menu-button font-normal">Exit</button>
         </div>
-    </div>
+
+        <div id="scoreboard" class="ui-container scoreboard">
+            <div class="scoreboard-inner">
+                <div class="team-box ui-container">
+                    <div class="score font-normal">10</div>
+                    <div class="names font-normal">Adam & Eve</div>
+                </div>
+                <div class="team-box ui-container">
+                    <div class="score font-normal">10</div>
+                    <div class="names font-normal">Adam & Eve</div>
+                </div>
+            </div>
+            <button class="ui-button size_narrow font-normal" data-event="exit">Exit</button>
+        </div>
+    </div> <!-- /gameboard -->
 </body>
 
 </html>

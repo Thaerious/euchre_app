@@ -31,9 +31,10 @@ body {
     min-height: 300px;
     min-width: 300px;
 
-    /* Default for landscape */
-    height: calc(var(--box-size) * 1vh);
-    width: calc(var(--box-size) * 1vh);
+    @media (orientation: landscape) {
+        height: calc(var(--box-size) * 1vh);
+        width: calc(var(--box-size) * 1vh);
+    }
 
     @media (orientation: portrait) {
         width: calc(var(--box-size) * 1vw);
@@ -272,7 +273,7 @@ body {
     }
 }
 
-.score {
+.score-cards {
     position: absolute;
     height: 15%;
     aspect-ratio: 2.5 / 3.5;    
@@ -515,3 +516,35 @@ body {
         align-items: center;
       }    
 }
+
+.scoreboard{
+    position: absolute;
+    display: flex;
+    justify-content: space-around;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    gap: 5px;
+
+    .scoreboard-inner{
+        display: flex;
+        gap: 5px;
+        width: 100%;
+        justify-content: space-around;
+        gap: 5px;        
+    }
+
+    .team-box{
+        display: flex;        
+        flex: 1;
+        flex-direction: column;
+        justify-content: space-around;
+        gap: 5px;
+
+        .score, .names{
+            border: 1px solid red;
+        }
+    }
+}
+
