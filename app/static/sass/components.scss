@@ -9,18 +9,19 @@ body {
     background-color: #87CEEB; 
 }
 
-:root{
+:root, button{
     font-family: "Montserrat", sans-serif;
-    font-size: calc(var(--box-size) * 0.05vmin);
+    font-size: calc(var(--box-size) * 0.04vmin);
     color: var(--app-yellow);
-    font-weight: bolder;    
+    font-weight: bolder;   
+    user-select: none; 
 }
 
-.hidden, .is-hidden {
+.is-hidden {
     display: none !important;   
 }
 
-.invisible{
+.is-invisible{
     visibility: hidden !important;
 }
 
@@ -43,16 +44,16 @@ body {
     }
 }
 
-.font-small{
-    font-size: 0.75rem;
+.font_small{
+    font-size: 0.75em;
 }
 
-.font-normal{
-    font-size: 1.2rem;
+.font_normal{
+    font-size: 0.9em;
 }
 
-.font-large{
-    font-size: 2rem;   
+.font_large{
+    font-size: 2em;   
 }
 
 .ui-container {
@@ -103,7 +104,7 @@ body {
     color: black;
 }
 
-.disabled {
+.is-disabled {
     pointer-events: none;
     user-select: none;
     color: grey !important;
@@ -128,13 +129,13 @@ body {
     align-items: center;
     justify-content: center;
     background-color: var(--app-component-green);
-    border: 2px solid black;
-    border-radius: 8px;
+    border: var(--app-border);
+    border-radius: var(--app-border-radius);
     cursor: pointer;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     will-change: transform;
 
-    &.disabled {
+    &.is-disabled {
         pointer-events: none;
         user-select: none;
         color: grey !important;
@@ -170,13 +171,13 @@ body {
 
 .ui-button, .ui-textbox{
     &.size_full{
-        width: 100%;
-        height: calc(var(--box-height) * 0.075);
+        width: 15em;
+        height: 2em;
     }
     
     &.size_narrow{
-        width: 50%;
-        height: calc(var(--box-height) * 0.075);
+        width: 7.5em;
+        height: 2em;
     }
 
     &.size_small{
@@ -186,10 +187,10 @@ body {
     }  
 
     &.size_round{
-        border-radius: 25px;
+        border-radius: 10em;
         text-align: center;
-        height: 25px;  
-        width: 25px;
+        height: 1.8em;  
+        width: 1.8em;
         align-self: center;
     }     
 }
@@ -204,7 +205,7 @@ body {
     border-radius: 50%;
     background-color: rgb(180, 235, 180);
     color: red;
-    border: 2px solid red;  
+    border: 0.1em solid red;  
     right: 0;
     margin: 4%;
 
@@ -217,27 +218,21 @@ body {
     }
 }
 
-.info-text:not(.show){
-    opacity: 0;
-    pointer-events: none;
-}
-
 .info-text{
     position: fixed;
     display: flex;
     align-items: center;
     justify-content: center;  
-    padding: 10px;    
+    padding: 0.5em;
+
     background-color: var(--app-component-green);
-    border: 2px solid black;
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    transition: all 0.5s ease;
+    border: var(--app-border);
+    border-radius: var(--app-border-radius);
+    box-shadow: var(--app-box-shadow);
+
     width: 50%;
-    min-height: 100px;
     z-index: 1000;
     cursor: pointer;
-    user-select: none;
 }
 
 .text-area{

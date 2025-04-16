@@ -27,16 +27,16 @@ class InfoButton extends HTMLElement {
             this.infoText.style.top = `${rect.bottom}px`;
             this.infoText.style.transform = 'translate(-100%, -100%)';        
 
-            this.infoText?.classList.add("show")
+            this.infoText?.classList.remove("is-hidden")
             this.gameBoard.appendChild(this.infoText);
         });
 
         this.infoText?.addEventListener("mouseleave", ()=> {
-            this.infoText?.classList.remove("show")
+            this.infoText?.classList.add("is-hidden")
         });
 
         this.infoText?.addEventListener("click", ()=> {
-            this.infoText?.classList.remove("show")
+            this.infoText?.classList.remove("is-hidden")
         });        
     }
 }

@@ -23,8 +23,8 @@ class NameDialog extends HTMLElement {
         // Enable the ok button when there is text in the username input
         this.usernameText.addEventListener("input", () => {
             const username = this.usernameText.value.trim()
-            if (username === "") this.okButton.classList.add("disabled")
-            else this.okButton.classList.remove("disabled")
+            if (username === "") this.okButton.classList.add("is-disabled")
+            else this.okButton.classList.remove("is-disabled")
         });           
         
         // Hide dialog when OK is pressed
@@ -37,10 +37,10 @@ class NameDialog extends HTMLElement {
 
     updateControls() {
         if (this.usernameText.value !== "") {
-            this.okButton.classList.remove("disabled")            
+            this.okButton.classList.remove("is-disabled")            
         }
         else {
-            this.okButton.classList.add("disabled")
+            this.okButton.classList.add("is-disabled")
         }        
     }
 

@@ -53,7 +53,7 @@ export default class ButtonManager {
      * Each object can have the following properties:
      *   - name {string}: The label for the button.
      *   - action {string} (optional): Custom event name to emit; defaults to the lowercased button name.
-     *   - disable {boolean} (optional): If true, the button will be disabled upon creation.
+     *   - disable {boolean} (optional): If true, the button will be is-disabled upon creation.
      */
     showButtons(...buttonNames) {
         buttonNames = buttonNames.flat()
@@ -85,11 +85,11 @@ export default class ButtonManager {
             let id = button.dataset[this.dataFieldID]            
 
             if (buttonNames.indexOf(id) == -1) {
-                button.classList.remove("disabled")
+                button.classList.remove("is-disabled")
             }
             else {
                 console.log(id)
-                button.classList.add("disabled")
+                button.classList.add("is-disabled")
             }
         }
     }

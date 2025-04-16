@@ -11,14 +11,14 @@
     gap: 10px;
 }
 
-.game-title{    
+.game-title{
     position: absolute;
     left: 50%;
     top: 15%;
     transform: translate(-50%, -50%);
     font-family: "Britannic", sans-serif;
     font-weight: bolder;
-    color: var(--app-yellow);        
-    font-size: 4rem;    
+    color: var(--app-yellow);
+    font-size: 5rem;    
     -webkit-text-stroke: 0.025em black;    
 }

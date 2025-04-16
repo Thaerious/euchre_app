@@ -2221,7 +2221,7 @@ function setup(env) {
         args[_key] = arguments[_key];
       }
 
-      // Disabled?
+      // is-disabled?
       if (!debug.enabled) {
         return;
       }
@@ -2666,7 +2666,7 @@ var Socket = /*#__PURE__*/function (_Emitter) {
         transport = this.transports[0];
       }
 
-      this.readyState = "opening"; // Retry with the next transport if the transport is disabled (jsonp: false)
+      this.readyState = "opening"; // Retry with the next transport if the transport is is-disabled (jsonp: false)
 
       try {
         transport = this.createTransport(transport);
@@ -3414,7 +3414,7 @@ function polling(opts) {
   if ("open" in xhr && !opts.forceJSONP) {
     return new XHR(opts);
   } else {
-    if (!jsonp) throw new Error("JSONP disabled");
+    if (!jsonp) throw new Error("JSONP is-disabled");
     return new JSONP(opts);
   }
 }
@@ -4708,10 +4708,10 @@ module.exports = function (opts) {
   var xdomain = opts.xdomain; // scheme must be same when usign XDomainRequest
   // http://blogs.msdn.com/b/ieinternals/archive/2010/05/13/xdomainrequest-restrictions-limitations-and-workarounds.aspx
 
-  var xscheme = opts.xscheme; // XDomainRequest has a flow of not sending cookie, therefore it should be disabled as a default.
+  var xscheme = opts.xscheme; // XDomainRequest has a flow of not sending cookie, therefore it should be is-disabled as a default.
   // https://github.com/Automattic/engine.io-client/pull/217
 
-  var enablesXDR = opts.enablesXDR; // XMLHttpRequest can be disabled on IE
+  var enablesXDR = opts.enablesXDR; // XMLHttpRequest can be is-disabled on IE
 
   try {
     if ("undefined" !== typeof XMLHttpRequest && (!xdomain || hasCORS)) {
@@ -5049,7 +5049,7 @@ module.exports = {
 try {
   module.exports = typeof XMLHttpRequest !== 'undefined' && 'withCredentials' in new XMLHttpRequest();
 } catch (err) {
-  // if XMLHttp support is disabled in IE then it will throw
+  // if XMLHttp support is is-disabled in IE then it will throw
   // when trying to create
   module.exports = false;
 }

@@ -28,11 +28,11 @@ export default class ViewHistory extends EventEmitter {
         this._paused = value
 
         if (value) {
-            document.querySelector("#run_queue").classList.remove("disabled")
-            document.querySelector("#pause_queue").classList.add("disabled")
+            document.querySelector("#run_queue").classList.remove("is-disabled")
+            document.querySelector("#pause_queue").classList.add("is-disabled")
         } else {
-            document.querySelector("#run_queue").classList.add("disabled")
-            document.querySelector("#pause_queue").classList.remove("disabled")
+            document.querySelector("#run_queue").classList.add("is-disabled")
+            document.querySelector("#pause_queue").classList.remove("is-disabled")
         }
     }
 
@@ -143,14 +143,14 @@ export default class ViewHistory extends EventEmitter {
     }
 
     updateButtons() {
-        document.querySelector("#prev_snap").classList.remove("disabled")
-        document.querySelector("#next_snap").classList.remove("disabled")
+        document.querySelector("#prev_snap").classList.remove("is-disabled")
+        document.querySelector("#next_snap").classList.remove("is-disabled")
 
         if (this.snapIndex <= 0) {
-            document.querySelector("#prev_snap").classList.add("disabled")
+            document.querySelector("#prev_snap").classList.add("is-disabled")
         }
         if (this.snapIndex >= this.snapHistory.length - 1) {
-            document.querySelector("#next_snap").classList.add("disabled")
+            document.querySelector("#next_snap").classList.add("is-disabled")
         }
 
         document.querySelector("#snap_index").innerText = `${this.snapIndex}`
