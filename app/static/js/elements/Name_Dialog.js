@@ -1,3 +1,5 @@
+// Name_Dialog.js
+
 class NameDialog extends HTMLElement {
     constructor() {
         super()
@@ -10,7 +12,7 @@ class NameDialog extends HTMLElement {
         const html = await res.text();
         this.shadowRoot.innerHTML = html;
 
-        this.usernameText = this.shadowRoot.querySelector("#username_txt")
+        this.usernameText = this.shadowRoot.querySelector("#name-entry")
         this.okButton = this.shadowRoot.querySelector("#ok-button")
 
         // Set focus to start button when enter is pressed on name textbox

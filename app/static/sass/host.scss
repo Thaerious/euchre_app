@@ -1,6 +1,10 @@
 @use './game';
 @use './components';
 
+.game-board{
+    display: flex;
+}
+
 #host-menu{
     position: absolute;
     display: flex;
@@ -12,16 +16,7 @@
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-}
-
-.game-title{    
-    font-family: "Britannic", sans-serif;
-    font-weight: bolder;
-    display: flex;
-    color: var(--app-yellow);        
-    font-size: 5rem;    
-    -webkit-text-stroke: 3px black; 
-    justify-content: center; 
+    background-color: pink;
 }
 
 .by-line{    
