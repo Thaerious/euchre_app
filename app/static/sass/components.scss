@@ -47,22 +47,11 @@ button {
     }
 }
 
-.font_small {
-    font-size: 0.65em;
-}
-
-.font_normal {
-    font-size: 0.9em;
-}
-
-.font_large {
-    font-size: 2em;
-}
-
 .ui-collection, .ui-panel {
     display: flex;
     justify-content: space-around;
     gap: var(--app-gap);
+    padding: var(--app-padding);
 }
 
 .ui-panel {
@@ -74,7 +63,6 @@ button {
     min-height: fit-content;
     box-sizing: border-box;
     overflow: hidden;
-    gap: var(--app-gap);
 }
 
 .row {
@@ -175,32 +163,25 @@ button {
 }
 
 .ui-collection, .ui-panel {
-    // & .row {
-        // .ui-button, .ui-textbox, .ui-label {
-            // &.shape_round{
-            //     // height: 2em;
-            //     aspect-ratio: 1;
-            // }        
-        // }
-    // }
-
-    & .col {
+    &.col {
         .ui-button, .ui-textbox, .ui-label {
             width: 100%;
+            font-size: 0.9em;
 
-            &.shape_round{
+            &.shape_round {
                 aspect-ratio: 1 / 1;
                 border-radius: 2em;
-            }  
+            }
 
             &.size_full {
-                height: 2em;
+                height: 2.0em;
                 align-self: center;
             }
 
             &.size_small {
-                height: 1.5em;
+                height: 1.6em;
                 width: 75%;
+                font-size: 0.65em;
                 align-self: center;
             }
 
@@ -208,7 +189,7 @@ button {
                 height: 2em;
                 width: 75%;
                 align-self: center;
-            }            
+            }
         }
     }
 }
