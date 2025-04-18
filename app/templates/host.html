@@ -19,32 +19,30 @@
     <name-dialog class="is-hidden"></name-dialog>
 
     <div id="game-board" class="game-board" game-token="{{game_token}}" seat="{{seat}}">
-        <div id="host-menu">
-            <div class="component-collection">
-                <div class="game-title">Euchre</div>
-                <div class="by-line">Staging Game</div>
-            </div>
+        <div class="ui-collection col">
+            <div class="game-title">Euchre</div>
+            <div class="by-line">Staging Game</div>
+        </div>
 
-            <div class="ui-container horz default font_normal">
-                <!-- name text boxes -->
-                {% include 'elements/name_container.html' %}
-                <!-- kick buttons -->
-                <div id="kick-container" class="kick-container">
-                    <div seat="0" class="ui-button size_round red is-invisible">X</div>    
-                    <div seat="1" class="ui-button size_round red">X</div>
-                    <div seat="2" class="ui-button size_round red">X</div>
-                    <div seat="3" class="ui-button size_round red">X</div>
-                </div>                
-            </div>
-
-            <div class="component-collection">
-                <button id="start_button" class="ui-button size_full font_normal" tabindex="0">Start</button>
-                <button id="name_button" class="ui-button size_small font_small">Set Name</button>
-                <button id="copy_button" class="ui-button size_small font_small">Copy Invite Code</button>
-                <button id="cancel_button" class="ui-button size_small font_small">Cancel</button>
+        <div class="ui-panel row font_normal">
+            <!-- name text boxes -->
+            {% include 'elements/name_container.html' %}
+            <!-- kick buttons -->
+            <div id="kick-container" class="kick-container ui-collection col">
+                <div seat="0" class="ui-button size_full shape_round red is-invisible">X</div>
+                <div seat="1" class="ui-button size_full shape_round red">X</div>
+                <div seat="2" class="ui-button size_full shape_round red">X</div>
+                <div seat="3" class="ui-button size_full shape_round red">X</div>
             </div>
         </div>
-    </div>
+
+        <div class="ui-collection col">
+            <button id="start_button" class="ui-button size_full" tabindex="0">Start</button>
+            <button id="name_button" class="ui-button size_small">Set Name</button>
+            <button id="copy_button" class="ui-button size_small">Copy Invite Code</button>
+            <button id="cancel_button" class="ui-button size_small">Cancel</button>
+        </div> 
+    </div> <!-- /game-board -->
 </body>
 
 </html>

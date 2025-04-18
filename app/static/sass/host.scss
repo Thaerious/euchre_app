@@ -1,33 +1,15 @@
-@use './game';
+// host.scss
 @use './components';
 
 .game-board{
     display: flex;
-}
-
-#host-menu{
-    position: absolute;
-    display: flex;
     flex-direction: column;
+    justify-content: space-evenly;
     align-items: center;
-    justify-content: space-around;
-    width: 60%;
-    height: 95%;    
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    background-color: pink;
-}
 
-.by-line{    
-    font-family: "Britannic", sans-serif;
-    font-weight: bolder;
-    display: flex;
-    color: var(--app-yellow);        
-    font-size: 2rem;    
-    -webkit-text-stroke: 1px black;  
-    margin: 0 0 5% 0; 
-    justify-content: center; 
+    > *{
+        width: 70%;
+    }
 }
 
 .pending-player:empty::before {
@@ -36,21 +18,9 @@
     color: darkgray;
 }    
 
-.label-inner.disconnected{
+.ui-label.disconnected{
     color: red;
     background-color: lightgrey;
-}
-
-.name-container, .kick-container{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-evenly;
-    height: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
-    gap: 10px;
-    padding: 15px;
 }
 
 .name-container{

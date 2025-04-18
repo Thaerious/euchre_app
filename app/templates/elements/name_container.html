@@ -1,14 +1,14 @@
 <!-- name_container.html -->
-<div class="name-container">
+<div class="ui-collection name-container col">
     {% for i in range(4) %}
         {% if i in names and names[i].name != None %}
             {% if names[i].connected == 0%}
-                <div id="player_{{ i }}_name" class="label-inner pending-player">{{ names[i].name }}</div> 
+                <div id="player_{{ i }}_name" class="ui-label size_full pending-player">{{ names[i].name }}</div> 
             {% else %}        
-                <div id="player_{{ i }}_name" class="label-inner pending-player disconnected">{{ names[i].name }}</div> 
+                <div id="player_{{ i }}_name" class="ui-label size_full pending-player disconnected">{{ names[i].name }}</div> 
             {% endif %}
         {% else %}
-            <div id="player_{{ i }}_name" class="label-inner pending-player"></div> 
+            <div id="player_{{ i }}_name" class="ui-label size_full pending-player"></div> 
         {% endif %}
     {% endfor %}
 </div>

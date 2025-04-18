@@ -4,7 +4,7 @@ class StyledTextBox extends HTMLElement {
         super()
 
         // Style the outer text box
-        this.classList.add('ui-container', 'default');
+        this.classList.add('ui-panel', 'default');
 
         // Create inner editable div
         this.innerDiv = document.createElement('input');

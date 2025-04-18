@@ -1,37 +1,40 @@
 /* components.scss */
 @use './constants';
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap');
- 
+
 body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #87CEEB; 
+    background-color: #87CEEB;
 }
 
-:root, button{
+:root,
+button {
     font-family: "Montserrat", sans-serif;
     font-size: calc(var(--box-size) * 0.04vmin);
     color: var(--app-yellow);
-    font-weight: bolder;   
-    user-select: none; 
+    font-weight: bolder;
+    user-select: none;
 }
 
 .is-hidden {
-    display: none !important;   
+    display: none !important;
 }
 
-.is-invisible{
+.is-invisible {
     visibility: hidden !important;
 }
 
 .game-board {
     position: absolute;
     background-color: var(--app-board-green);
-    border: 2px solid #ffffff;
-    border-radius: 15px;
+    border: var(--app-border);
+    border-radius: var(--app-border-radius);
+    border-color: var(--app-yellow);
     margin: 0 auto;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--app-box-shadow);
+    transition: all 0.3s ease;
 
     @media (orientation: landscape) {
         height: calc(var(--box-size) * 1vh);
@@ -44,63 +47,67 @@ body {
     }
 }
 
-.font_small{
-    font-size: 0.75em;
+.font_small {
+    font-size: 0.65em;
 }
 
-.font_normal{
+.font_normal {
     font-size: 0.9em;
 }
 
-.font_large{
-    font-size: 2em;   
+.font_large {
+    font-size: 2em;
 }
 
-.ui-container {
+.ui-collection, .ui-panel {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    justify-content: space-around;
+    gap: var(--app-gap);
+}
+
+.ui-panel {
     background-color: var(--app-component-green);
-    border: 2px solid black;
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border: var(--app-border);
+    border-radius: var(--app-border-radius);
+    box-shadow: var(--app-component-shadow);
     transition: all 0.3s ease;
-    width: 100%;
-    max-width: 400px; /* Adjust as needed */
     min-height: fit-content;
     box-sizing: border-box;
     overflow: hidden;
-
-    &.horz {
-        flex-direction: row;
-    }
+    gap: var(--app-gap);
 }
 
-.ui-textbox{
+.row {
+    flex-direction: row;
+}
+
+.col {
+    flex-direction: column;
+}
+
+.ui-textbox {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 90%;
     background-color: whitesmoke;
-    border: 2px solid black;
-    border-radius: 8px;
+    border: var(--app-border);
+    border-radius: var(--app-border-radius);
     cursor: text;
     text-align: center;
-    height: 25px;
 }
 
 .ui-textbox:empty::before {
-    content: var(--hint, "input"); 
+    content: var(--hint, "input");
     display: inline-block;
     color: darkgray;
 }
 
-.textbox-hint{
+.textbox-hint {
     color: darkgray;
 }
 
-.ui-textbox{
+.ui-textbox {
     color: black;
 }
 
@@ -111,19 +118,6 @@ body {
     background-color: darkgrey;
 }
 
-.label-inner{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 90%;
-    background-color: whitesmoke;
-    border: 2px solid black;
-    color: black;
-    border-radius: 8px;
-    text-align: center;
-    height: 25px;
-}
-
 .ui-button {
     display: flex;
     align-items: center;
@@ -132,7 +126,7 @@ body {
     border: var(--app-border);
     border-radius: var(--app-border-radius);
     cursor: pointer;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--app-component-shadow);
     will-change: transform;
 
     &.is-disabled {
@@ -164,65 +158,89 @@ body {
 
     &:active:not(.no-active) {
         background-color: #2E7D32;
-        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-        transform: translateY(2px);
-    }    
-} 
-
-.ui-button, .ui-textbox{
-    &.size_full{
-        width: 15em;
-        height: 2em;
+        box-shadow: var(--app-component-shadow);
+        transform: translateY(0.25em);
     }
-    
-    &.size_narrow{
-        width: 7.5em;
-        height: 2em;
-    }
-
-    &.size_small{
-        height: calc(var(--box-height) * 0.05);
-        width: 75%;
-        align-self: center;
-    }  
-
-    &.size_round{
-        border-radius: 10em;
-        text-align: center;
-        height: 1.8em;  
-        width: 1.8em;
-        align-self: center;
-    }     
 }
 
-.info-button{
+.ui-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: whitesmoke;
+    border: var(--app-border);
+    border-radius: var(--app-border-radius);
+    color: black;
+    text-align: center;
+}
+
+.ui-collection, .ui-panel {
+    // & .row {
+        // .ui-button, .ui-textbox, .ui-label {
+            // &.shape_round{
+            //     // height: 2em;
+            //     aspect-ratio: 1;
+            // }        
+        // }
+    // }
+
+    & .col {
+        .ui-button, .ui-textbox, .ui-label {
+            width: 100%;
+
+            &.shape_round{
+                aspect-ratio: 1 / 1;
+                border-radius: 2em;
+            }  
+
+            &.size_full {
+                height: 2em;
+                align-self: center;
+            }
+
+            &.size_small {
+                height: 1.5em;
+                width: 75%;
+                align-self: center;
+            }
+
+            &.size_narrow {
+                height: 2em;
+                width: 75%;
+                align-self: center;
+            }            
+        }
+    }
+}
+
+.info-button {
     position: absolute;
     display: flex;
     align-items: center;
-    justify-content: center;  
+    justify-content: center;
     height: 50%;
     aspect-ratio: 1 / 1;
     border-radius: 50%;
     background-color: rgb(180, 235, 180);
     color: red;
-    border: 0.1em solid red;  
+    border: 0.1em solid red;
     right: 0;
     margin: 4%;
 
-    &:hover{
+    &:hover {
         background-color: whitesmoke;
     }
 
-    &::before{
+    &::before {
         content: "?";
     }
 }
 
-.info-text{
+.info-text {
     position: fixed;
     display: flex;
     align-items: center;
-    justify-content: center;  
+    justify-content: center;
     padding: 0.5em;
 
     background-color: var(--app-component-green);
@@ -235,65 +253,72 @@ body {
     cursor: pointer;
 }
 
-.text-area{
+.text-area {
     display: flex;
     align-items: center;
-    justify-content: center; 
+    justify-content: center;
     text-align: center;
-    
+
     color: var(--app-dark-yellow);
     background-color: var(--app-component-green);
-    border: 2px solid;
+    border: var(--app-border);
     border-color: black;
-    border-radius: 15px;
+    border-radius: var(--app-border-radius);
     cursor: pointer;
 }
 
-.mask{
+.mask {
     position: fixed;
     background-color: #008000;
     opacity: 60%;
-    z-index: 999;  
+    z-index: 999;
     left: 0;
     top: 0;
-    width: 100%;  
+    width: 100%;
     height: 100%;
 }
 
-.dialog-container{
+.dialog-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
     background-color: #008000;
-    border: 2px solid;
+    border: var(--app-border);
     border-color: var(--app-yellow);
-    border-radius: 15px;
-    width: 100%;    
+    border-radius: var(--app-border-radius);
+    width: 100%;
     height: 100%;
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.6);
+    box-shadow: var(--app-box-shadow);
     z-index: 1000;
 }
 
-.component-collection{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
-    gap: 5px       
-}
-
-alert-dialog, name-dialog{
+alert-dialog,
+name-dialog {
     position: absolute;
     width: 50%;
     aspect-ratio: 5/3;
     z-index: 1000;
 }
 
-.game-title{
+.game-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-family: "Britannic", sans-serif;
     font-weight: bolder;
     color: var(--app-yellow);
-    font-size: 5rem;    
-    -webkit-text-stroke: 0.025em black;    
+    font-size: 5rem;
+    -webkit-text-stroke: 0.025em black;
+}
+
+.by-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Britannic", sans-serif;
+    font-weight: bolder;
+    color: var(--app-yellow);
+    font-size: 2rem;
+    -webkit-text-stroke: 0.025em black;
 }
