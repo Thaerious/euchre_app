@@ -247,25 +247,10 @@ info-button {
     height: 100%;
 }
 
-.dialog-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
-    background-color: #008000;
-    border: var(--app-border);
-    border-color: var(--app-yellow);
-    border-radius: var(--app-border-radius);
-    width: 100%;
-    height: 100%;
-    box-shadow: var(--app-box-shadow);
-    z-index: 1000;
-}
-
-alert-dialog,
-name-dialog {
+alert-dialog, name-dialog {
     position: absolute;
-    width: 50%;
+    width: 60%;
+    max-width: 450px;
     aspect-ratio: 5/3;
     z-index: 1000;
 }
