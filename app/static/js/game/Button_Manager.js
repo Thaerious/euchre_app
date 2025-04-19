@@ -63,17 +63,17 @@ export default class ButtonManager {
             let id = button.dataset[this.dataFieldID]  
 
             if (buttonNames.indexOf(id) == -1) {
-                button.classList.add("is-hidden")
+                button.classList.add("is_hidden")
             }
             else {
-                button.classList.remove("is-hidden")
+                button.classList.remove("is_hidden")
             }
         }
     }
 
     hideButtons() {
         for (let button of this.buttons) {
-            button.classList.add("is-hidden")
+            button.classList.add("is_hidden")
         }
     }
 
@@ -109,16 +109,16 @@ export default class ButtonManager {
     }
 
     /**
-     * Hides the action button container by adding the "is-hidden" class.
+     * Hides the action button container by adding the "is_hidden" class.
      */
     hideContainer() {
-        this.container.classList.add("is-hidden");
+        this.container.classList.add("is_hidden");
     }
 
     /**
-     * Shows the action button container by removing the "is-hidden" class.
+     * Shows the action button container by removing the "is_hidden" class.
      */
     showContainer() {
-        this.container.classList.remove("is-hidden");        
+        this.container.classList.remove("is_hidden");        
     }
 }

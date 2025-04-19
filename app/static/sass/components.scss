@@ -18,7 +18,7 @@ button {
     user-select: none;
 }
 
-.is-hidden {
+.is_hidden {
     display: none !important;
 }
 
@@ -194,44 +194,32 @@ button {
     }
 }
 
-.info-button {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 50%;
-    aspect-ratio: 1 / 1;
-    border-radius: 50%;
-    background-color: rgb(180, 235, 180);
-    color: red;
-    border: 0.1em solid red;
-    right: 0;
-    margin: 4%;
-
-    &:hover {
-        background-color: whitesmoke;
-    }
-
+info-button {
     &::before {
         content: "?";
     }
 }
 
-.info-text {
-    position: fixed;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.ui-info-text {
     padding: 0.5em;
+    width: 50%;
 
     background-color: var(--app-component-green);
     border: var(--app-border);
     border-radius: var(--app-border-radius);
-    box-shadow: var(--app-box-shadow);
+    box-shadow: var(--app-box-shadow);        
 
-    width: 50%;
     z-index: 1000;
     cursor: pointer;
+
+    opacity: 0%;
+    animation: fade-in 0.5s ease forwards;
+}
+
+@keyframes wipe-in {
+    to {
+        opacity: 100%;
+    }
 }
 
 .text-area {
@@ -290,6 +278,7 @@ name-dialog {
     font-weight: bolder;
     color: var(--app-yellow);
     font-size: 5rem;
+    transition: all 0.3s ease;
     -webkit-text-stroke: 0.025em black;
 }
 

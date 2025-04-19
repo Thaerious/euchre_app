@@ -5,18 +5,18 @@ export default class TokenManager {
     }
 
     showMaker(seat, suit) {
-        this.makerToken.classList.remove("is-hidden")
+        this.makerToken.classList.remove("is_hidden")
         this.makerToken.setAttribute("seat", seat)
         this.makerToken.setAttribute("suit", suit)
     }
 
     showDealer(seat) {
-        this.dealerToken.classList.remove("is-hidden")
+        this.dealerToken.classList.remove("is_hidden")
         this.dealerToken.setAttribute("seat", seat)
     }
 
     hide(){
-        this.makerToken.classList.add("is-hidden")
-        this.dealerToken.classList.add("is-hidden")
+        this.makerToken.classList.add("is_hidden")
+        this.dealerToken.classList.add("is_hidden")
     }    
 }

@@ -1,21 +1,27 @@
 @use './components';
 
-.button-container{
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    left: 50%;
-    top: 50%;
-    width: 50%;
-    transform: translate(-50%, -50%);
-    gap: 10px;
-}
-
-.game-title{
+#game-title{
     position: absolute;
     left: 50%;
     top: 15%;
     transform: translate(-50%, -50%);    
 }
 
+#game-board{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    justify-self: center;
+}
 
+#all-buttons{
+    width: 80%;
+}
+
+#nav-buttons {
+    flex: 1 1 auto;
+}
+
+#help-buttons {
+    flex: 0 0 auto;
+}

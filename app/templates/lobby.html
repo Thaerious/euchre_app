@@ -12,23 +12,23 @@
 </head>
 
 <body>
-    <alert-dialog class="is-hidden"></alert-dialog>
+    <alert-dialog class="is_hidden"></alert-dialog>
     <div id="game-board" class="game-board">
-        <div class="game-title">Euchre</div>
-        <div id="button-container" class="button-container">
-            <button id="private-button" class="ui-button size_full font_normal">
-                Private Game
-                <info-button class="info-button"></info-button>
-                <div class="info-text font_normal is-hidden">Create a multi-player game with invite codes.</div>         
-            </button>
-            <button id="quick-button" class="ui-button size_full font_normal">
-                Quick Start Solo
-                <info-button class="info-button"></info-button>                
-                <div class="info-text font_normal is-hidden">Start an all bot game.</div>                             
-            </button>
-            {% if logged_in %}
-                <button id="logout-button" class="ui-button size_full font_normal">Logout</button>
-            {% endif %}
+        <div id="game-title" class="game-title">Euchre</div>
+
+        <div id="all-buttons" class="ui-collection row">
+            <div id="nav-buttons" class="ui-collection col">
+                <div id="private-button" class="ui-button size_full">Private Game</div>
+                <div id="quick-button" class="ui-button size_full">Quick Start Solo</div>
+            </div>
+            <div id="help-buttons" class="ui-collection col">
+                <info-button id="private-help" class="ui-button size_full shape_round red">
+                    <div class="ui-info-text font_normal is_hidden">Create a multi-player game with invite codes.</div>                    
+                </info-button>
+                <info-button id="quick-help" class="ui-button size_full shape_round red">
+                    <div class="ui-info-text font_normal is_hidden">Start an all bot game.</div>                                                 
+                </info-button>
+            </div>                                 
         </div>
     </div>
 </body>

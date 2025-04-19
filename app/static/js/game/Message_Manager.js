@@ -5,10 +5,10 @@ export default class MessageManager {
 
     show(text) {
         this.container.innerText = text
-        this.container.classList.remove("is-hidden")
+        this.container.classList.remove("is_hidden")
     }
 
     hide(){
-        this.container.classList.add("is-hidden")
+        this.container.classList.add("is_hidden")
     }    
 }

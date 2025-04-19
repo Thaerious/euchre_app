@@ -2,7 +2,7 @@ class InfoButton extends HTMLElement {
     constructor() {
         super()
 
-        this.infoText = this.parentElement.querySelector(".info-text")
+        this.infoText = this.querySelector(".ui-info-text")
         this.gameBoard = document.querySelector("#game-board")
 
         this.addEventListener('mousedown', (e) => {
@@ -27,16 +27,16 @@ class InfoButton extends HTMLElement {
             this.infoText.style.top = `${rect.bottom}px`;
             this.infoText.style.transform = 'translate(-100%, -100%)';        
 
-            this.infoText?.classList.remove("is-hidden")
+            this.infoText?.classList.remove("is_hidden")
             this.gameBoard.appendChild(this.infoText);
         });
 
         this.infoText?.addEventListener("mouseleave", ()=> {
-            this.infoText?.classList.add("is-hidden")
+            this.infoText?.classList.add("is_hidden")
         });
 
         this.infoText?.addEventListener("click", ()=> {
-            this.infoText?.classList.remove("is-hidden")
+            this.infoText?.classList.add("is_hidden")
         });        
     }
 }

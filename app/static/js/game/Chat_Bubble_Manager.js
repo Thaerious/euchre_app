@@ -24,7 +24,7 @@ export default class ChatBubbleManager {
     show(seat, text) {
         this.element.setAttribute("seat", seat)
         this.element.querySelector("div").innerText = text
-        this.element.classList.remove("is-hidden")
+        this.element.classList.remove("is_hidden")
         this.element.classList.remove("fade-out")        
     }
 

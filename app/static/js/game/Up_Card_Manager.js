@@ -5,11 +5,11 @@ export default class UpCardManager {
 
     show(face) {
         this.card.setAttribute("face", face)    
-        this.card.classList.remove("is-hidden");
+        this.card.classList.remove("is_hidden");
     }
     
     hide() {
-        this.card.classList.add("is-hidden");
+        this.card.classList.add("is_hidden");
     }    
     
     get face() {

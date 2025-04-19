@@ -53,8 +53,8 @@ class CountdownButton extends HTMLElement {
         const observer = new MutationObserver(mutations => {
             for (const m of mutations) {
                 if (m.attributeName === "class") {
-                    const wasHidden = m.oldValue?.includes("is-hidden");
-                    const isNowHidden = m.target.classList.contains("is-hidden");
+                    const wasHidden = m.oldValue?.includes("is_hidden");
+                    const isNowHidden = m.target.classList.contains("is_hidden");
                     
                     if (wasHidden && !isNowHidden) {
                         this.time = parseInt(this.getAttribute("timeout"))
