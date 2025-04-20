@@ -3,10 +3,7 @@
 @use './components';
 @use './cards';
 
-.hidden {
-    display: none !important;
-}
-
+// used in Chat_Bubble_Manager.js
 .fade-out {
     opacity: 0;
     transition: opacity 1.0s ease-out;
@@ -133,43 +130,31 @@ body {
 
 .played {
     position: absolute;
+    left: 50%;
+    bottom: 50%;    
 }
  
 .played[seat='0']{
-    left: 50%;
-    bottom: 50%;
     transform: translate(-50%, 125%);
 }
 
 .played[seat='1']{
-    left: 50%;
-    bottom: 50%;
     transform: translate(-150%, 50%) rotate(90deg);
 }
 
 .played[seat='2']{
-    left: 50%;
-    bottom: 50%;
     transform: translate(-50%, -25%);
 }
 
 .played[seat='3']{
-    left: 50%;
-    bottom: 50%;
     transform: translate(50%, 50%) rotate(90deg);
 }
 
 
 // hand cards
 .hand[seat="0"] {
-    --card_index: 0;
     bottom: 10%;  
     left: calc(var(--hand_0_offset, 0%) * var(--offset_width) + 50% + var(--card_index) * 5%);           
-
-    &.enabled:hover{
-        transform: translate(-5%, -26%);
-        cursor: pointer;
-    }
 }
 
 .hand[seat="1"] {
@@ -332,46 +317,15 @@ body {
     justify-content: center;    
     width: 30%;
     height: 5%;   
-    background-color: #4CAF50;
-    border-radius: 8px;
+    background-color: var(--app-component-green);
+    border: var(--app-border);
+    border-radius: var(--app-border-radius);
+
     pointer-events: none;
 
     bottom: 27%;
     left: 50%;
     transform: translateX(-50%);
-}
-
-#alert{
-    position: absolute;
-    align-items: center;    
-    justify-content: center;    
-    width: 75%;
-    height: 25%;   
-    background-color: #4CAF50;
-    border-radius: 8px;
-    z-index: 1000;
-    border: 2px solid #ffffff;
-    border-radius: 15px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    bottom: 50%;
-    left: 50%;
-    transform: translate(-50%, 50%);
-
-    #alert-message{
-        position: absolute;
-        top: 15%;        
-        left: 0;  
-        width: 100%; 
-        text-align: center;          
-    }
-
-    #alert-button{
-        position: absolute;
-        bottom: 25%;        
-        left: 50%;  
-        width: 25%; 
-        transform: translate(-50%, 50%);             
-    }
 }
 
 .token{
@@ -451,7 +405,6 @@ body {
     width: 20%;
     bottom: 27%;
     left: 50%;
-    // background-color: pink;
     transform: translateX(-50%);
 
     >.suit-button {
@@ -463,32 +416,24 @@ body {
     position: absolute;
     display: flex;
     justify-content: center;
-
-    // background-color: pink;
     height: 6%;
     width: 55%;
     bottom: 3.5%;
     left: 50%;
     transform: translateX(-50%);
-
-    .action-size {
-        width: 30%;
-        height: 100%;
-        margin: 0 1% 0 1%;
-    }
 }
 
 .menu-button-container{
     position: absolute;
     display: flex;
-    bottom: -40px;
+    bottom: -2em;
     left: 2%;
     width: 38%;
     flex-flow: row-reverse;
     justify-content: center;
 
     .menu-button{
-        margin: 2px;
+        margin: .2em;
         width: 30%;
     }
 }
@@ -496,21 +441,21 @@ body {
 .control-button-container{
     position: absolute;
     display: flex;
-    bottom: -40px;
-    right: -35px;
+    bottom: -2em;
+    right: -4em;
 
     *{
-        margin: 5px;
+        margin: .2em;
     }
 
     .snap_index {
         display: flex;
         width: 50px;
-        background-color: #4CAF50;
-        border: 2px solid black;
-        border-radius: 8px;
+        background-color: var(--app-component-green);
+        border: var(--app-border);
+        border-radius: var(--app-border-radius);
         cursor: pointer;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        box-shadow: var(--app-box-shadow);
         transition: all 0.3s ease;
         justify-content: center;
         align-items: center;
