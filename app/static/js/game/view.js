@@ -10,7 +10,5 @@ window.addEventListener("load", async () => {
     viewModel.on("continue", () => {
         ui.viewModel.showButtons()
         console.log("hiding countdown button")
-    })
-
-    ui.viewModel.showButtons(["continue"])
+    })  
 });

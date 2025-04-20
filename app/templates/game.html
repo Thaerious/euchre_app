@@ -22,7 +22,7 @@
     <div id="game-board" class="game-board" seat="{{seat}}" game-token="{{game_token}}">
         <div id="upcard" class="card" face="back"></div>
 
-        <div id="chat-bubble" class="chat-bubble is_hidden" seat="1">
+        <div id="chat-bubble" class="chat-bubble is_hidden black" seat="1">
             <img src="../static/images/chat_bubble.png" />
             <div>ALONE</div>
         </div>
@@ -48,7 +48,7 @@
             {% include 'elements/trick.html' %}
         </div>
 
-        <div id="suit-button-container" class="suit-button-container">
+        <div id="suit-button-container" class="suit-button-container is_hidden">
             <button class="ui-button suit-button black" data-suit="♠" data-event="change-suit" selectable>♠</button>
             <button class="ui-button suit-button red" data-suit="♥" data-event="change-suit" selectable>♥</button>
             <button class="ui-button suit-button black" data-suit="♣" data-event="change-suit" selectable>♣</button>
@@ -92,18 +92,21 @@
             <button id="exit_button" class="ui-button menu-button font_normal">Exit</button>
         </div>
 
-        <div id="scoreboard" class="ui-panel scoreboard">
-            <div class="scoreboard-inner">
-                <div class="team-box ui-panel">
-                    <div class="score font_normal">10</div>
-                    <div class="names font_normal">Adam & Eve</div>
+        <div id="scoreboard" class="ui-panel col is_hidden">
+            <div class="by-line">Final Score</div>
+            <div id="scoreboard-inner" class="ui-collection row">
+                <div class="team-box ui-panel col">
+                    <div class="ui-label size_large">10</div>
+                    <div class="ui-label black">Adam</div>
+                    <div class="ui-label black">Adam</div>
                 </div>
-                <div class="team-box ui-panel">
-                    <div class="score font_normal">10</div>
-                    <div class="names font_normal">Adam & Eve</div>
+                <div class="team-box ui-panel col">
+                    <div class="ui-label size_large">10</div>
+                    <div class="ui-label black">Adam</div>
+                    <div class="ui-label black">Adam</div>
                 </div>
             </div>
-            <button class="ui-button size_narrow font_normal" data-event="exit">Exit</button>
+            <button class="ui-button size_narrow" data-event="exit">Exit</button>
         </div>
     </div> <!-- /gameboard -->
 </body>

@@ -97,6 +97,7 @@ button {
 
 .ui-textbox {
     color: black;
+    font-size: 0.9em; 
 }
 
 .is-disabled {
@@ -116,20 +117,13 @@ button {
     cursor: pointer;
     box-shadow: var(--app-component-shadow);
     will-change: transform;
+    font-size: 0.9em; 
 
     &.is-disabled {
         pointer-events: none;
         user-select: none;
         color: grey !important;
         background-color: darkgrey;
-    }
-
-    &.red {
-        color: red;
-    }
-
-    &.black {
-        color: black
     }
 
     &.selected {
@@ -155,18 +149,38 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: whitesmoke;
-    border: var(--app-border);
-    border-radius: var(--app-border-radius);
-    color: black;
-    text-align: center;
+    color: var(--app-yellow);
+    font-size: 0.9em; 
 }
 
 .ui-collection, .ui-panel {
+    .ui-button, .ui-textbox, .ui-label {
+        &.size_large{
+            font-size: 1.8em;
+        }
+
+        &.size_full{
+            font-size: 0.9em;            
+        }
+
+        &.size_small {
+            font-size: 0.65em;
+        }
+
+        &.size_narrow {
+            font-size: 0.65em;
+        }        
+    }
+
+    &.row{
+        .ui-button, .ui-textbox, .ui-label, .ui-collection, .ui-panel {
+            flex: 1;
+        }
+    }
+
     &.col {
         .ui-button, .ui-textbox, .ui-label {
             width: 100%;
-            font-size: 0.9em;
 
             &.shape_round {
                 aspect-ratio: 1 / 1;
@@ -181,7 +195,6 @@ button {
             &.size_small {
                 height: 1.6em;
                 width: 75%;
-                font-size: 0.65em;
                 align-self: center;
             }
 
@@ -276,4 +289,20 @@ alert-dialog, name-dialog {
     color: var(--app-yellow);
     font-size: 2rem;
     -webkit-text-stroke: 0.025em black;
+}
+
+.red {
+    color: red;
+}
+
+.black {
+    color: black
+}
+
+.white {
+    color: whitesmoke
+}
+
+.yellow {
+    color: var(--app-yellow)
 }
