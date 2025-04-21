@@ -1,3 +1,5 @@
+import getSeat from "../getSeat.js"
+
 export default class ChatBubbleManager {
     constructor(elementID = "chat-bubble") {
         this.timeout = null
@@ -6,6 +8,20 @@ export default class ChatBubbleManager {
         if (!this.element) {
             console.error(`HandManager: Element with ID '${elementID}' not found.`)
             return
+        }
+    }
+
+    set snapshot(snapshot) {
+        if (![1, 2, 3, 4, 5].has(snapshot.state)) return
+        if (snapshot.last_action == "play") return
+        if (snapshot.last_player == null) return
+        this.bubbleMessage(snapshot)
+    }
+
+    bubbleMessage(snapshot) {
+        if (snapshot.last_player != snapshot.for_player) {
+            const seat = getSeat(snapshot.last_player, snapshot.for_player)
+            this.showFade(seat, `${snapshot.last_action} ${snapshot.last_data ?? ""}`)
         }
     }
 

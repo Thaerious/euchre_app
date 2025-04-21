@@ -1,7 +1,29 @@
+import { getPindex } from "../getSeat.js"
+import playable_suits from "../playable_suits.js"
+
 export default class HandManager {
     constructor(seat, eventSource) {
         this.seat = seat
         this.eventSource = eventSource
+    }
+
+    set snapshot(snapshot) {    
+        if (this.seat === 0) {
+            this.clear()
+            this.addCards(snapshot.hand)
+
+            if (snapshot.state == 2) {
+                this.enable()
+            }
+            else if (snapshot.state == 5) {
+                const suits = playable_suits(snapshot)
+                this.enable(suits)            
+            }
+        }
+        else {
+            const player_index = getPindex(this.seat, snapshot.for_player)
+            this.fill("back", snapshot.players[player_index].hand_size)
+        }
     }
 
     get count() {

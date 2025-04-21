@@ -1,7 +1,24 @@
+import getSeat from "../getSeat.js";
 
 export default class PlayedCardsManager {
     constructor() {
         this.nextZ = 1;
+    }
+
+    set snapshot(snapshot) {
+        // show played cards
+        this.clear()
+        if ([5, 6].has(snapshot.state)) {
+            let current_trick = snapshot.tricks.at(-1)
+
+            let pindex = snapshot.lead
+            let seat = getSeat(pindex, snapshot.for_player)
+
+            for (let card of current_trick) {
+                this.setCard(seat, card)
+                if (++seat > 3) seat = 0
+            }
+        }
     }
 
     clear() {

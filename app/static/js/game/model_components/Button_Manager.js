@@ -22,7 +22,7 @@ export default class ButtonManager {
      * Creates an instance of ButtonManager.
      * @param {string} elementID - The CSS selector for the container holding the action buttons.
      */
-    constructor(elementID, eventSource, settings = {dataFieldID : "event"}) {
+    constructor(elementID, eventSource, settings = { dataFieldID: "event" }) {
         this.container = document.getElementById(elementID);
         this.buttons = document.querySelectorAll(`#${elementID} > *`)
         this.eventSource = eventSource
@@ -59,8 +59,8 @@ export default class ButtonManager {
         buttonNames = buttonNames.flat()
 
         // Hide all existing buttons
-        for (let button of this.buttons) {     
-            let id = button.dataset[this.dataFieldID]  
+        for (let button of this.buttons) {
+            let id = button.dataset[this.dataFieldID]
 
             if (buttonNames.indexOf(id) == -1) {
                 button.classList.add("is_hidden")
@@ -77,12 +77,16 @@ export default class ButtonManager {
         }
     }
 
+    enableAll() {
+        this.disable([])
+    }
+
     disable(...buttonNames) {
         buttonNames = buttonNames.flat()
 
         // Hide all existing buttons
         for (let button of this.buttons) {
-            let id = button.dataset[this.dataFieldID]            
+            let id = button.dataset[this.dataFieldID]
 
             if (buttonNames.indexOf(id) == -1) {
                 button.classList.remove("is-disabled")
@@ -119,6 +123,6 @@ export default class ButtonManager {
      * Shows the action button container by removing the "is_hidden" class.
      */
     showContainer() {
-        this.container.classList.remove("is_hidden");        
+        this.container.classList.remove("is_hidden");
     }
 }

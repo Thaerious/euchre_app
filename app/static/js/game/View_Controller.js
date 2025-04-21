@@ -13,7 +13,7 @@ export default class ViewController {
 
     addListeners() {
         this.gameIO.on("exception", async ex => {
-            this.viewModel.alert(ex.message)
+            this.viewModel.alertDialog.show(ex.message)
         });
 
         // Events for view history
@@ -37,7 +37,7 @@ export default class ViewController {
 
         // Changing a suit button will enable action buttons
         this.viewModel.on("change-suit", () => {
-            this.viewModel.enableAllActions()
+            this.viewModel.actionButtons.enableAll()
         });
         
         // Event listeners

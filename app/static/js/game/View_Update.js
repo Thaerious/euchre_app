@@ -5,38 +5,16 @@ export default class View_Update {
         this.viewModel = viewModel
     }
 
-    async load(snapshot) {
-        this.snapshot = snapshot
-        console.log(`ViewUpdate.load ${snapshot.hash.substring(0, 8)}:Snapshot`)
-        await this.loadView()
-    }
-
-    // Main entry point for view controller
-    async update(snapshot, doLoad = false) {
-        if (snapshot.state == 1 && snapshot.last_action == "continue") {
-            this.snapshot = snapshot
-            await this.loadView()
-        }
-
-        this.snapshot = snapshot
-        await this.updateView()
+    set snapshot(snapshot) {
+        this.setNames()
+        this.updateActionButtons()
     }
 
     async loadView() {
-        this.setNames()
-        this.viewModel.message.hide()
-        this.viewModel.tokens.hide()
-        this.viewModel.played.clear()
-        this.viewModel.suitButtons.clearSelected()
-        this.viewModel.suitButtons.hideContainer()
-        this.viewModel.actionButtons.hideButtons()
-        this.viewModel.hands[0].clear()
-        this.viewModel.upcard.show("back")
-        this.updateTokens()
+
 
         if (this.snapshot.state == 7) return;
 
-        this.setCards()
         this.updateScore()
         this.updateTricks()
         await this.displayUpcard()
@@ -44,28 +22,6 @@ export default class View_Update {
         this.updateActionButtons()
         await this.pauseOn6()
         this.bubbleIf()
-
-        if (this.snapshot.state == 0) {
-            this.alert.show("Game Over", () => {
-                window.location = "/lobby"
-            })
-        }
-    }
-
-    async updateView() {
-        this.viewModel.message.hide()
-        this.viewModel.suitButtons.clearSelected()
-        this.viewModel.suitButtons.hideContainer()
-        this.viewModel.actionButtons.hideButtons()
-        await this.clearHandIf5()
-        await this.displayUpcard()
-        await this.playCardIf()
-        this.updateTokens()
-        this.updateScore()
-        this.updateTricks()
-        this.bubbleIf()
-        await this.pauseOn6()
-        this.updateActionButtons()
 
         if (this.snapshot.state == 0) {
             this.alert.show("Game Over", () => {
@@ -108,17 +64,6 @@ export default class View_Update {
                 this.viewModel.played.setCard(seat, card)
                 if (++seat > 3) seat = 0
             }
-        }
-    }
-
-    setCards() {
-        this.viewModel.hands[0].addCards(this.snapshot.hand) // set the hand cards
-
-        // set opponents cards in hand
-        for (let p = 0; p < 4; p++) {
-            if (p == this.snapshot.for_player) continue
-            let seat = this.getSeat(p, this.snapshot.for_player)
-            this.viewModel.hands[seat].fill("back", this.snapshot.players[p].hand_size)
         }
     }
 
@@ -185,7 +130,7 @@ export default class View_Update {
     }
 
     pauseForContinue(message = "") {
-        if (message !== "") this.viewModel.showMessage(message);
+        if (message !== "") this.viewModel.message.show(message);
         this.viewModel.actionButtons.showButtons(["continue"]);
     
         return new Promise((resolve) => {
@@ -198,7 +143,14 @@ export default class View_Update {
     }
 
     updateActionButtons() {
-        if (this.snapshot.current_player != this.snapshot.for_player) return
+        if (this.snapshot.current_player != this.snapshot.for_player) {
+            this.viewModel.actionButtons.hideButtons()
+            this.viewModel.suitButtons.hideContainer()
+            this.viewModel.message.hide()
+            return
+        }
+
+        this.viewModel.suitButtons.clearSelected()
 
         switch (this.snapshot.state) {
             case 1:
@@ -265,19 +217,5 @@ export default class View_Update {
     // Translate a seat index to a player index
     getIndex(seat, forPlayer) {
         return (seat + forPlayer) % 4
-    }
-
-    bubbleIf() {
-        if (![1, 2, 3, 4, 5].has(this.snapshot.state)) return
-        if (this.snapshot.last_action == "play") return
-        if (this.snapshot.last_player == null) return
-        this.bubbleMessage()
-    }
-
-    bubbleMessage() {
-        if (this.snapshot.last_player != this.snapshot.for_player) {
-            const seat = this.getSeat(this.snapshot.last_player, this.snapshot.for_player)
-            this.viewModel.chatBubble.showFade(seat, `${this.snapshot.last_action} ${this.snapshot.last_data ?? ""}`)
-        }
     }
 }

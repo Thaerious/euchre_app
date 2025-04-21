@@ -1,9 +1,8 @@
 import EventEmitter from "../modules/Event_Emitter.js";
 
 export default class ViewHistory extends EventEmitter {
-    constructor(gameIO, viewModel) {
+    constructor(viewModel) {
         super()
-        this.gameIO = gameIO
         this.viewModel = viewModel        
         this.snapHistory = []   // An array of all snapshots, the tail is the most recent
         this._snapIndex = -1    // The currently displayed snapshot from snapHistory
@@ -11,12 +10,6 @@ export default class ViewHistory extends EventEmitter {
         this.isRunning = false  // Semaphore around the run loop, prevents update race condition
         
         this.addButtonListeners()
-
-        // Websocket incoming events.
-        this.gameIO.on("snapshot", async snapshot => {
-            console.log(`received ${snapshot.hash.substring(0, 8)}:Snapshot`)
-            this.enqueue(snapshot)
-        });
     }
 
     // getter/setter for pause, changes view state of queue buttons
