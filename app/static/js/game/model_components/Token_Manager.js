@@ -6,7 +6,7 @@ export default class TokenManager {
         this.dealerToken = document.getElementById(`dealer_token`);
     }
 
-    set snapshot(snapshot) {
+    setSnapshot(snapshot) {
         if (snapshot.state > 0) {
             const dealerSeat = getSeat(snapshot.dealer, snapshot.for_player)
             this.showDealer(dealerSeat)

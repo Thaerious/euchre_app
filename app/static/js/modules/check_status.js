@@ -14,7 +14,6 @@ export default async function checkStatus() {
         return true
     }
     else if (response.status === 401) {
-        console.log("Removing unauthorized acess token.")
         localStorage.removeItem("access_token");
         return false
     } else {

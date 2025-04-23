@@ -153,7 +153,7 @@ body {
 
 // hand cards
 .hand[seat="0"] {
-    bottom: 10%;  
+    bottom: 13%;  
     left: calc(var(--hand_0_offset, 0%) * var(--offset_width) + 50% + var(--card_index) * 5%);           
 }
 
@@ -312,18 +312,12 @@ body {
 
 #message{
     position: absolute;
-    display: flex;
     align-items: center;    
     justify-content: center;    
     width: 30%;
     height: 5%;   
-    background-color: var(--app-component-green);
-    border: var(--app-border);
-    border-radius: var(--app-border-radius);
-
     pointer-events: none;
-
-    bottom: 27%;
+    bottom: 29%;
     left: 50%;
     transform: translateX(-50%);
 }
@@ -403,7 +397,7 @@ body {
     justify-content: space-between;
     height: 4%;
     width: 20%;
-    bottom: 27%;
+    bottom: 29%;
     left: 50%;
     transform: translateX(-50%);
 
@@ -412,10 +406,8 @@ body {
     }
 }
 
-.action-button-container {
+#action-button-container {
     position: absolute;
-    display: flex;
-    justify-content: center;
     height: 6%;
     width: 55%;
     bottom: 3.5%;

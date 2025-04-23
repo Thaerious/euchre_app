@@ -1,4 +1,4 @@
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for
 from SQL_Anon import SQL_Anon, User
 from decorators.fetch_anon_token import get_anon_token
 from decorators.fetch_user import fetch_user
@@ -18,6 +18,7 @@ class Game_Endpoints:
 
         app.add_url_rule("/game", view_func=self.game, endpoint="game")
         app.add_url_rule("/view", view_func=self.view, endpoint="view")
+        app.add_url_rule("/exit", view_func=self.exit, endpoint="exit", methods=["POST"])
 
         io.on_event('connect', self.on_connect, namespace=self.NAMESPACE)
         io.on_event('disconnect', self.on_disconnect, namespace=self.NAMESPACE)        
@@ -34,6 +35,11 @@ class Game_Endpoints:
     def view(self, user):
         logger.info("/view")
         return render_template("game.html", seat=user.seat, game_token=user.game_token, view=True)
+
+    @fetch_user()
+    def exit(self, user):
+        logger.info("/exit")
+        return redirect(url_for('lobby', reason='game ended'))
 
     # websocket connect handler 
     @fetch_user()

@@ -5,20 +5,26 @@ export default class PlayedCardsManager {
         this.nextZ = 1;
     }
 
-    set snapshot(snapshot) {
-        // show played cards
+    setSnapshot(snapshot) {
         this.clear()
         if ([5, 6].has(snapshot.state)) {
-            let current_trick = snapshot.tricks.at(-1)
-
-            let pindex = snapshot.lead
-            let seat = getSeat(pindex, snapshot.for_player)
-
-            for (let card of current_trick) {
+            const trick = this.getTrick(snapshot)
+            trick.forEach((card, seat) => {
                 this.setCard(seat, card)
-                if (++seat > 3) seat = 0
-            }
+            });
         }
+    }
+
+    /**
+     * Returns the most recent trick as an object mapping each seat to its played card.
+     */
+    getTrick(snapshot) {
+        const result = []        
+        snapshot.order.forEach((pindex, i) => {
+            const seat = getSeat(pindex, snapshot.for_player)
+            result[seat] = snapshot.tricks.at(-1)[i]
+        });
+        return result
     }
 
     clear() {

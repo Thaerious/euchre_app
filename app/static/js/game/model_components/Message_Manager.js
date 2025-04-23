@@ -1,6 +1,6 @@
 export default class MessageManager {
-    constructor(elementID = "message") {
-        this.container = document.getElementById(elementID);
+    constructor() {
+        this.container = document.getElementById("message");
     }
 
     show(text) {

@@ -1,3 +1,5 @@
+import registerButtons from "../register_buttons.js"
+
 /**
  * ButtonManager
  * -------------------
@@ -27,22 +29,7 @@ export default class ButtonManager {
         this.buttons = document.querySelectorAll(`#${elementID} > *`)
         this.eventSource = eventSource
         this.dataFieldID = settings.dataFieldID // the data field used to identify the button
-
-        for (let button of this.buttons) {
-            if (button.getAttribute("selectable") != null) {
-                button.addEventListener("click", () => {
-                    this.clearSelected();
-                    button.classList.add("selected");
-                    this.eventSource.emit(button.dataset.event, button.dataset);
-                });
-            }
-            else {
-                // When the button is clicked, emit the event defined in its data-action attribute.
-                button.addEventListener("click", () => {
-                    this.eventSource.emit(button.dataset.event, button.dataset);
-                });
-            }
-        }
+        registerButtons(this.container, eventSource)
     }
 
     /**
@@ -92,7 +79,6 @@ export default class ButtonManager {
                 button.classList.remove("is-disabled")
             }
             else {
-                console.log(id)
                 button.classList.add("is-disabled")
             }
         }

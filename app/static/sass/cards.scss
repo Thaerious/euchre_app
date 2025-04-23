@@ -46,4 +46,9 @@
     &:not(.enabled) {
         pointer-events: none;
     }
+
+    &.enabled:hover{
+        transform: translate(-5%, -26%);
+        cursor: pointer;
+    }    
 }

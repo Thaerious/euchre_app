@@ -1,9 +1,9 @@
 export default class UpCardManager {
-    constructor(elementID = "upcard") {
-        this.card = document.getElementById(elementID)
+    constructor() {
+        this.card = document.getElementById("upcard")
     }
 
-    set snapshot(snapshot) {
+    setSnapshot(snapshot) {
         if ([1, 2, 3, 4].has(snapshot.state)) {
             if (snapshot.up_card !== null) {
                 this.show(snapshot.up_card)

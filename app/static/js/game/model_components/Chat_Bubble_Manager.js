@@ -1,9 +1,9 @@
 import getSeat from "../getSeat.js"
 
 export default class ChatBubbleManager {
-    constructor(elementID = "chat-bubble") {
+    constructor() {
         this.timeout = null
-        this.element = document.getElementById(elementID)
+        this.element = document.getElementById("chat-bubble")
 
         if (!this.element) {
             console.error(`HandManager: Element with ID '${elementID}' not found.`)
@@ -11,7 +11,7 @@ export default class ChatBubbleManager {
         }
     }
 
-    set snapshot(snapshot) {
+    setSnapshot(snapshot) {
         if (![1, 2, 3, 4, 5].has(snapshot.state)) return
         if (snapshot.last_action == "play") return
         if (snapshot.last_player == null) return

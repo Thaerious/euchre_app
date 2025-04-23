@@ -7,23 +7,26 @@ import PlayedCardsManager from "./model_components/Played_Cards_Manager.js"
 import ButtonManager from "./model_components/Button_Manager.js"
 import EventEmitter from "../modules/Event_Emitter.js"
 import ScoreboardManager from "./model_components/Scoreboard_Manager.js"
+import ScoreManager from "./model_components/Score_Manager.js"
+import NameManager from "./model_components/Name_Manager.js"
+import IntegratedButtonManager from "./model_components/Integrated_Button_Manager.js"
 
 Array.prototype.has = function (value) {
     return this.indexOf(value) >= 0
 };
 
 class Hands extends Array {
-    constructor(eventSource) {
+    constructor(eventSource, messageMgr) {
         super()
-        this[0] = new HandManager(0, eventSource)
-        this[1] = new HandManager(1, null)
-        this[2] = new HandManager(2, null)
-        this[3] = new HandManager(3, null)        
+        this[0] = new HandManager(0, messageMgr, eventSource)
+        this[1] = new HandManager(1, null, null)
+        this[2] = new HandManager(2, null, null)
+        this[3] = new HandManager(3, null, null)        
     }
 
-    set snapshot(snapshot) {
+    setSnapshot(snapshot) {
         for (const hand of this) {
-            hand.snapshot = snapshot
+            hand.setSnapshot(snapshot)
         }
     }
 }
@@ -34,28 +37,32 @@ export default class ViewModel extends EventEmitter{
         this.snapshot = null
 
         // Load components
+        this.messageMgr = new MessageManager()
         this.chatBubble = new ChatBubbleManager()
-        this.message = new MessageManager()
         this.tokens = new TokenManager()
         this.played = new PlayedCardsManager()
         this.suitButtons = new ButtonManager("suit-button-container", this, {dataFieldID: "suit"})
         this.actionButtons = new ButtonManager("action-button-container", this)
-        this.scoreboardManager = new ScoreboardManager()
-        this.hands = new Hands(this)
+        this.scoreboardManager = new ScoreboardManager(this)
+        this.hands = new Hands(this, this.messageMgr)
         this.upcard = new UpCardManager()
         this.alertDialog = document.querySelector("alert-dialog")
+        this.scoreManager = new ScoreManager()
+        this.nameManager = new NameManager()
+        this.integratedButtonManager = new IntegratedButtonManager(this)
     }
 
     /**
      * For each property on this object, check if it has a 'snapshot' setter.
      * If so, set its 'snapshot' to the provided value.
      */
-    set snapshot(value) {
+    async setSnapshot(snapshot) {
+        this.messageMgr.hide()
+
         for (const prop of Object.getOwnPropertyNames(this)) {   
             const obj = this[prop]
-            const desc = Object.getOwnPropertyDescriptor(obj.__proto__, "snapshot")
-            if (desc && typeof desc.set === "function") {
-                obj["snapshot"] = value
+            if (obj && typeof obj["setSnapshot"] === "function") {
+                await obj["setSnapshot"](snapshot)
             }
         }
     }

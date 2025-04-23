@@ -55,13 +55,13 @@
             <button class="ui-button suit-button red" data-suit="♦" data-event="change-suit" selectable>♦</button>
         </div>
 
-        <div id="action-button-container" class="action-button-container">
-            <countdown-button class="ui-button size_full font_normal is_hidden" timeout="5"
+        <div id="action-button-container" class="ui-collection row">
+            <countdown-button class="ui-button size_full is_hidden" timeout="5"
                 data-event="continue">Continue</countdown-button>
-            <button class="ui-button size_full font_normal is_hidden" data-event="pass">Pass</button>
-            <button class="ui-button size_full font_normal is_hidden" data-event="order">Order</button>
-            <button class="ui-button size_full font_normal is_hidden" data-event="make">Make</button>
-            <button class="ui-button size_full font_normal is_hidden" data-event="alone">Alone</button>
+            <button class="ui-button size_full is_hidden" data-event="pass">Pass</button>
+            <button class="ui-button size_full is_hidden" data-event="order">Order</button>
+            <button class="ui-button size_full is_hidden" data-event="make">Make</button>
+            <button class="ui-button size_full is_hidden" data-event="alone">Alone</button>
         </div>
 
         <div id="score_0" class="score-cards" score="0">
@@ -76,7 +76,7 @@
 
         <img id="dealer_token" class="token" seat="3" src="../static/images/dealer.png" />
         <div id="maker_token" class="token" seat="3"></div>
-        <div id="message" class="is_hidden font_normal">Pick a Card</div>
+        <div id="message" class="ui-panel font_normal">Pick a Card</div>
 
         <!-- Snapshot queue control buttons -->
         <div class="control-button-container">
@@ -106,7 +106,7 @@
                     <div class="name1 ui-label black">Adam</div>
                 </div>
             </div>
-            <button class="ui-button size_narrow" data-event="exit">Exit</button>
+            <div class="ui-button size_narrow" data-event="exit">Exit</div>
         </div>
     </div> <!-- /gameboard -->
 </body>

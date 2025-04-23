@@ -1,29 +1,39 @@
 import { getPindex } from "../getSeat.js"
-import playable_suits from "../playable_suits.js"
+import playableSuits, { calcSuit } from "../playable_suits.js"
 
 export default class HandManager {
-    constructor(seat, eventSource) {
+    constructor(seat, messageMgr, eventSource) {
         this.seat = seat
+        this.messageMgr = messageMgr
         this.eventSource = eventSource
     }
 
-    set snapshot(snapshot) {    
-        if (this.seat === 0) {
-            this.clear()
-            this.addCards(snapshot.hand)
+    setSnapshot(snapshot) {    
+        const player_index = getPindex(this.seat, snapshot.for_player)
 
-            if (snapshot.state == 2) {
-                this.enable()
-            }
-            else if (snapshot.state == 5) {
-                const suits = playable_suits(snapshot)
-                this.enable(suits)            
-            }
+        if (this.seat === 0) {
+            this.__setSnapshot0(snapshot)
         }
-        else {
-            const player_index = getPindex(this.seat, snapshot.for_player)
+        else {            
             this.fill("back", snapshot.players[player_index].hand_size)
         }
+
+        const player = snapshot.players[player_index]
+        this.tricks = player.tricks
+    }
+
+    __setSnapshot0(snapshot) {
+        this.clear()
+        this.addCards(snapshot.hand)
+
+        if (snapshot.state == 2) {
+            this.enable(snapshot.trump)
+        }
+        else if (snapshot.state == 5) {
+            this.messageMgr.show("Play a Card")
+            const suits = playableSuits(snapshot)
+            this.enable(snapshot.trump, suits)            
+        }        
     }
 
     get count() {
@@ -31,11 +41,11 @@ export default class HandManager {
         return cards.length
     }
 
-    enable(suits = ["♠", "♥", "♦", "♣"]) {
+    enable(trump, suits = ["♠", "♥", "♦", "♣"]) {
         const cards = document.querySelectorAll(`.hand[seat='${this.seat}']`);
 
         for (const card of cards) {
-            const suit = card.getAttribute("face").at(-1)
+            const suit = calcSuit(card.getAttribute("face"), trump)
             if (suits.indexOf(suit) != -1) {
                 card.classList.add("enabled")
             }

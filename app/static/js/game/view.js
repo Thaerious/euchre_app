@@ -11,12 +11,11 @@ window.addEventListener("load", async () => {
     }
 
     viewModel.on("continue", () => {
-        ui.viewModel.showButtons()
-        console.log("hiding countdown button")
+        ui.viewModel.actionButtons.hideButtons()
     })  
 
     viewHistory.on("load", (snapshot) => {
-        viewModel.snapshot = snapshot
+        viewModel.setSnapshot(snapshot)
     })
 
     await viewHistory.load()

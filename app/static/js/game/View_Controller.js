@@ -3,11 +3,10 @@ export default class ViewController {
     // It listens for events emitted from either the ViewModel or this.gameIO and updates
     // the other objects accordingly.
     // It will also change the state of the ViewModel based on ViewModel events.
-    constructor(viewModel, viewHistory, viewUpdate, gameIO) {
+    constructor(viewModel, viewHistory,  gameIO) {
         this.viewModel = viewModel
         this.viewHistory = viewHistory
         this.gameIO = gameIO
-        this.viewUpdate = viewUpdate
         this.addListeners()
     }
 
@@ -19,13 +18,7 @@ export default class ViewController {
         // Events for view history
         this.viewHistory.on("load", async snapshot => {
             console.log(`load ${snapshot.hash.substring(0, 8)}: state ${snapshot.state}`)
-            await this.viewUpdate.load(snapshot)
-        })
-
-        // Events for view history
-        this.viewHistory.on("update", async snapshot => {
-            console.log(`update ${snapshot.hash.substring(0, 8)}: state ${snapshot.state}`)
-            await this.viewUpdate.update(snapshot)
+            await this.viewModel.setSnapshot(snapshot);
         })
 
         // Websocket event for server side errors.
@@ -54,7 +47,11 @@ export default class ViewController {
         });
 
         this.viewModel.on("alone", () => {
-            this.gameIO.doAction("alone", this.viewModel.suitButtons.getSuit())
+            const selected = this.viewModel.suitButtons.selected
+            if (selected.length == 0) throw Exception("No suit selected")
+            const suit = selected[0].dataset.suit
+
+            this.gameIO.doAction("alone", suit)
         });
 
         this.viewModel.on("order", () => {
@@ -63,39 +60,40 @@ export default class ViewController {
 
         // Animation when a player plays a card
         this.viewModel.on("card-selected", (face) => {
-            const snapshot = this.viewUpdate.snapshot
+            const snapshot = this.viewHistory.snapshot
             if (snapshot.current_player != snapshot.for_player) return;
             this.viewModel.playCardAnimation(0, face)
         });
 
         // Hand card listeners
         this.viewModel.on("card-selected", (card) => {
-            const snapshot = this.viewUpdate.snapshot
+            const snapshot = this.viewHistory.snapshot
 
             switch (snapshot.state) {
                 case 2:
                     this.gameIO.doAction("up", card)
                     break;
                 case 5:
-                    console.log("do action")
                     this.gameIO.doAction("play", card)
                     break;
             }
         });
 
-        // Menu Listeners
-        this.viewModel.exitButton.addEventListener("click", async () => {
-            const response = await fetch("/exit", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-
-            if (response.redirected) {
-                window.location.href = response.url;
-            }
-        });
+        this.viewModel.on("exit", this.doExit);
+        this.viewModel.exitButton.addEventListener("click", this.doExit);           
         this.viewModel.rulesButton.addEventListener("click", () => { });
     }   
+
+    async doExit() {
+        const response = await fetch("/exit", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (response.redirected) {
+            window.location.href = response.url;
+        }       
+    }
 }
