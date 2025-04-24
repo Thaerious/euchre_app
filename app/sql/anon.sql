@@ -9,7 +9,7 @@ CREATE TABLE users (
     username TEXT UNIQUE DEFAULT NULL,              -- username set by player
     room TEXT DEFAULT NULL,                         -- websocket room to communicate with user
     connected BOOLEAN DEFAULT 1,                    -- 1 if the websocket is currently connected, else 0
-    seat INT NOT NULL,                              -- seat 0 is host
+    seat INT NOT NULL,                              -- in host/join seat 0 is host, this changes when in game
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- token creation timestamp
 );
 

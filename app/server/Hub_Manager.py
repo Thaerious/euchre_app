@@ -7,7 +7,6 @@ from euchre.bots import Bot_2
 from constants import *
 import os
 import pickle
-import random
 
 class Hub_Manager(Auto_Key_Dict):
     SAVE_LOC = "./saves"

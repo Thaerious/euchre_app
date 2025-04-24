@@ -28,16 +28,28 @@ class Game_Hub:
         self.connections = Auto_Key_Dict("id")
         self.game_token = game_token
         self.thread = None
-        self.is_running = False
+        self._is_running = False
         self.condition = threading.Condition()
 
         if names:
             random.shuffle(names)
             logger.debug(f"{names}, {type(names)}")
             self.game = Game(names)
+            self.game.win_condition = 1
             self.game.input(None, "start", None)
         else:
             self.game = None
+
+    @property
+    def is_running(self):
+        with self.condition:
+            return self._is_running
+
+    @is_running.setter
+    def is_running(self, value):
+        with self.condition:
+            self._is_running = value
+            self.condition.notify()
 
     @property
     def size(self):
@@ -80,7 +92,7 @@ class Game_Hub:
 
     def run(self):
         """Main game loop that waits for player decisions and progresses the game state."""
-        while self.game.current_state != 0 and self.is_running:
+        while self.game.current_state != 8 and self._is_running:
             try:
                 # States 1-5 require user action
                 if self.game.current_state in [1, 2, 3, 4, 5]:
@@ -120,6 +132,8 @@ class Game_Hub:
             name = self.game.current_player.name
             while name not in self.connections:
                 self.condition.wait()
+                if not self.is_running:
+                    return
 
             try:
                 connection = self.connections[name]
