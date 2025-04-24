@@ -1,7 +1,7 @@
 import logging
 from flask import render_template, request, url_for, redirect
-from SQL_Anon import SQL_Anon, User, Game
-from decorators.fetch_anon_token import fetch_anon_token, get_anon_token
+from SQL_Anon import SQL_Anon, User_Record, Game_Record
+from decorators.fetch_anon_token import user_token, get_user_token
 from decorators.fetch_user import fetch_user
 import sqlite3
 from constants import *
@@ -19,7 +19,7 @@ class Host_Endpoints:
     NAMESPACE = "/host"
 
     def __init__(self, app, io, hubs):
-        User.io = io
+        User_Record.io = io
         self.io = io
         self.hubs:Hub_Manager = hubs
         self.sql_anon = SQL_Anon(filename="./app/anon.db", namespace=self.NAMESPACE)        
@@ -36,19 +36,19 @@ class Host_Endpoints:
         io.on_event('start_game', self.on_start_game, namespace=self.NAMESPACE)
 
     # /lobby template endpoint
-    @fetch_anon_token
+    @user_token
     def lobby(self):
         logger.info("/lobby")
         return render_template("lobby.html")
 
     # /host template endpoint
-    @fetch_anon_token
+    @user_token
     def host_game(self, user_token):
         logger.info("/host")
         game_rec = None
         user = self.sql_anon.get_user(user_token)
 
-        if user is None:
+        if user.game_token is None:
             game_rec = self.sql_anon.create_game(user_token)
             user = self.sql_anon.get_user(user_token)
         else:            
@@ -61,7 +61,7 @@ class Host_Endpoints:
                               )        
 
     # /join template endpoint
-    @fetch_anon_token
+    @user_token
     def join_game(self, game_token, user_token):  
         logger.info("/exit_lobby")  
         user = self.sql_anon.get_user(user_token) 
@@ -78,7 +78,7 @@ class Host_Endpoints:
             pass
         else: 
             # if user is in another game
-            self.sql_anon.remove_user(user_token)
+            self.sql_anon.remove_user_from_game(user_token)
             self.sql_anon.join_game(user_token, game_token)
 
         game_rec = self.sql_anon.get_game(game_token)
@@ -98,7 +98,7 @@ class Host_Endpoints:
             self.sql_anon.remove_game(user.game_token)
             game_rec.emit("game_cancelled", {})
         else:
-            self.sql_anon.remove_user(user.user_token)
+            self.sql_anon.remove_user_from_game(user.user_token)
             game_rec = self.sql_anon.get_game(user.game_token)
             game_rec.emit("update_names", game_rec.names)
 
@@ -109,7 +109,6 @@ class Host_Endpoints:
     def on_connect(self, auth, user):
         logger.info("ws:connect")
         self.sql_anon.set_ws_room(user.user_token, request.sid)
-        self.sql_anon.set_connected(user.user_token, True)
         user = user.refresh()
 
         get_game_rec = self.sql_anon.get_game(user.game_token)
@@ -118,11 +117,11 @@ class Host_Endpoints:
     # websocket disconnect handler
     def on_disconnect(self, reason=None):
         logger.info("ws:disconnect")
-        user_token = get_anon_token()
+        user_token = get_user_token()
         user = self.sql_anon.get_user(user_token)
+        self.sql_anon.clear_ws_room(user.user_token)        
 
-        if user is not None:
-            self.sql_anon.set_connected(user.user_token, False)
+        if user.game_token is not None:
             game_rec = self.sql_anon.get_game(user.game_token)
             game_rec.emit("update_names", game_rec.names)            
 
@@ -144,7 +143,7 @@ class Host_Endpoints:
         target = self.sql_anon.get_seat(data["seat"], user.game_token)
         if target is None: return
 
-        self.sql_anon.remove_user(target.user_token)
+        self.sql_anon.remove_user_from_game(target.user_token)
         target.emit("kicked", {})
         game_rec = self.sql_anon.get_game(user.game_token)
         game_rec.emit("update_names", game_rec.names)
@@ -157,7 +156,7 @@ class Host_Endpoints:
         self.create_game(game_rec)        
         game_rec.emit("start_game")
         
-    def create_game(self, game_rec:Game):
+    def create_game(self, game_rec:Game_Record):
         # Generate bot names
         bot_names = BOT_NAMES.copy()
         print(f"4 - {game_rec.player_count} = {4 - game_rec.player_count}")

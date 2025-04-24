@@ -4,13 +4,12 @@ DROP TABLE IF EXISTS bots;
 DROP TABLE IF EXISTS game_status;
 
 CREATE TABLE users (
-    user_token VARCHAR(12) PRIMARY KEY,             -- token identifier set in the user's cookie
-    game_token VARCHAR(12) NOT NULL,                -- shared identifier for players in the same game
-    username TEXT UNIQUE DEFAULT NULL,              -- username set by player
-    room TEXT DEFAULT NULL,                         -- websocket room to communicate with user
-    connected BOOLEAN DEFAULT 1,                    -- 1 if the websocket is currently connected, else 0
-    seat INT NOT NULL,                              -- in host/join seat 0 is host, this changes when in game
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- token creation timestamp
+    user_token VARCHAR(12) PRIMARY KEY,              -- token identifier set in the user's cookie
+    game_token VARCHAR(12),                          -- shared identifier for players in the same game
+    username TEXT UNIQUE DEFAULT NULL,               -- username set by player
+    room TEXT DEFAULT NULL,                          -- websocket room to communicate with user
+    seat INT DEFAULT NULL,                           -- in host/join seat 0 is host, this changes when in game
+    last_access TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- last access by user_token.py timestamp
 );
 
 CREATE TABLE games(

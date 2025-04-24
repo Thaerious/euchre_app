@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for
-from SQL_Anon import SQL_Anon, User
-from decorators.fetch_anon_token import get_anon_token
+from SQL_Anon import SQL_Anon, User_Record
+from decorators.fetch_anon_token import get_user_token
 from decorators.fetch_user import fetch_user
 from constants import *
 from logger_factory import logger_factory
@@ -37,13 +37,14 @@ class Game_Endpoints:
         return render_template("game.html", seat=user.seat, game_token=user.game_token, view=True)
 
     @fetch_user()
-    def exit(self, user):
+    def exit(self, data, user):
         logger.info("/exit")
+        self.sql_anon.remove_user_from_game(user.user_token)
         return redirect(url_for('lobby', reason='game ended'))
 
     # websocket connect handler 
     @fetch_user()
-    def on_connect(self, auth, user: User):
+    def on_connect(self, auth, user: User_Record):
         logger.info(f"ws:connect {user.username}")
         self.sql_anon.set_ws_room(user.user_token, request.sid)
         self.sql_anon.set_connected(user.user_token, True)
@@ -67,7 +68,7 @@ class Game_Endpoints:
     # websocket disconnect handler
     def on_disconnect(self, reason=None):
         logger.info("ws:disconnect")
-        user_token = get_anon_token()
+        user_token = get_user_token()
         user = self.sql_anon.get_user(user_token)
 
         if user is not None:

@@ -14,12 +14,12 @@ DEFAULT_FILENAME = "./app/anon.db"
 
 logger = logger_factory(__name__, "SQL")
 
-class Game():
+class Game_Record():
     def __init__(self, game_row, user_rows, namespace):
         self.namespace = namespace
         self.__dict__.update(game_row)
         self.users = []
-        for row in user_rows: self.users.append(User(row, namespace))
+        for row in user_rows: self.users.append(User_Record(row, namespace))
 
     @property
     def player_count(self):
@@ -40,38 +40,37 @@ class Game():
         return {
             user.seat: {
                 "name": user.username,
-                "connected": user.connected
+                "connected": user.room != None
             } for user in self.users
         }            
 
-class User:
+class User_Record:
     """ Helper object for a single row of the users table. """
     @staticmethod
     def set_io(io):
-        User.io = io    
+        User_Record.io = io    
 
     def __init__(self, row, namespace):
         self.namespace = namespace
         self.__dict__.update(row)
 
     def emit(self, event, object = None):                  
-
         if self.namespace == None: 
             raise RuntimeError("Cannot emit: namespace is not set.")
         elif isinstance(object, str):
-            User.io.emit(event, object, room=self.room, namespace=self.namespace)
+            User_Record.io.emit(event, object, room=self.room, namespace=self.namespace)
             logger.info(f"EMIT ({self.username}, {event}:{type(object).__name__}) -> {object}")
         else:
             json_string = json.dumps(object, indent=2, default=custom_json_serializer)
-            User.io.emit(event, json_string, room=self.room, namespace=self.namespace)
+            User_Record.io.emit(event, json_string, room=self.room, namespace=self.namespace)
             logger.info(f"EMIT ({self.username}, {event}:{type(object).__name__}) -> {object.__repr__()}")
 
     def refresh(self):
         row = SQL_Anon(namespace=self.namespace).get_user_row(self.user_token)
-        return User(row, namespace=self.namespace)
+        return User_Record(row, namespace=self.namespace)
 
     def is_connected(self) -> bool:
-        return User.io.server.manager.is_connected(self.room, self.namespace)
+        return User_Record.io.server.manager.is_connected(self.room, self.namespace)
 
     def __str__(self):
         return str(self.__dict__)
@@ -94,7 +93,7 @@ class SQL_Anon:
 
     def get_user(self, user_token):
         row = self.get_user_row(user_token)
-        return User(row, self.namespace) if row else None
+        return User_Record(row, self.namespace) if row else None
 
     def get_user_row(self, user_token):
         """ Retrive user information """
@@ -116,7 +115,7 @@ class SQL_Anon:
             sql = ("SELECT * FROM users WHERE seat = ? AND game_token = ?")
             cursor.execute(sql, (seat, game_token))
             row = cursor.fetchone()
-            return User(dict(row), self.namespace) if row else None
+            return User_Record(dict(row), self.namespace) if row else None
 
     def set_seat(self, user_token, seat):
         """ Set the seat for a user """
@@ -132,10 +131,7 @@ class SQL_Anon:
         with sqlite3.connect(self.filename) as conn:
             conn.set_trace_callback(logger.debug)
             cursor = conn.cursor()
-            sql = ("DELETE FROM users WHERE game_token = ?")
-            cursor.execute(sql, (game_token,))
-
-            sql = ("DELETE FROM games WHERE game_token = ?")
+            sql = ("UPDATE users SET game_token = null, seat = null WHERE game_token = ?")
             cursor.execute(sql, (game_token,))
 
     def get_game(self, game_token):
@@ -159,10 +155,10 @@ class SQL_Anon:
             cursor.execute(sql, (game_token,))
             game_row = cursor.fetchone()
 
-            return Game(game_row, user_rows, self.namespace)
+            return Game_Record(game_row, user_rows, self.namespace)
 
-    def remove_user(self, user_token):
-        """ Remove a user from a game. 
+    def remove_user_from_game(self, user_token):
+        """ Remove a user from the game they are currently in. 
             Throw an exception if the user is host.
         """
         with sqlite3.connect(self.filename) as conn:
@@ -175,8 +171,8 @@ class SQL_Anon:
             if seat == 0: 
                 raise Forbidden("Cannot remove the host player from the game.")
             else:
-                sql = ("DELETE FROM users WHERE seat = ? AND game_token = ? ")
-                cursor.execute(sql, (seat, game_token))
+                sql = ("UPDATE users SET game_token = null, seat = null WHERE user_token = ? ")
+                cursor.execute(sql, (user_token,))
 
     def create_game(self, host_token):
         """ Create a new game with 'host_token' as host """
@@ -191,10 +187,21 @@ class SQL_Anon:
             cursor.execute(sql, (game_token,))
 
             # set host to seat 0
-            sql = ("INSERT INTO users (user_token, game_token, seat) VALUES (?, ?, ?)")
-            cursor.execute(sql, (host_token, game_token, 0)) # seat 0 is host
+            sql = ("UPDATE users SET game_token = ?, seat = ? WHERE user_token = ?")
+            cursor.execute(sql, (game_token, 0, host_token)) # seat 0 is host
             
         return self.get_game(game_token)
+
+    def create_user(self, user_token):
+        """ Create a new empty user with the specified user token """
+        with sqlite3.connect(self.filename) as conn:
+            conn.set_trace_callback(logger.debug)
+            cursor = conn.cursor()
+
+            sql = ("INSERT INTO users (user_token, seat) VALUES (?, ?)")
+            cursor.execute(sql, (user_token, -1))
+
+        return self.get_user(user_token)
 
     def join_game(self, user_token, game_token):
         """ Associate a player with a game """
@@ -205,11 +212,8 @@ class SQL_Anon:
             conn.set_trace_callback(logger.debug)
             cursor = conn.cursor()
 
-            sql = ("SELECT * FROM users WHERE game_token = ?")
-            cursor.execute(sql, (game_token,))
-
-            sql = ("INSERT INTO users (user_token, game_token, seat) VALUES (?, ?, ?)")
-            cursor.execute(sql, (user_token, game_token, seat))
+            sql = ("UPDATE users SET game_token = ?, seat = ? WHERE user_token = ?")
+            cursor.execute(sql, (game_token, seat, user_token))
             return game_token
 
     def set_ws_room(self, user_token, ws_room):
@@ -220,6 +224,15 @@ class SQL_Anon:
             cursor = conn.cursor()
             sql = ("UPDATE users SET room = ? WHERE user_token = ?")
             cursor.execute(sql, (ws_room, user_token))
+
+    def clear_ws_room(self, user_token):
+        """ Retrieve the game token (or None) associtated with the user token """
+
+        with sqlite3.connect(self.filename) as conn:
+            conn.set_trace_callback(logger.debug)
+            cursor = conn.cursor()
+            sql = ("UPDATE users SET room = null WHERE user_token = ?")
+            cursor.execute(sql, (user_token,))
 
     def set_name(self, user_token, name):
         """ Set the user name associated with the user_token """
@@ -300,13 +313,21 @@ class SQL_Anon:
             sql = ("UPDATE games SET game_status = ? WHERE game_token = ?")
             cursor.execute(sql, (value, game_token))
 
-    def clear_connected(self):
+    def clear_rooms(self):
         """ Set the connection status of all users to 0 (disconnected) """
         with sqlite3.connect(self.filename) as conn:            
             conn.set_trace_callback(logger.debug)
             cursor = conn.cursor()
-            sql = ("UPDATE users SET connected = 0")
+            sql = ("UPDATE users SET room = null")
             cursor.execute(sql)
+
+    def update_timestamp(self, user_token):
+        """ Update the timestamp of the specified user """
+        with sqlite3.connect(self.filename) as conn:
+            conn.set_trace_callback(logger.debug)
+            cursor = conn.cursor()
+            sql = "UPDATE users SET last_access = CURRENT_TIMESTAMP WHERE user_token = ?"
+            cursor.execute(sql, (user_token,))
 
     def users(self):
         """ List all users"""
@@ -317,7 +338,7 @@ class SQL_Anon:
             sql = ("SELECT * FROM users")
             cursor.execute(sql)
             rows = cursor.fetchall()
-            return [dict(row) for row in rows]
+            return [dict(row) for row in rows], [desc[0] for desc in cursor.description]
         
     def games(self):
         """ List all games"""
@@ -331,7 +352,7 @@ class SQL_Anon:
                   )
             cursor.execute(sql)
             rows = cursor.fetchall()
-            return [dict(row) for row in rows]    
+            return [dict(row) for row in rows], [desc[0] for desc in cursor.description]
 
     def bots(self):
         """ List all bots"""
@@ -342,7 +363,7 @@ class SQL_Anon:
             sql = ("SELECT * FROM bots")
             cursor.execute(sql)
             rows = cursor.fetchall()
-            return [dict(row) for row in rows]        
+            return [dict(row) for row in rows], [desc[0] for desc in cursor.description]
 
     def reset(self):
         """ Clear all tables """
@@ -362,18 +383,25 @@ def invoke(method_name, *args):
 
     sql = SQL_Anon(filename=DEFAULT_FILENAME)
 
-    if hasattr(sql, method_name):
-        method = getattr(sql, method_name)
-        result = method(*args)
- 
-        if result is None:
-            pass
-        elif isinstance(result, list) & isinstance(result[0], dict):
-            print(tabulate(result, headers="keys", tablefmt="pretty"))
-        else:
-            print(result)
-    else:
+    if not hasattr(sql, method_name):
         print(f"Method '{method_name}' not found in SQL_Games.")
+        return
+
+    method = getattr(sql, method_name)
+    r = method(*args)       
+   
+    if not isinstance(r, tuple):
+        print(r)
+        return
+
+    result, headers = r
+
+    if len(result) == 0:
+        print(tabulate(result, headers=headers, tablefmt="pretty"))
+    elif isinstance(result, list) & isinstance(result[0], dict):
+        print(tabulate(result, headers="keys", tablefmt="pretty"))
+    else:
+        print(result)
 
 def print_help():
     """Print available methods for the script."""

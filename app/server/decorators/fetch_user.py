@@ -1,9 +1,9 @@
 from functools import wraps
 from decorators.inject_arg import inject_arg
-from .fetch_anon_token import get_anon_token
+from .fetch_anon_token import get_user_token
 from werkzeug.exceptions import Unauthorized
 from typing import Callable
-from SQL_Anon import User
+from SQL_Anon import User_Record
 import logging
 
 logger = logging.getLogger(__name__)
@@ -48,14 +48,14 @@ def fetch_user(arg:str = "user", sql=None) -> Callable:
                  raise AttributeError("Expected 'self.sql_anon' or an explicit 'sql' argument.")
 
             # Retrieve session token from cookies.
-            token = get_anon_token()
+            token = get_user_token()
             if not token:
                 logger.warning(f"[{func.__name__}] Missing anon token.")
                 raise Unauthorized("Anonymous token missing or invalid.")
 
             # Retrieve the user and inject the argument
             user = sql_anon.get_user(token)
-            if user is None or not isinstance(user, User):
+            if user is None or not isinstance(user, User_Record):
                 logger.warning(f"[{func.__name__}] No user found for token: {token[:6]}...")
                 raise Unauthorized("User not found or invalid.")
 

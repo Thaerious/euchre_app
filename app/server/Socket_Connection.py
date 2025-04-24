@@ -1,11 +1,11 @@
 # Socket_Connection.py
 import threading
 from Connection_Interface import Connection_Interface
-from SQL_Anon import User
+from SQL_Anon import User_Record
 from euchre import Snapshot
 
 class Socket_Connection(Connection_Interface):
-    def __init__(self, user:User):
+    def __init__(self, user:User_Record):
         super().__init__(user.username)
         self._user = user
         self.snapshot = None  

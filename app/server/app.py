@@ -33,7 +33,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 # logging.getLogger("werkzeug").disabled = True
 
-SQL_Anon.SQL_Anon().clear_connected()
+SQL_Anon.SQL_Anon().clear_rooms()
 
 app = Flask(__name__, template_folder="../templates", static_folder="../static")
 app.config["SECRET_KEY"] = "your_secret_key"
