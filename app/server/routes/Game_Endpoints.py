@@ -29,6 +29,8 @@ class Game_Endpoints:
     @fetch_user()
     def game(self, user):
         logger.info("/game")
+        if not user.game_token:
+            return redirect(url_for('lobby', reason='game not found'))
         return render_template("game.html", seat=user.seat, game_token=user.game_token)
 
     @fetch_user()
@@ -37,9 +39,15 @@ class Game_Endpoints:
         return render_template("game.html", seat=user.seat, game_token=user.game_token, view=True)
 
     @fetch_user()
-    def exit(self, data, user):
+    def exit(self, user):
         logger.info("/exit")
         self.sql_anon.remove_user_from_game(user.user_token)
+        game_record = self.sql_anon.get_game(user.game_token)
+        num_users = len(game_record.names)
+
+        if (num_users == 0):
+            self.sql_anon.remove_game(game_record.token)
+
         return redirect(url_for('lobby', reason='game ended'))
 
     # websocket connect handler 
@@ -47,7 +55,6 @@ class Game_Endpoints:
     def on_connect(self, auth, user: User_Record):
         logger.info(f"ws:connect {user.username}")
         self.sql_anon.set_ws_room(user.user_token, request.sid)
-        self.sql_anon.set_connected(user.user_token, True)
         game_rec = self.sql_anon.get_game(user.game_token)
         game_rec.emit("user_connected", {"seat": user.seat})
 
@@ -72,9 +79,11 @@ class Game_Endpoints:
         user = self.sql_anon.get_user(user_token)
 
         if user is not None:
-            self.sql_anon.set_connected(user.user_token, False)
+            self.sql_anon.clear_ws_room(user.user_token)
             game_rec = self.sql_anon.get_game(user.game_token)
-            game_rec.emit("user_left", {"seat": user.seat})  
+
+            if game_rec is not None:
+                game_rec.emit("user_left", {"seat": user.seat})  
 
     # /do_action websocket on action endpoint
     @fetch_user()

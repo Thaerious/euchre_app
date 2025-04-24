@@ -1,4 +1,3 @@
-import logging
 from flask import render_template, request, url_for, redirect
 from SQL_Anon import SQL_Anon, User_Record, Game_Record
 from decorators.fetch_anon_token import user_token, get_user_token
@@ -7,7 +6,6 @@ import sqlite3
 from constants import *
 import random
 from Game_Hub import Game_Hub
-from Socket_Connection import Socket_Connection
 from Bot_Connection import Bot_Connection
 from euchre.bots.Bot_2 import Bot_2
 from Hub_Manager import Hub_Manager
@@ -81,6 +79,7 @@ class Host_Endpoints:
             self.sql_anon.remove_user_from_game(user_token)
             self.sql_anon.join_game(user_token, game_token)
 
+        user = user.refresh()
         game_rec = self.sql_anon.get_game(game_token)
         return render_template("join.html", 
                                 game_token = user.game_token,
@@ -140,7 +139,7 @@ class Host_Endpoints:
     @fetch_user()
     def on_kick_player(self, data, user):
         logger.info("ws:kick_player")
-        target = self.sql_anon.get_seat(data["seat"], user.game_token)
+        target = self.sql_anon.get_user_by_seat(data["seat"], user.game_token)
         if target is None: return
 
         self.sql_anon.remove_user_from_game(target.user_token)

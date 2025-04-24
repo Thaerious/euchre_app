@@ -37,10 +37,8 @@ def user_token(f):
 
         # If the token does not exists create it
         if not token or not user: 
-            print("GENERATE NEW TOKEN")
-            token = ''.join(random.choices('0123456789abcdef', k=TOKEN_SIZE))        
-            # Add the token the DB
-            args[0].sql_anon.create_user(token)        
+            # Create new user (token)
+            token = args[0].sql_anon.create_user().user_token
         
         kwargs = inject_arg(ARG_NAME, token, f, kwargs)
 
