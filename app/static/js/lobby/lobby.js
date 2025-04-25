@@ -12,7 +12,7 @@ window.addEventListener("load", async () => {
     });
 
     document.querySelector("#quick-button").addEventListener("click", () => {
-        window.alert("not implemented")
+        window.location = "/quick_start"
     });
 
     document.querySelector

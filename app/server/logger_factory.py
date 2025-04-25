@@ -1,10 +1,13 @@
 import logging
 import sys
+import threading
 
 def logger_factory(name, prefix):
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(f'{prefix}> %(message)s')
+
+    tid_hex = hex(threading.get_ident() % 0x10000)[2:].zfill(4)
+    formatter = logging.Formatter(f'{tid_hex} {prefix}> %(message)s')
 
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(logging.DEBUG)    

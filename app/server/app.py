@@ -8,13 +8,10 @@ from routes.Game_Endpoints import Game_Endpoints
 from Hub_Manager import Hub_Manager
 from constants import *
 from werkzeug.exceptions import Unauthorized
-
 import SQL_Anon
-
 import os
 import atexit
 import logging
-
 
 print("\nStarting Euchre Server")
 print("----------------------")
@@ -43,7 +40,12 @@ app.config["DEBUG"] = False
 
 jwt = JWTManager(app)
 
-websocket = SocketIO(app, cors_allowed_origins="*") 
+websocket = SocketIO(
+    app, 
+    cors_allowed_origins="*", 
+    ping_interval=5, 
+    ping_timeout=2
+) 
 
 # Routes Registration
 hubs = Hub_Manager()
@@ -54,6 +56,10 @@ Game_Endpoints(app, websocket, hubs)
 @app.errorhandler(Unauthorized)
 def handle_unauthorized(e):
     return redirect(url_for("lobby", reason='unauthorized'))
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return redirect(url_for("lobby", reason='404'))
 
 @atexit.register
 def save_game():

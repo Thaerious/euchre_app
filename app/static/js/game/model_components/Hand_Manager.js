@@ -26,14 +26,20 @@ export default class HandManager {
         this.clear()
         this.addCards(snapshot.hand)
 
-        if (snapshot.state == 2) {
+        if (snapshot.for_player !== snapshot.current_player) {
+            this.disable()
+        }
+        else if (snapshot.state == 2) {
             this.enable(snapshot.trump)
         }
         else if (snapshot.state == 5) {
             this.messageMgr.show("Play a Card")
             const suits = playableSuits(snapshot)
-            this.enable(snapshot.trump, suits)            
-        }        
+            this.enable(snapshot.trump, suits)
+        }
+        else {
+            this.disable()
+        }
     }
 
     get count() {

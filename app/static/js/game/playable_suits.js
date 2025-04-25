@@ -22,7 +22,6 @@ export default function playableSuits(snapshot){
 
 export function calcSuit(card, trump) {
     const suit = card.at(-1)
-    console.log(card, card.at(0), suit, oppositeSuit[suit], trump)
     if (card.at(0) !== "J") return suit
     if (oppositeSuit[suit] === trump) return trump
     return suit

@@ -82,17 +82,12 @@ class Name_Dictionary(dict):
             if i not in self: return i
         return len(self)
 
-class SQL_Anon:
-    def __init__(self, namespace=None, filename="./app/anon.db"):
-        """Initialize database connection with the given SQLite file."""
-        self.namespace = namespace
-        self.filename = filename 
-
-        if not os.path.exists(filename):
-            raise FileNotFoundError(f"Database file not found: {filename}")       
+class Anon_Cursor:
+    def __init__(self, filename):
+        self.filename = filename
 
     def __enter__(self):
-        self.conn = sqlite3.connect(self.filename)
+        self.conn = sqlite3.connect(self.filename, check_same_thread=False)
         self.conn.set_trace_callback(logger.debug)
         self.conn.row_factory = sqlite3.Row  # This makes query results behave like dictionaries
         self.cursor = self.conn.cursor()
@@ -102,13 +97,22 @@ class SQL_Anon:
         self.conn.commit()
         self.conn.close()
 
+class SQL_Anon:
+    def __init__(self, namespace=None, filename="./app/anon.db"):
+        """Initialize database connection with the given SQLite file."""
+        self.namespace = namespace
+        self.filename = filename 
+
+        if not os.path.exists(filename):
+            raise FileNotFoundError(f"Database file not found: {filename}")       
+
     def get_user(self, user_token):
         row = self.get_user_row(user_token)
         return User_Record(row, self.namespace) if row else None
 
     def get_user_row(self, user_token):
         """ Retrive user information """
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             sql = ("SELECT * FROM users WHERE user_token = ?")
             cursor.execute(sql, (user_token,))
             row = cursor.fetchone()
@@ -116,7 +120,7 @@ class SQL_Anon:
 
     def get_user_by_seat(self, seat, game_token):
         """ Retrive user information """
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             sql = ("SELECT * FROM users WHERE seat = ? AND game_token = ?")
             cursor.execute(sql, (seat, game_token))
             row = cursor.fetchone()
@@ -124,27 +128,18 @@ class SQL_Anon:
 
     def set_seat(self, user_token, seat):
         """ Set the seat for a user """
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             sql = ("UPDATE users SET seat = ? WHERE user_token = ?")        
             cursor.execute(sql, (seat, user_token))
-
-    def remove_game(self, game_token):
-        """ Remove a game and remove the game's users """
-        with self as cursor:
-            sql = ("UPDATE users SET game_token = null, seat = null WHERE game_token = ?")
-            cursor.execute(sql, (game_token,))
-
-            sql = ("DELETE FROM games WHERE game_token LIKE ?")
-            cursor.execute(sql, (game_token + "%",))
 
     def get_game(self, game_token):
         """ Retrieve list of users for the specified game.
             Return None list if there is no game
         """
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             sql = ("SELECT * FROM users WHERE game_token = ?")
             cursor.execute(sql, (game_token,))
-            user_rows = cursor.fetchall()            
+            user_rows = cursor.fetchall()
 
             sql = ("SELECT status_desc AS status, game_token as token "
                    "FROM games INNER JOIN game_status "
@@ -161,22 +156,28 @@ class SQL_Anon:
         """ Remove a user from the game they are currently in. 
             Throw an exception if the user is host.
         """
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             sql = ("SELECT seat, game_token FROM users WHERE user_token = ? ")
             cursor.execute(sql, (user_token,))
             (seat, game_token) = cursor.fetchone()            
 
-            if seat == 0: 
-                raise Forbidden("Cannot remove the host player from the game.")
-            else:
-                sql = ("UPDATE users SET game_token = null, seat = null WHERE user_token = ? ")
-                cursor.execute(sql, (user_token,))
+            sql = ("UPDATE users SET game_token = null, seat = null WHERE user_token = ? ")
+            cursor.execute(sql, (user_token,))
+
+    def remove_game(self, game_token):
+        """ Remove a game and remove the game's users """
+        with Anon_Cursor(self.filename) as cursor:
+            sql = ("UPDATE users SET game_token = null, seat = null WHERE game_token = ?")
+            cursor.execute(sql, (game_token,))
+
+            sql = ("DELETE FROM games WHERE game_token LIKE ?")
+            cursor.execute(sql, (game_token + "%",))
 
     def create_game(self, host_token):
         """ Create a new game with 'host_token' as host """
         game_token = ''.join(random.choices('0123456789abcdef', k=TOKEN_SIZE)) 
 
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             # create the game row
             sql = ("INSERT INTO games (game_token) VALUES (?)")
             cursor.execute(sql, (game_token,))
@@ -191,7 +192,7 @@ class SQL_Anon:
         """ Create a new empty user with the specified user token """
         user_token = ''.join(random.choices('0123456789abcdef', k=TOKEN_SIZE))        
 
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             sql = ("INSERT INTO users (user_token, seat) VALUES (?, ?)")
             cursor.execute(sql, (user_token, -1))
 
@@ -202,7 +203,7 @@ class SQL_Anon:
 
         seat = self.get_user_names(game_token).next_free_seat()
 
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             sql = ("UPDATE users SET game_token = ?, seat = ? WHERE user_token = ?")
             cursor.execute(sql, (game_token, seat, user_token))
             return game_token
@@ -210,27 +211,27 @@ class SQL_Anon:
     def set_ws_room(self, user_token, ws_room):
         """ Retrieve the game token (or None) associtated with the user token """
 
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             sql = ("UPDATE users SET room = ? WHERE user_token = ?")
             cursor.execute(sql, (ws_room, user_token))
 
     def clear_ws_room(self, user_token):
         """ Retrieve the game token (or None) associtated with the user token """
 
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             sql = ("UPDATE users SET room = null WHERE user_token = ?")
             cursor.execute(sql, (user_token,))
 
     def set_name(self, user_token, name):
         """ Set the user name associated with the user_token """
 
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             sql = ("UPDATE users SET username = ? WHERE user_token = ?")
             cursor.execute(sql, (name, user_token))            
 
     def get_user_names(self, game_token) -> Name_Dictionary: 
         """ List all user's names for the specified game """
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             sql = ("SELECT seat, username FROM users WHERE game_token = ?")
             cursor.execute(sql, (game_token,))
             result = cursor.fetchall()
@@ -243,7 +244,7 @@ class SQL_Anon:
         
     def get_bots(self, game_token) -> Name_Dictionary: 
         """ List all bot names for the specified game """
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             sql = ("SELECT bot_name as name, bot_version as version FROM bots WHERE game_token = ?")
             cursor.execute(sql, (game_token,))
             rows = cursor.fetchall()
@@ -251,7 +252,7 @@ class SQL_Anon:
 
     def get_all_names(self, game_token) -> list: 
         """ List all names (bot and user) for the specified game """
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             sql = ("SELECT username AS name "
                    "FROM users "
                    "WHERE game_token = ? "
@@ -266,37 +267,37 @@ class SQL_Anon:
 
     def add_bot(self, game_token, name, version):
         """ Associate a bot with a game """
-        with self as cursor:            
+        with Anon_Cursor(self.filename) as cursor:            
             sql = ("INSERT INTO bots (game_token, bot_name, bot_version) VALUES (?, ?, ?)")
             cursor.execute(sql, (game_token, name, version))
 
     def set_status(self, game_token, value):
         """ Set the status of a game {STAGING, PLAYING, COMPLETE} """
-        with self as cursor:            
+        with Anon_Cursor(self.filename) as cursor:            
             sql = ("UPDATE games SET game_status = ? WHERE game_token = ?")
             cursor.execute(sql, (value, game_token))
 
     def clear_rooms(self):
         """ Set the connection status of all users to disconnected """
-        with self as cursor:            
+        with Anon_Cursor(self.filename) as cursor:            
             sql = ("UPDATE users SET room = null")
             cursor.execute(sql)
 
     def update_timestamp(self, user_token):
         """ Update the timestamp of the specified user """
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             sql = "UPDATE users SET last_access = CURRENT_TIMESTAMP WHERE user_token = ?"
             cursor.execute(sql, (user_token,))
 
     def drop_user(self, user_token):
         """ Remove a user """
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             sql = ("DELETE FROM users WHERE user_token LIKE ?")
             cursor.execute(sql, (user_token + '%',))
 
     def users(self):
         """ List all users"""
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             sql = ("SELECT * FROM users")
             cursor.execute(sql)
             rows = cursor.fetchall()
@@ -304,7 +305,7 @@ class SQL_Anon:
         
     def games(self):
         """ List all games"""
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             sql = ("SELECT game_token, status_desc as status "
                    "FROM games INNER JOIN game_status "
                    "ON game_status = game_status.status_code "
@@ -315,7 +316,7 @@ class SQL_Anon:
 
     def bots(self):
         """ List all bots"""
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             sql = ("SELECT * FROM bots")
             cursor.execute(sql)
             rows = cursor.fetchall()
@@ -323,7 +324,7 @@ class SQL_Anon:
 
     def reset(self):
         """ Clear all tables """
-        with self as cursor:
+        with Anon_Cursor(self.filename) as cursor:
             cursor.execute("DELETE FROM users")
             cursor.execute("DELETE FROM games")
             cursor.execute("DELETE FROM bots")

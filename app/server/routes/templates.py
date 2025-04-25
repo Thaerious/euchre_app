@@ -1,5 +1,5 @@
 import logging
-from flask import render_template, Blueprint
+from flask import render_template, Blueprint, redirect, url_for
 from SQL_Anon import SQL_Anon
 
 sql_anon = SQL_Anon("./app/anon.db")
@@ -8,7 +8,7 @@ templates_bp = Blueprint("templates", __name__, template_folder="../templates", 
 
 @templates_bp.route("/")
 def index():
-    return render_template("lobby.html")
+    return redirect(url_for("lobby", reason='index'))
 
 @templates_bp.route("/elements/<filename>.html")
 def component(filename):

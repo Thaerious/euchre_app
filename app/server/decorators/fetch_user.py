@@ -4,9 +4,9 @@ from .fetch_anon_token import get_user_token
 from werkzeug.exceptions import Unauthorized
 from typing import Callable
 from SQL_Anon import User_Record
-import logging
+from logger_factory import logger_factory
 
-logger = logging.getLogger(__name__)
+logger = logger_factory(__name__, "FETCH")
 
 def fetch_user(arg:str = "user", sql=None) -> Callable:
     """
@@ -38,10 +38,12 @@ def fetch_user(arg:str = "user", sql=None) -> Callable:
         @fetch_user()
         def on_connect(self, user):
             print(user.username)
-    """    
+    """
     def decorator(func):
         @wraps(func)
         def decorated(self, *args, **kwargs):
+            logger.debug(f"{type(self).__name__}.{func.__name__}")
+
             # Use passed-in SQL_Anon instance or fallback to self.sql_anon.
             sql_anon = sql or getattr(self, "sql_anon", None)
             if sql_anon is None:

@@ -1,9 +1,10 @@
-from constants import TOKEN_SIZE
+from constants import TOKEN_SIZE, COMPLETE
 from Connection_Interface import Connection_Interface
 from euchre import Game, Snapshot, EuchreException, ActionException
 from Auto_Key_Dict import Auto_Key_Dict
 from logger_factory import logger_factory
 from typing import Optional
+from SQL_Anon import SQL_Anon
 import threading
 import random
 
@@ -119,6 +120,7 @@ class Game_Hub:
                 connection = self.connections[name]
                 connection.emit_message(ex.to_json())
 
+        SQL_Anon().set_status(self.game_token, COMPLETE)
         return self
 
     def await_player_decision(self):

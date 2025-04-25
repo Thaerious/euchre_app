@@ -28,19 +28,21 @@ class Game_Endpoints:
     # /game template endpoint
     @fetch_user()
     def game(self, user):
-        logger.info("/game")
+        logger.info(f"/game {user.username}")
+
         if not user.game_token:
             return redirect(url_for('lobby', reason='game not found'))
+        
         return render_template("game.html", seat=user.seat, game_token=user.game_token)
 
     @fetch_user()
     def view(self, user):
-        logger.info("/view")
+        logger.info(f"/view {user.username}")
         return render_template("game.html", seat=user.seat, game_token=user.game_token, view=True)
 
     @fetch_user()
     def exit(self, user):
-        logger.info("/exit")
+        logger.info(f"/exit {user.username}")
         self.sql_anon.remove_user_from_game(user.user_token)
         game_record = self.sql_anon.get_game(user.game_token)
         num_users = len(game_record.names)
@@ -56,27 +58,36 @@ class Game_Endpoints:
         logger.info(f"ws:connect {user.username}")
         self.sql_anon.set_ws_room(user.user_token, request.sid)
         game_rec = self.sql_anon.get_game(user.game_token)
+
+        if not game_rec:
+            self.sql_anon.remove_user_from_game(user.user_token)
+            return redirect(url_for('lobby', reason='game not found'))
+
         game_rec.emit("user_connected", {"seat": user.seat})
 
         # refresh the user because the namespace & room are different
         user = user.refresh()
 
-        hub = self.hubs[user.game_token]
-        hub.add_connection(Socket_Connection(user))
+        try:
+            hub = self.hubs[user.game_token]
+            hub.add_connection(Socket_Connection(user))
+        except FileNotFoundError:
+            logger.error("Save file not found.")
+            return redirect(url_for('lobby', reason='save file not found'))
 
     # websocket connect handler 
     @fetch_user()
     def on_join(self, user):
-        logger.info("ws:join")
+        logger.info(f"ws:join {user.username}")
         hub = self.hubs[user.game_token]
         connection = hub[user.username]
         connection.emit_snapshot()
 
     # websocket disconnect handler
     def on_disconnect(self, reason=None):
-        logger.info("ws:disconnect")
         user_token = get_user_token()
         user = self.sql_anon.get_user(user_token)
+        logger.info(f"ws:disconnect {user.username}")
 
         if user is not None:
             self.sql_anon.clear_ws_room(user.user_token)
@@ -88,7 +99,7 @@ class Game_Endpoints:
     # /do_action websocket on action endpoint
     @fetch_user()
     def on_action(self, data, user):
-        logger.info(f"ws:action {data} {user}")
+        logger.info(f"ws:action {user.username} {data}")
         hub = self.hubs[user.game_token]
         connection = hub.connections[user.username]
         connection.set_decision(data)
