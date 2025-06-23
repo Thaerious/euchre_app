@@ -79,6 +79,7 @@
         <div id="message" class="ui-panel font_normal">Pick a Card</div>
 
         <!-- Snapshot queue control buttons -->
+        {% if view %}
         <div class="control-button-container">
             <button id="prev_snap" class="ui-button suit-button black">Prev</button>
             <div id="snap_index" class="snap_index font_normal">0</div>
@@ -86,6 +87,7 @@
             <button id="run_queue" class="ui-button suit-button black">▶</button>
             <button id="pause_queue" class="ui-button suit-button black">⏸</button>
         </div>
+        {% endif %}
 
         <div class="menu-button-container">
             <button id="rules_button" class="ui-button menu-button font_normal">Rules</button>

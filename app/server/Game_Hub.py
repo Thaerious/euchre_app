@@ -1,12 +1,14 @@
 from constants import TOKEN_SIZE, COMPLETE
 from Connection_Interface import Connection_Interface
-from euchre import Game, Snapshot, EuchreException, ActionException
+from euchre import Game, Snapshot, EuchreError, ActionError
 from Auto_Key_Dict import Auto_Key_Dict
 from logger_factory import logger_factory
 from typing import Optional
 from SQL_Anon import SQL_Anon
+from euchre.utility import custom_json_serializer
 import threading
 import random
+import json
 
 logger = logger_factory(__name__, "HUB")
 
@@ -93,10 +95,10 @@ class Game_Hub:
 
     def run(self):
         """Main game loop that waits for player decisions and progresses the game state."""
-        while self.game.current_state != 8 and self._is_running:
+        while self.game.state != 8 and self._is_running:
             try:
                 # States 1-5 require user action
-                if self.game.current_state in [1, 2, 3, 4, 5]:
+                if self.game.state in [1, 2, 3, 4, 5]:
                     name, decision = self.await_player_decision()
 
                     if decision is None:
@@ -104,7 +106,7 @@ class Game_Hub:
 
                     try:
                         self.game.input(name, decision[0], decision[1])
-                    except EuchreException as ex:
+                    except EuchreError as ex:
                         connection = self.connections[name]
                         connection.emit("exception", ex)                        
                     except Exception as ex:
@@ -116,8 +118,9 @@ class Game_Hub:
                     # States 6, 7 require server action
                     self.game.input(None, "continue", None)
                     self.broadcast_snapshots()
-            except EuchreException as ex:
+            except EuchreError as ex:
                 connection = self.connections[name]
+                msg = json.dumps(self, indent=2, default=custom_json_serializer)
                 connection.emit_message(ex.to_json())
 
         SQL_Anon().set_status(self.game_token, COMPLETE)

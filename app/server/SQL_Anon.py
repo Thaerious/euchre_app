@@ -3,7 +3,7 @@ from constants import TOKEN_SIZE
 from logger_factory import logger_factory
 from tabulate import tabulate
 from werkzeug.exceptions import Forbidden
-from euchre.custom_json_serializer import custom_json_serializer
+from euchre.utility.custom_json_serializer import custom_json_serializer
 import sqlite3
 import sys
 import random

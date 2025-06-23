@@ -8,8 +8,6 @@ export default class ViewHistory extends EventEmitter {
         this._snapIndex = -1    // The currently displayed snapshot from snapHistory
         this.paused = false     // When true update view with queued snapshots
         this.isRunning = false  // Semaphore around the run loop, prevents update race condition
-        
-        this.addButtonListeners()
     }
 
     // getter/setter for pause, changes view state of queue buttons
@@ -19,14 +17,6 @@ export default class ViewHistory extends EventEmitter {
 
     set paused(value) {
         this._paused = value
-
-        if (value) {
-            document.querySelector("#run_queue").classList.remove("is-disabled")
-            document.querySelector("#pause_queue").classList.add("is-disabled")
-        } else {
-            document.querySelector("#run_queue").classList.add("is-disabled")
-            document.querySelector("#pause_queue").classList.remove("is-disabled")
-        }
     }
 
     get snapshot() {
@@ -47,7 +37,6 @@ export default class ViewHistory extends EventEmitter {
         } else {
             this._snapIndex = value;
         }
-        this.updateButtons()
     }
 
     async run() {
@@ -74,31 +63,6 @@ export default class ViewHistory extends EventEmitter {
         await this.emit("load", this.snapshot)
         return new Promise(resolve => setTimeout(resolve, 1000));
     }
-   
-    addButtonListeners() {
-        // Snapshot Queue button listeners
-        document.querySelector("#next_snap").addEventListener("click", () => {
-            this.next()
-        });
-
-        document.querySelector("#snap_index").addEventListener("click", () => {
-            this.go(this.snapIndex)
-        });
-
-        document.querySelector("#prev_snap").addEventListener("click", () => {
-            this.paused = true
-            this.prev()
-        });
-
-        document.querySelector("#run_queue").addEventListener("click", async () => {
-            this.paused = false
-            this.run()
-        });
-
-        document.querySelector("#pause_queue").addEventListener("click", () => {
-            this.paused = true
-        });
-    }
 
     async enqueue(snapshot) {
         // don't queue old snapshots
@@ -106,7 +70,6 @@ export default class ViewHistory extends EventEmitter {
         if (lastHash !== snapshot.hash) {
             this.snapHistory.push(snapshot)
             this.save()
-            this.updateButtons()
             await this.run() // Won't run when paused
         }
     }
@@ -133,19 +96,5 @@ export default class ViewHistory extends EventEmitter {
         if (history.length > 0) {
             this.emit("load", this.snapshot)
         }
-    }
-
-    updateButtons() {
-        document.querySelector("#prev_snap").classList.remove("is-disabled")
-        document.querySelector("#next_snap").classList.remove("is-disabled")
-
-        if (this.snapIndex <= 0) {
-            document.querySelector("#prev_snap").classList.add("is-disabled")
-        }
-        if (this.snapIndex >= this.snapHistory.length - 1) {
-            document.querySelector("#next_snap").classList.add("is-disabled")
-        }
-
-        document.querySelector("#snap_index").innerText = `${this.snapIndex}`
     }
 }
